@@ -1,0 +1,178 @@
+/**
+ * Element Plus 主题覆盖
+ * 严格对齐 design/DESIGN_SYSTEM.md §12.1
+ * 策略：保留 Element Plus，全局覆盖 CSS variables
+ */
+
+:root {
+  --el-color-primary: #1a1a1a;
+  --el-color-primary-light-3: #404040;
+  --el-color-primary-light-5: #666666;
+  --el-color-primary-light-7: #999999;
+  --el-color-primary-light-8: #cccccc;
+  --el-color-primary-light-9: #e5e5e5;
+  --el-color-primary-dark-2: #000000;
+
+  --el-color-success: #2d7a3e;
+  --el-color-warning: #9a6c1a;
+  --el-color-danger: #9b2c2c;
+  --el-color-info: #888888;
+
+  --el-text-color-primary: #1a1a1a;
+  --el-text-color-regular: #525252;
+  --el-text-color-secondary: #888;
+  --el-text-color-placeholder: #bfbfbf;
+
+  --el-bg-color: #ffffff;
+  --el-bg-color-page: #f7f6f3;
+  --el-bg-color-overlay: #ffffff;
+  --el-fill-color: #f0efeb;
+  --el-fill-color-light: #fafaf8;
+  --el-fill-color-lighter: #fcfcfa;
+  --el-fill-color-blank: #ffffff;
+
+  --el-border-color: #e5e4e0;
+  --el-border-color-light: #ececea;
+  --el-border-color-lighter: #f0efeb;
+  --el-border-color-darker: #d4d3cf;
+
+  --el-border-radius-base: 8px;
+  --el-border-radius-small: 4px;
+  --el-border-radius-round: 16px;
+  --el-border-radius-circle: 100%;
+
+  --el-font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
+                    "Microsoft YaHei", "Inter", sans-serif;
+  --el-font-size-base: 14px;
+}
+
+.el-card {
+  border-radius: 16px;
+  border: 1px solid var(--el-border-color);
+  box-shadow: none !important;
+}
+
+/* 实心 primary：仅作用于非 plain / text / link 变体，避免污染描边按钮 */
+.el-button--primary:not(.is-plain):not(.is-text):not(.is-link) {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #fff;
+  font-weight: 500;
+}
+.el-button--primary:not(.is-plain):not(.is-text):not(.is-link):hover {
+  background: #000;
+  border-color: #000;
+  color: #fff;
+}
+/* primary plain（描边按钮）：Notion 风——白底深字、悬停反黑，修复"黑框看不见字"bug */
+.el-button--primary.is-plain {
+  background: #fff;
+  border-color: var(--el-border-color-darker);
+  color: #1a1a1a;
+}
+.el-button--primary.is-plain:hover {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #fff;
+}
+.el-button {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 200ms ease;
+}
+.el-button--default {
+  border-color: var(--el-border-color-darker);
+}
+
+.el-input__wrapper {
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px var(--el-border-color-darker) inset !important;
+  background: #fff;
+  padding: 4px 12px;
+}
+.el-input__wrapper.is-focus {
+  box-shadow: 0 0 0 1.5px #1a1a1a inset !important;
+}
+
+.el-table {
+  --el-table-border-color: transparent;
+  --el-table-row-hover-bg-color: #fafaf8;
+  --el-table-header-bg-color: #fafaf8;
+}
+.el-table thead th {
+  font-weight: 500;
+  color: #888;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.el-table th, .el-table td {
+  border-bottom: 1px solid var(--el-border-color) !important;
+}
+
+.el-tag {
+  border-radius: 4px;
+  border: none;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.el-menu {
+  background: transparent;
+  border-right: none !important;
+}
+.el-menu-item {
+  height: 40px;
+  line-height: 40px;
+  border-radius: 8px;
+  margin: 2px 8px;
+  color: var(--el-text-color-primary);
+}
+.el-menu-item:hover { background: rgba(0, 0, 0, 0.04); }
+.el-menu-item.is-active {
+  background: #e8e7e3;
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+.el-tabs__active-bar {
+  background-color: #1a1a1a;
+  height: 2px;
+}
+.el-tabs__nav-wrap::after { background-color: var(--el-border-color); }
+.el-tabs__item {
+  font-weight: 500;
+  color: #888;
+}
+.el-tabs__item.is-active { color: #1a1a1a; }
+
+.el-drawer__header {
+  margin-bottom: 0;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--el-border-color);
+}
+.el-drawer__body { padding: 24px; }
+
+.el-dialog { border-radius: 16px; overflow: hidden; }
+.el-dialog__header { padding: 20px 24px; border-bottom: 1px solid var(--el-border-color); }
+.el-dialog__body { padding: 24px; }
+.el-dialog__footer { padding: 16px 24px; border-top: 1px solid var(--el-border-color); }
+
+.el-slider__bar { background-color: #1a1a1a; }
+.el-slider__button {
+  border-color: #1a1a1a;
+  background-color: #1a1a1a;
+}
+
+/* Tooltip / Popper：默认是黑底白字（很跳），改成 Notion 浅色卡片 */
+.el-popper.is-dark {
+  background: #ffffff;
+  color: var(--el-text-color-primary);
+  border: 1px solid var(--el-border-color-darker);
+  box-shadow: var(--dm-shadow-md);
+  font-weight: 400;
+}
+.el-popper.is-dark .el-popper__arrow::before {
+  background: #ffffff !important;
+  border: 1px solid var(--el-border-color-darker) !important;
+}

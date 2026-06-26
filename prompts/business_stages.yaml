@@ -1,0 +1,374 @@
+# ============================================================
+# 5 阶段销售方法论 v0.2
+# ============================================================
+#
+# 使用者：
+#   - Sales Agent (src/agents.py)  : 只注入当前 stage 的 actions/must_not/allowed_actions
+#   - Judge Agent (src/judge.py)   : 读全图，按 gate 判断 next_stage（支持倒退）
+#   - Coach Agent (src/coach.py)   : 用 weight 算配比偏离、用 catalog 算剧本覆盖率
+#
+# 决策依据：v0.2 与用户确认（Q1-Q5）
+#   Q1=B   : machine_check 走最低门槛 + memory_refresh_interval 默认 3 -> 2
+#   Q2=YES : 销冠在 strategy 里多输出 playbook_action 字段
+#   Q3=B   : weight 仅 Coach 使用，Judge 推进阶段不读 weight
+#   Q4=YES : 允许 stage 倒退（仅 S3->S2 / S4->S3 两条边）
+#   Q5=YES : WALK_AWAY / COMPLAINT 短路终止，不再走 S5
+# ============================================================
+
+version: "0.3"   # v0.3：v10.1/10.2 混合推进机制升级（required_trigger + gate_condition + persona/sales logic/constraints）
+
+stages:
+  # ──────────────────────────────────────────────────────────
+  - id: S1
+    name: CONNECTING
+    cn_name: 开场与需求暴露
+    weight: 0.15
+
+    # v0.3 NEW —— v10.1 导购员核心驱动动作（Required Trigger）
+    required_trigger: >-
+      导购员必须发起无压破冰：1 句话欢迎 + 空间留白 / 道具关联软钩子，零压力、零价格、零型号、零催单。
+
+    # v0.3 NEW —— v10.1 消费者阶段流转大闸（Gate Condition）
+    gate_condition: >-
+      导购员完成合规破冰，未触犯高压逼单红线（未强问预算 / 未强推 SKU / 未喊"今天最优惠"）。
+
+    # v0.3 NEW —— v10.2 Persona 执行逻辑 / 行为约束
+    persona_logic: >-
+      加载初始防御值，基于性格基调（外向 / 内向）给被动观察或冷漠短句回应。
+    persona_constraints: >-
+      仅表达表象兴趣（"看一看 / 随便瞧瞧"），可释放基础背景线索；严禁主动暴露底层痛点。
+
+    # v0.3 NEW —— v10.2 Sales 执行逻辑 / 行为约束
+    sales_logic: >-
+      建立连接。通过空间留白 + 商品陈列道具进行非压迫性引导。
+    sales_constraints: >-
+      严禁急于推荐具体产品 / 强行逼单 / 一上来 ≥ 2 连问；必须保持无压状态，引导需求自然暴露。
+
+    sales_actions:
+      - 用 1 句话破冰：欢迎 + 空间留白（"先看看也行，需要随时叫我"），不要立刻问"想买什么"
+      - 用"道具关联"引导：客户停在某区域 → 用该区域产品做轻钩子（"这台是今天到的新款，您要不要上手试试"）
+      - 第一轮发言禁止任何价格、型号、规格、政策、优惠数字
+
+    sales_must_not:
+      - 不要在 S1 直接报价或推荐具体 SKU
+      - 不要连续追问 ≥ 2 个问题（典型违规："您预算多少？主要给谁用？"）
+      - 不要说"性价比高 / 很划算 / 不会错的"这类结论性表达
+
+    allowed_playbook_actions:
+      - warmup_greeting
+      - soft_hook
+      - space_giving
+
+    judge_gate:
+      machine_check:
+        - 销冠开场白未出现明显价格数字（不含 "¥|元|RMB|3 位以上整数|起售"）
+        - 客户最近一轮 hidden_state.status == "CONTINUE"
+      llm_check:
+        - 客户已对销冠做出任何主动回应（哪怕只是"嗯""看看"），不再是单方面问候
+        - 销冠未触发高压逼单红线（强行问预算 / 强行报价 / 强推 SKU）
+
+    stage_fail_signal:
+      - 客户连续 ≥ 3 轮"我先看看"或转身离开倾向、且销冠始终未给出任何有效回应 → outcome=WALK_AWAY，跳过后续所有阶段（单点没谈拢不触发，给销冠铺开 135910 的机会）
+
+  # ──────────────────────────────────────────────────────────
+  - id: S2
+    name: EXPLORING
+    cn_name: 核心异议与动机挖掘
+    weight: 0.30
+
+    required_trigger: >-
+      导购员必须连续应用 SPIN 提问链（Situation → Problem → Implication → Need-Payoff），层层剥离表象，锁定隐性动机。
+    gate_condition: >-
+      导购员必须明确做一次"痛点确认"闭环陈述并拿到客户的正向确认（"对 / 嗯 / 是这样"），否则禁止晋级。
+
+    persona_logic: >-
+      根据底层痛点逐步释放线索；在导购精准确认痛点前对核心信息保持保留。
+    persona_constraints: >-
+      伴随挖掘深入，逐步抛出价格敏感度 / 竞品对比 / 品牌信任度等初始异议，测试导购专业度；异议要落在导购能用 135910（卖点 / 竞品 / FAQ）当场接住的范围内，同一异议最多追问 2 轮，拿到具体回应即认可并切到下一个话题。
+
+    sales_logic: >-
+      用 SPIN 提问链层层剥离表象，挖掘并锁定客户的隐性动机、使用场景与决策标准。
+    sales_constraints: >-
+      必须在阶段结束前向客户发出"痛点确认"闭环陈述并获正向确认；每轮只问 1 个 SPIN 问题，禁止堆问。
+
+    sales_actions:
+      - 应用 SPIN 提问链：Situation(场景) → Problem(痛点) → Implication(影响) → Need-Payoff(收益)
+      - 每轮只问 1 个 SPIN 问题，不要一次堆 3 个
+      - 客户回答任一维度后，先 reflection 复述确认再深挖（"您是说每天通勤 1 小时主要听播客，对吗？"）
+      - 锁定客户隐性动机（动机背后的"为什么"，不是显性需求）
+
+    sales_must_not:
+      - 不要跳过 Problem 直接给方案
+      - 不要重复问 session_memory 已记录的维度
+
+    allowed_playbook_actions:
+      - spin_situation
+      - spin_problem
+      - spin_implication
+      - spin_need_payoff
+      - reflection_paraphrase
+
+    judge_gate:
+      machine_check:
+        # Q1=B 松：只查最低门槛，其余交给 llm_check
+        - session_memory.current_need 非空（至少有一个明确需求文本）
+      llm_check:
+        - 销冠已显性 reflection / paraphrase 客户底层痛点至少 1 次
+        - 客户至少表达过 1 个具体"为什么需要 / 为什么不买"的动机，而非泛泛"看看"
+        - 销冠最近 3 轮 strategy.playbook_action 命中 [spin_*, reflection_paraphrase] 至少 1 次
+
+    stage_fail_signal:
+      - 销冠连续 ≥ 3 轮还在问需求没给任何方案 → 强制晋级到 S3（凑轮次保护）
+      - 客户 attitude ∈ {annoyed, frustrated} → 立刻晋级，不再深挖
+
+  # ──────────────────────────────────────────────────────────
+  - id: S3
+    name: EXPERIENCE
+    cn_name: 方案匹配与价值锚定
+    weight: 0.40
+
+    required_trigger: |
+      导购员必须执行两件事：
+      3A 演示：方案 / 产品对齐到 S2 挖到的痛点场景，给具体规格 / 数据 / 政策做价值锚定；
+      3B 消异：面对高压异议主动执行「共鸣（情绪同频）→ 转换（视角重塑）→ 佐证（数据/案例支撑）」三部曲。
+    gate_condition: >-
+      导购员必须完整执行消异三部曲并正面回应客户的所有高压异议；任何一条异议被回避 / 敷衍 / "放心啦"过 → 禁止晋级。
+
+    persona_logic: >-
+      比较产品方案是否真正适合自己；触发深层防守机制，借题抛出高压异议、极端对比或质疑产品价值。
+    persona_constraints: >-
+      依据导购对痛点理解的深度进行细节盘问；若导购方案话术空洞 / 三部曲缺位，Defense Level 实时回升（态度变冷 / 砍价更狠 / 提竞品次数↑）；反之，导购给出对得上的具体卖点 / 竞品对比 / 现场演示 / 店内售后回应时，Defense Level 相应下降，放下该点推进到下一个 135910 话题。盘问只围绕导购店内讲得清的卖点 / 竞品 / FAQ，不索要官网 / 第三方实测 / 逐字保修条款这类店里接不住的东西，同一异议不纠缠到第 3 轮。
+
+    sales_logic: >-
+      3A 精准对齐痛点做场景化还原 + 3B 严格执行共鸣-转换-佐证三部曲处理异议。
+    sales_constraints: >-
+      禁止回避异议或敷衍作答；每次回应必须有实质产品信息支撑与逻辑对齐；引用事实必须出自 KB / web_search / 公开常识，否则诚实说"我帮您确认"。
+
+    sales_actions:
+      # 3A 演示
+      - 3A-Align ：把方案 / 产品对齐到 S2 挖到的具体痛点场景
+      - 3A-Anchor：给 1-2 个具体规格数字 / 实测数据 / 政策细节，不要堆 3 个以上卖点
+      - 3A-Action：推 1 个可立刻完成的现场动作（线下店：上手 / 试戴 / 演示；线上：开屏共享 / 寄样）
+      # 3B 消异（三部曲）
+      - 3B-共鸣：先承认异议合理（"您这个顾虑很多人都有"），不要立刻反驳
+      - 3B-转换：把异议重新框架（"关键不在 X 而在 Y"）
+      - 3B-佐证：给 1 个具体证据（数字 / 政策 / 案例 / 现场演示），绝不"放心啦 / 没问题啦"空话
+
+    sales_must_not:
+      - 不要绕开客户最强异议而只重复卖点
+      - 不要把 3B 三部曲省略成"放心啦"
+      - 引用产品事实必须来自知识库 / web_search / 公开常识，不确定就说"我帮您确认"
+
+    allowed_playbook_actions:
+      - align_3a
+      - anchor_3a
+      - action_3a
+      - empathy_3b
+      - reframe_3b
+      - evidence_3b
+
+    judge_gate:
+      machine_check:
+        - 销冠最近 5 轮至少 2 轮 strategy.used_product_context == true（真的引用了产品事实）
+        - 销冠最近 5 轮 strategy.playbook_action 至少命中 anchor_3a 或 evidence_3b 1 次
+      llm_check:
+        - 销冠对 main_objections 里每一条异议都做出了 3B 三部曲式回应（共鸣 → 转换 → 佐证）
+        - 客户 hidden_state.purchase_signal 从 S2 末尾 ≤ 0.4 → 当前 ≥ 0.55（兴趣回升）
+
+    stage_fail_signal:
+      - 销冠出现伪造证据（content 提到 URL / 订单号 / 论坛贴号但 tool_calls 无对应成功调用）→ next_stage=S2 重新挖
+      - 客户 status = COMPLAINT → 中止全流程
+      - 销冠连续 3 轮 playbook_action 全是 anchor_3a / align_3a 没有 3B → 原地停留并要求 sales_instruction="先消异议再加卖点"
+
+  # ──────────────────────────────────────────────────────────
+  - id: S4
+    name: CLOSING
+    cn_name: 成交推进与强压测试
+    weight: 0.10
+
+    required_trigger: >-
+      导购员必须主动发起成交邀约（开单 / 二选一 / 假设成交 / 稀缺收网四选一），不允许等客户先开口。
+    gate_condition: >-
+      导购员完成收网邀约。若导购出现决策犹豫（"您要不要再想想 / 看您方便吧 / 我也不确定"）→ 直接判定流转失败，触发倒退或 WALK_AWAY。
+
+    persona_logic: >-
+      释放最后购买信号 or 抛出终极决策障碍（极致砍价 / 权益博弈 / 风险防备 / 离场威胁）。
+    persona_constraints: >-
+      进入心理博弈状态；只有当导购**连续多轮严重失职**（反复回避核心问题 / 明显敷衍 / 无限退让）时才考虑谈判破裂触发 Exit，不要因为单个参数 / 保修细节没谈拢就直接离场。
+
+    sales_logic: >-
+      主动发起成交邀约；灵活用假设成交法 + 稀缺权益 + 限时优惠促成收网。
+    sales_constraints: >-
+      保持坚定成交姿态；敏锐捕捉购买信号，不留流失空间；硬磨 ≥ 2 轮失败必须转 FOLLOW_UP 或 S5。
+
+    sales_actions:
+      - 主动发起成交邀约："那这台我帮您开单"或"今天下单的话…" — 必须主动开口
+      - 假设成交法：把"是否要"换成"怎么要"（"配 256G 还是 512G？""您是带走还是送货？"）
+      - 稀缺权益收网：明确边界（"今天到店礼今晚 9 点截止 / 首批 20 台还剩 3 台"），不能编造数字
+      - 接到拒绝立刻给台阶：FOLLOW_UP（"那这样，我把详细资料发您微信，您慢慢看"）
+
+    sales_must_not:
+      - 不要继续讨论参数细节，S4 任务是拿承诺
+      - 不要"决策犹豫"：销冠说出"您要不要再想想 / 这个我不确定 / 看您方便吧"等被动表达 → 视为 S4 失败
+      - 不要硬磨 ≥ 2 轮 closing 失败仍纠缠
+
+    allowed_playbook_actions:
+      - assumptive_close
+      - choice_close
+      - scarcity_close
+      - schedule_followup
+      - send_quote_wechat
+
+    judge_gate:
+      machine_check:
+        - 销冠最近 3 轮至少 1 轮 strategy.playbook_action ∈ [assumptive_close, choice_close, scarcity_close, schedule_followup, send_quote_wechat]
+        - 客户响应一次：DEAL_DONE / FOLLOW_UP / 明确 NO
+      llm_check:
+        - 销冠主动开口要承诺，且承诺内容是**具体可执行**的下一步动作（不是"考虑一下吧"这种空话）
+
+    stage_fail_signal:
+      - 销冠主动 closing 后连续 2 轮被拒绝 → 转 S5 优雅退出
+      - 客户 status = WALK_AWAY → outcome=WALK_AWAY，跳过 S5
+
+  # ──────────────────────────────────────────────────────────
+  - id: S5
+    name: LOYALTY
+    cn_name: 峰终体验与退出
+    weight: 0.05
+
+    required_trigger: >-
+      导购员必须执行完美峰终：肯定客户决策价值 + 给出无忧安全背书（售后 / 7 天无忧 / 正品承诺） + 优雅道别留钩子。
+    gate_condition: >-
+      对话正常结束，系统判定情感闭环完成（成交后做峰终或未成交体面收尾两种情形之一）。
+
+    persona_logic: >-
+      心理防御全面拆解，释放成交后心理爽感反馈 / 高满意度评价，完成情感闭环。
+    persona_constraints: >-
+      若前置阶段顺畅，需展现高忠诚度 / 转介绍意愿 / 愉悦告别；若前置阶段崩了，可冷淡道别但不再激化。
+
+    sales_logic: >-
+      执行 Peak-End Rule。肯定决策价值 + 无忧背书 + 优雅道别三件事至少完成 2 件。
+    sales_constraints: >-
+      禁止在收到成交信号后放松服务标准，必须站好最后一班岗；禁止继续推产品 / 继续问需求。
+
+    sales_actions:
+      - 肯定决策价值（不论成交与否）："您今天问的问题很专业""您挑的这台确实适合您"
+      - 给无忧背书：售后政策 / 7 天无忧 / 加微信随时问 / 不喜欢可调换
+      - 优雅道别：留一个"下次见"的小钩子（"下次新品到了我第一时间告诉您"）
+
+    sales_must_not:
+      - 不要 S5 还继续推产品 / 继续问需求
+      - 不要客户已经说"再见"了还硬留
+
+    allowed_playbook_actions:
+      - affirm_choice
+      - warranty_backup
+      - graceful_farewell
+
+    judge_gate:
+      machine_check:
+        - 销冠最后一轮 content 中出现：肯定 / 感谢 / 欢迎再来 类语义
+      llm_check:
+        - 销冠完成"肯定 + 背书 + 道别"三件事中至少 2 件
+
+    stage_fail_signal: []   # 终态无失败
+
+
+# ============================================================
+# playbook_action 全集（Q2 销冠自报，Judge machine_check + Coach 复盘用）
+# ============================================================
+playbook_action_catalog:
+  S1:
+    - id: warmup_greeting
+      cn: 破冰寒暄
+    - id: soft_hook
+      cn: 道具关联软钩子
+    - id: space_giving
+      cn: 主动给空间
+  S2:
+    - id: spin_situation
+      cn: SPIN-场景提问
+    - id: spin_problem
+      cn: SPIN-痛点提问
+    - id: spin_implication
+      cn: SPIN-影响提问
+    - id: spin_need_payoff
+      cn: SPIN-收益提问
+    - id: reflection_paraphrase
+      cn: 复述确认
+  S3:
+    - id: align_3a
+      cn: 3A-Align 方案对齐痛点
+    - id: anchor_3a
+      cn: 3A-Anchor 规格政策锚定
+    - id: action_3a
+      cn: 3A-Action 现场动作
+    - id: empathy_3b
+      cn: 3B-共鸣
+    - id: reframe_3b
+      cn: 3B-转换
+    - id: evidence_3b
+      cn: 3B-佐证带证据
+  S4:
+    - id: assumptive_close
+      cn: 假设成交
+    - id: choice_close
+      cn: 二选一成交
+    - id: scarcity_close
+      cn: 稀缺收网
+    - id: schedule_followup
+      cn: 约下次跟进
+    - id: send_quote_wechat
+      cn: 报价加微信
+  S5:
+    - id: affirm_choice
+      cn: 肯定决策
+    - id: warranty_backup
+      cn: 售后背书
+    - id: graceful_farewell
+      cn: 优雅道别
+
+
+# ============================================================
+# 全局规则
+# ============================================================
+global_rules:
+  # Q3=B 软参考：weight 只用于 Coach 复盘报告，Judge 推进阶段不读 weight
+  weight_usage: coach_report_only
+  weight_tolerance: 0.10
+
+  # Q1=B：machine_check 走最低门槛
+  stage_advance_policy:
+    description:
+      - machine_check 全部 True → 进入 llm_check 由 LLM 主观判断
+      - 任一 machine_check False → next_stage = current_stage，sales_instruction 写明缺什么
+      - llm_check 全 True → next_stage = current_stage + 1
+      - llm_check 部分 False → next_stage = current_stage，sales_instruction 写明缺什么
+
+  # Q4：允许 stage 倒退
+  stage_regression_policy:
+    enabled: true
+    allowed_transitions:
+      - from: S3
+        to: S2
+        reason: 伪造证据 / 需求挖错了
+      - from: S4
+        to: S3
+        reason: 客户突然冒出新异议
+    forbidden_transitions:
+      - 任何阶段 -> S1   # 不允许倒退到开场
+
+  # Q5：outcome 短路
+  outcome_short_circuit:
+    - 客户 status = WALK_AWAY → outcome=WALK_AWAY，session 立即结束，不再生成 S5 轮
+    - 客户 status = COMPLAINT → outcome=COMPLAINT，session 立即结束
+    - 客户 status = DEAL_DONE → 仍走 S5 做峰终（成交后的售后承诺很重要）
+
+  # Q1 辅助：memory 刷新加速
+  memory_refresh_interval_default: 2
+
+  # 全局红线（任何阶段都不能违反）
+  global_red_lines:
+    - 销冠任何一轮 word_count > 200 字 → responsiveness 减 2
+    - 销冠任何一轮空泛词 ≥ 3 个且无数字佐证 → specificity 减 3
+    - 客户连续 3 轮 attitude ∈ {annoyed, frustrated} → Judge 强制 sales_instruction "降速 + 共情，禁推产品"

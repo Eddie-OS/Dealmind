@@ -1,0 +1,59 @@
+# ===== 密钥 / 环境变量 =====
+.env
+.env.*
+!.env.example
+
+# ===== Python =====
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ===== Node / 前端 =====
+node_modules/
+web/node_modules/
+web/dist/
+dist/
+*.local
+
+# ===== 编辑器 / IDE =====
+.idea/
+.vscode/
+
+# ===== Codegraph 索引 =====
+.codegraph/
+
+# ===== 运行时产物 / 大文件 =====
+outputs/
+logs/
+*.log
+terminals/
+tmp/
+
+# ===== 数据库 / 向量库 / 上传（运行时数据，不入库）=====
+data/*.db
+data/*.db-journal
+data/*.sqlite
+data/chroma/
+data/sessions/
+data/uploads/
+data/handbook_uploads/
+data/product_handbooks/
+data/analysis_reports/
+data/lessons_candidate.jsonl
+
+# ===== 归档 / 大体积素材 =====
+*.zip
+*.rar
+*.7z
+__MACOSX/
+训练文件/
+
+# ===== 系统垃圾 =====
+.DS_Store
+Thumbs.db

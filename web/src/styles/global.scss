@@ -1,0 +1,58 @@
+/**
+ * 全局基础样式
+ * 严格对齐 design/DESIGN_SYSTEM.md §12.3
+ * 注意：顺序是 element 覆盖 → token，token 在后以保证 --dm-* 不被吃掉
+ */
+
+@use './element-overrides.scss';
+@use './tokens.scss';
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--dm-bg);
+  color: var(--dm-text);
+  font-family: var(--dm-font-sans);
+  font-size: var(--dm-fs-body);
+  line-height: var(--dm-lh-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: var(--dm-text-link);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+button {
+  font-family: inherit;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4d3cf;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
