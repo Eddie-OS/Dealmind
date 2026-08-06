@@ -12,6 +12,7 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from 'axios'
 import { ElMessage } from 'element-plus'
+import { getToken, clearLogin } from '@/router'
 
 declare module 'axios' {
   // 让 TS 知道 config 上可以挂 silent 字段
@@ -29,6 +30,16 @@ export const http: AxiosInstance = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
+// 每个请求自动带上登录 token
+http.interceptors.request.use((config) => {
+  const token = getToken()
+  if (token) {
+    config.headers = config.headers ?? {}
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
 http.interceptors.response.use(
   (resp) => resp,
   (error: AxiosError<{ detail?: string | { msg: string }[] }>) => {
@@ -36,6 +47,16 @@ http.interceptors.response.use(
     const silent = cfg.silent === true
     const status = error.response?.status
     let msg = '请求失败，请稍后重试'
+
+    // 未授权 / 登录失效：清掉本地 token 并踢回登录页
+    if (status === 401) {
+      clearLogin()
+      if (!window.location.pathname.startsWith('/login')) {
+        window.location.assign('/login')
+      }
+      if (!silent) ElMessage.error('登录已失效，请重新登录')
+      return Promise.reject(error)
+    }
 
     if (error.code === 'ECONNABORTED') {
       msg = '请求超时，请检查网络或稍后重试'

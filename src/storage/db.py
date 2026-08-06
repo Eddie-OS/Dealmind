@@ -46,6 +46,15 @@ def get_connection(db_path: Optional[Path] = None) -> sqlite3.Connection:
     )
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON;")
+    # 多人并发加固：
+    # - WAL：读写不再互相阻塞（读不挡写、写不挡读），SQLite 并发大幅改善。
+    #   journal_mode 是数据库级持久设置，逐连接重复设置无副作用。
+    # - busy_timeout：拿不到写锁时最多等 5 秒再报错，避免高峰期
+    #   "database is locked" 直接抛错。
+    # - synchronous=NORMAL：WAL 下安全且更快（断电最多丢最后一个事务，可接受）。
+    conn.execute("PRAGMA journal_mode = WAL;")
+    conn.execute("PRAGMA busy_timeout = 5000;")
+    conn.execute("PRAGMA synchronous = NORMAL;")
     return conn
 
 

@@ -12,6 +12,7 @@
  *   DELETE /api/sessions/{id}                   (Stage 7 删 DB + outputs)
  */
 import { http } from './http'
+import { getToken } from '@/router'
 
 export type FirstSpeaker = 'sales' | 'persona'
 export type SessionStatus = 'pending' | 'running' | 'done' | 'cancelled' | 'failed'
@@ -219,9 +220,13 @@ export const sessionsApi = {
       )
       .then((r) => r.data),
 
-  /** 导出 URL（用 <a download> 触发浏览器下载，走 axios baseURL 的同源代理） */
-  exportUrl: (id: string, format: ExportFormat) =>
-    `/api/sessions/${encodeURIComponent(id)}/export?format=${format}`,
+  /** 导出 URL（用 <a download> 触发浏览器下载，走 axios baseURL 的同源代理）
+   *  浏览器直连不走 axios 拦截器，token 以查询参数附上（后端中间件支持 ?token= 兜底）。 */
+  exportUrl: (id: string, format: ExportFormat) => {
+    const token = getToken()
+    const auth = token ? `&token=${encodeURIComponent(token)}` : ''
+    return `/api/sessions/${encodeURIComponent(id)}/export?format=${format}${auth}`
+  },
 
   /**
    * 批量导出（zip）：sessions/{id}.{fmt} + 可选 analysis/{id}.md/.json

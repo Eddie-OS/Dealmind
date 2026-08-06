@@ -626,6 +626,7 @@ function qualityFlagMeta(flag?: string): { type: string; label: string } | null 
   const map: Record<string, { type: string; label: string }> = {
     ok: { type: 'success', label: '可直接采纳' },
     review: { type: 'warning', label: '需人工确认' },
+    minor: { type: 'warning', label: '微调·未实质重写' },
     kept_original: { type: 'info', label: '仅保留原文' },
   }
   return (flag && map[flag]) || null
@@ -1935,7 +1936,7 @@ async function submitBindAndAnalyze() {
                       class="rev-quote"
                     >
                       <div class="rev-quote-meta">
-                        <span class="rev-quote-score">{{ q.score.toFixed(1) }}</span>
+                        <span v-if="q.score != null" class="rev-quote-score">{{ q.score.toFixed(1) }}</span>
                         <span class="rev-quote-by">{{ q.persona_name }}</span>
                       </div>
                       <div v-if="q.customer_question" class="rev-quote-line">

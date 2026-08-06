@@ -18,6 +18,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
+  ElAlert,
   ElButton,
   ElEmpty,
   ElMessage,
@@ -430,6 +431,12 @@ const stageBalanceHasData = computed(
   () => (playbook.value?.stage_distribution || []).some((s) => s.actual_count > 0),
 )
 
+// 成交质量：自我成交率（成交但销冠从未进入 S4/S5 收口）
+const dealQuality = computed(() => playbook.value?.deal_quality || null)
+const selfClosePct = computed(() =>
+  dealQuality.value ? Math.round(dealQuality.value.self_close_rate * 100) : 0,
+)
+
 // 剧本动作覆盖率：横向条形，按阶段着色
 const actionUsageOption = computed(() => {
   const items = (playbook.value?.action_usage || []).slice(0, 22)
@@ -714,6 +721,29 @@ onMounted(async () => {
         </div>
       </section>
 
+      <!-- 成交质量告警：自我成交率高 = deal_rate 含金量低 -->
+      <section v-if="dealQuality && dealQuality.deal_sessions > 0" class="card deal-quality-card">
+        <ElAlert
+          :type="selfClosePct >= 60 ? 'warning' : 'success'"
+          :closable="false"
+          show-icon
+        >
+          <template #title>
+            成交质量：{{ dealQuality.deal_sessions }} 场成交中，
+            <b>{{ dealQuality.self_closed }} 场（{{ selfClosePct }}%）销冠从未进入 S4/S5 收口</b>
+            ——属客户"自我成交"，由销冠真正收口的仅 {{ dealQuality.closed_by_sales }} 场
+          </template>
+          <div class="dm-text-small dm-text-muted" style="margin-top: 6px">
+            自我成交率偏高说明成交率含金量被高估：客户在异议/价值阶段就自行下定，
+            销冠的促成（S4）与峰终（S5）能力未被有效演练与评估。
+            成交场到达的最高阶段分布：
+            <span v-for="(m, i) in dealQuality.max_stage_dist" :key="m.stage_id">
+              {{ i ? ' · ' : '' }}{{ m.stage_id }}:{{ m.count }}
+            </span>
+          </div>
+        </ElAlert>
+      </section>
+
       <!-- business_stages v0.2：阶段配比 + 剧本动作覆盖率 -->
       <section class="chart-grid-2">
         <div class="card chart-card">
@@ -870,8 +900,19 @@ onMounted(async () => {
               <ElTableColumn label="#" width="48" align="right">
                 <template #default="{ $index }">{{ $index + 1 }}</template>
               </ElTableColumn>
-              <ElTableColumn label="异议内容" min-width="240" show-overflow-tooltip>
-                <template #default="{ row }">{{ row.text }}</template>
+              <ElTableColumn label="异议主题" min-width="280">
+                <template #default="{ row }">
+                  <div class="obj-cell-main">
+                    {{ row.text }}
+                    <ElTag v-if="row.theme" size="small" effect="plain" type="info">主题</ElTag>
+                  </div>
+                  <div
+                    v-if="row.variants && row.variants.length > 1"
+                    class="obj-cell-variants dm-text-small dm-text-muted"
+                  >
+                    {{ row.variants.slice(1, 4).map((v: any) => v.text).join(' / ') }}
+                  </div>
+                </template>
               </ElTableColumn>
               <ElTableColumn label="次数" width="70" align="right" prop="count" />
               <ElTableColumn label="客户" min-width="160">
@@ -999,6 +1040,15 @@ onMounted(async () => {
 /* 异议详情表 */
 .obj-table-wrap {
   padding: var(--dm-space-2);
+}
+.deal-quality-card {
+  padding: var(--dm-space-2);
+}
+.obj-cell-main {
+  display: flex; align-items: center; gap: 6px;
+}
+.obj-cell-variants {
+  margin-top: 2px; line-height: 1.3;
 }
 .tag-chip { margin-right: 4px; }
 

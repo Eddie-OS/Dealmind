@@ -1,0 +1,20 @@
+[Unit]
+Description=DealMind FastAPI backend (uvicorn)
+After=network.target
+
+[Service]
+Type=simple
+# 代码根目录；server.py 会从这里读取 .env 和 data/conversations.db
+WorkingDirectory=/opt/dealmind
+# 只监听本机回环，由 Caddy 对外暴露；不要用 0.0.0.0 直接裸奔公网
+ExecStart=/opt/dealmind/.venv/bin/uvicorn src.api.server:app --host 127.0.0.1 --port 8001
+Restart=always
+RestartSec=3
+# 把 HuggingFace 模型缓存固定到项目内，避免家目录路径变化导致重复下载
+Environment=HF_HOME=/opt/dealmind/.cache/huggingface
+# 让日志进 journald，方便 journalctl -u dealmind-api 查看
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -26,6 +26,7 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import Response
 
+from src.analyzers.objection_cluster import aggregate_objections
 from src.storage import db as storage_db
 
 
@@ -90,6 +91,31 @@ def _outcome_of(s: dict[str, Any]) -> str:
 def _memory_of(s: dict[str, Any]) -> dict[str, Any]:
     summary = s.get("summary") or {}
     return summary.get("latest_memory") or {}
+
+
+def _objection_rows(
+    sessions: list[dict[str, Any]],
+    personas: dict[int, dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
+    """把所有 session 的 main_objections 摊平成聚类输入行（带 persona/outcome/session）。"""
+    personas = personas or {}
+    rows: list[dict[str, Any]] = []
+    for s in sessions:
+        items = _memory_of(s).get("main_objections") or []
+        if not isinstance(items, list):
+            continue
+        pid = s.get("persona_id")
+        p_name = (personas.get(pid) or {}).get("name") if pid else None
+        outcome = _outcome_of(s)
+        for raw in items:
+            if isinstance(raw, str) and raw.strip():
+                rows.append({
+                    "text": raw.strip(),
+                    "persona": p_name,
+                    "outcome": outcome,
+                    "session_id": s["id"],
+                })
+    return rows
 
 
 def _final_judge(judges: list[dict[str, Any]]) -> dict[str, Any]:
@@ -182,49 +208,15 @@ def get_objections(
     sessions = b["sessions"]
     personas = b["personas_by_id"]
 
-    bucket: dict[str, dict[str, Any]] = {}
-    for s in sessions:
-        mem = _memory_of(s)
-        items = mem.get("main_objections") or []
-        if not isinstance(items, list):
-            continue
-        pid = s.get("persona_id")
-        p_name = (personas.get(pid) or {}).get("name") if pid else None
-        outcome = _outcome_of(s)
-        for raw in items:
-            if not isinstance(raw, str):
-                continue
-            key = raw.strip()
-            if not key:
-                continue
-            slot = bucket.setdefault(key, {
-                "text": key,
-                "count": 0,
-                "personas": set(),
-                "outcomes": Counter(),
-                "session_ids": [],
-            })
-            slot["count"] += 1
-            if p_name:
-                slot["personas"].add(p_name)
-            slot["outcomes"][outcome] += 1
-            slot["session_ids"].append(s["id"])
-
-    ranked = sorted(bucket.values(), key=lambda r: r["count"], reverse=True)[:top]
-    items = [{
-        "text": r["text"],
-        "count": r["count"],
-        "personas": sorted(r["personas"]),
-        "outcomes": [{"outcome": k, "count": v}
-                     for k, v in r["outcomes"].most_common()],
-        "session_ids": r["session_ids"][:5],   # 最多 5 个 demo
-    } for r in ranked]
+    rows = _objection_rows(sessions, personas)
+    clusters = aggregate_objections(rows)
+    items = clusters[:top]
 
     return {
         "batch_id": batch_id,
         "items": items,
-        "total_unique": len(bucket),
-        "total_records": sum(s["count"] for s in items),
+        "total_unique": len(clusters),     # 归并后的主题簇数（不再是原始去重串数）
+        "total_records": len(rows),        # 原始异议记录条数
     }
 
 
@@ -490,7 +482,15 @@ def get_playbook_stats(batch_id: int) -> dict[str, Any]:
     action_counter: Counter[str] = Counter()
     stage_used: dict[str, set[str]] = {sid: set() for sid in stage_ids}
 
+    # 成交质量诊断：成交是否经由销冠真正收口（到达 S4/S5），还是客户在 S2/S3
+    # "自我成交"。这是判断 deal_rate 含金量的关键——97% 自我成交说明高成交率虚高。
+    _stage_order_map = {sid: i for i, sid in enumerate(stage_ids)}
+    deal_sessions = 0
+    deal_self_closed = 0          # 成交但销冠从未进入 S4/S5
+    deal_max_stage: Counter[str] = Counter()
+
     for s in sessions:
+        sess_stage_set: set[str] = set()
         for t in turns_by_sid.get(s["id"], []):
             if t.get("role") != "sales":
                 continue
@@ -498,6 +498,8 @@ def get_playbook_stats(batch_id: int) -> dict[str, Any]:
             meta = t.get("metadata") or {}
             sid = meta.get("stage_id") or ""
             pa = meta.get("playbook_action")
+            if sid:
+                sess_stage_set.add(sid)
             if sid in stage_counter or sid in stage_ids:
                 stage_counter[sid] += 1
             if pa:
@@ -505,6 +507,16 @@ def get_playbook_stats(batch_id: int) -> dict[str, Any]:
                 action_counter[pa] += 1
                 if sid in stage_used:
                     stage_used[sid].add(pa)
+        if _outcome_of(s) == "DEAL_DONE":
+            deal_sessions += 1
+            reached_closing = any(
+                _stage_order_map.get(x, -1) >= _stage_order_map.get("S4", 99)
+                for x in sess_stage_set
+            )
+            if not reached_closing:
+                deal_self_closed += 1
+            mx = max((_stage_order_map.get(x, -1) for x in sess_stage_set), default=-1)
+            deal_max_stage[stage_ids[mx] if mx >= 0 else "(none)"] += 1
 
     tol = cfg.weight_tolerance
     stage_distribution: list[dict[str, Any]] = []
@@ -546,6 +558,21 @@ def get_playbook_stats(batch_id: int) -> dict[str, Any]:
             "coverage_rate": round(len(used) / len(allowed), 3) if allowed else 0.0,
         })
 
+    deal_quality = {
+        "deal_sessions": deal_sessions,
+        "self_closed": deal_self_closed,
+        "closed_by_sales": deal_sessions - deal_self_closed,
+        "self_close_rate": round(deal_self_closed / deal_sessions, 3)
+                           if deal_sessions else 0.0,
+        "max_stage_dist": [
+            {"stage_id": k, "count": v}
+            for k, v in sorted(
+                deal_max_stage.items(),
+                key=lambda kv: _stage_order_map.get(kv[0], 99),
+            )
+        ],
+    }
+
     return {
         "batch_id": batch_id,
         "total_sales_turns": sales_total,
@@ -554,6 +581,8 @@ def get_playbook_stats(batch_id: int) -> dict[str, Any]:
         "stage_distribution": stage_distribution,
         "action_usage": action_usage,
         "stage_coverage": stage_coverage,
+        # 成交质量：self_close_rate 高 = deal_rate 含金量低（客户自我成交、销冠未收口）
+        "deal_quality": deal_quality,
     }
 
 
@@ -615,18 +644,18 @@ def _section_mindsets(b: dict[str, Any]) -> str:
 
 
 def _section_objections(b: dict[str, Any], top: int = 15) -> str:
-    """3. 高频异议（含出现频次）。"""
-    bucket: Counter = Counter()
-    for s in b["sessions"]:
-        mem = _memory_of(s)
-        for raw in (mem.get("main_objections") or []):
-            if isinstance(raw, str) and raw.strip():
-                bucket[raw.strip()] += 1
-    if not bucket:
+    """3. 高频异议（语义归并后含频次 + 代表措辞）。"""
+    clusters = aggregate_objections(
+        _objection_rows(b["sessions"], b["personas_by_id"]), top=top
+    )
+    if not clusters:
         return "_本批次未沉淀异议（可能 session 跑得太短）。_\n"
-    lines = ["| 排名 | 异议 | 出现 |", "| --- | --- | --- |"]
-    for i, (text, n) in enumerate(bucket.most_common(top), 1):
-        lines.append(f"| {i} | {text} | {n} |")
+    lines = ["| 排名 | 异议主题 | 出现 | 代表措辞 |", "| --- | --- | --- | --- |"]
+    for i, c in enumerate(clusters, 1):
+        variants = "；".join(
+            v["text"] for v in (c.get("variants") or [])[:2]
+        ) or "—"
+        lines.append(f"| {i} | {c['text']} | {c['count']} | {variants} |")
     return "\n".join(lines) + "\n"
 
 
@@ -690,17 +719,15 @@ def _section_scripts(b: dict[str, Any], top: int = 15) -> str:
 
 
 def _section_faq(b: dict[str, Any], top: int = 10) -> str:
-    """6. FAQ：把高频异议改写为问答形式。"""
-    bucket: Counter = Counter()
-    for s in b["sessions"]:
-        for raw in (_memory_of(s).get("main_objections") or []):
-            if isinstance(raw, str) and raw.strip():
-                bucket[raw.strip()] += 1
-    if not bucket:
+    """6. FAQ：把高频异议主题改写为问答形式。"""
+    clusters = aggregate_objections(
+        _objection_rows(b["sessions"], b["personas_by_id"]), top=top
+    )
+    if not clusters:
         return "_暂无可生成的 FAQ。_\n"
     out = []
-    for i, (text, _n) in enumerate(bucket.most_common(top), 1):
-        out.append(f"**Q{i}.** {text}")
+    for i, c in enumerate(clusters, 1):
+        out.append(f"**Q{i}.** {c['text']}（本批出现 {c['count']} 次）")
         out.append(f"**A{i}.** _（请基于「推荐策略 / 标准话术」段落给出具体应对，"
                    "本字段后续 Stage 可由 LLM 自动生成回答）_")
         out.append("")

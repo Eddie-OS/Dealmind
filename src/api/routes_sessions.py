@@ -27,6 +27,10 @@ from src.api.session_runner_async import (
     SessionRunner,
     get_runner,
     register_runner,
+    release_session_slot,
+    remove_runner,
+    session_slot_stats,
+    try_acquire_session_slot,
 )
 from src.config import PROJECT_ROOT
 from src.loaders import load_text_file
@@ -277,26 +281,44 @@ async def start_session(session_id: str) -> dict:
             "（产品资料未找到。当前为 Stage 6a 默认占位，Stage 6b 将接入选定的产品 KB 做 RAG 检索。）"
         )
 
+    # 并发闸门：小内存机器同时跑太多实时会话会 OOM 卡死整机。
+    # 名额满时直接 429 让前端稍候再试，而不是硬扛。
+    if not try_acquire_session_slot():
+        stats = session_slot_stats()
+        raise HTTPException(
+            status.HTTP_429_TOO_MANY_REQUESTS,
+            f"当前同时进行的会话已满（{stats['active']}/{stats['max']}），"
+            f"请稍候几分钟再试。",
+        )
+
     cfg = row.get("config") or {}
-    runner = SessionRunner(session_id=session_id)
+    runner = SessionRunner(session_id=session_id, holds_slot=True)
     register_runner(runner)
 
-    runner.start_in_executor(
-        product_text=product_text,
-        persona=persona,
-        topic=row.get("topic") or "学习平板销售模拟",
-        max_rounds=int(row.get("max_rounds") or 50),
-        judge_interval=int(cfg.get("judge_interval") or 3),
-        memory_interval=int(cfg.get("memory_interval") or 3),
-        who_speaks_first=cfg.get("who_speaks_first") or "sales",
-        opening_line=row.get("opening_line") or "",
-        max_rounds_floor=int(cfg.get("max_rounds_floor") or 0),
-        output_dir="outputs",
-        product_kb_id=row.get("product_kb_id"),
-        enterprise_kb_id=row.get("enterprise_kb_id"),
-        handbook_id=row.get("handbook_id"),
-        language=(cfg.get("language") or "zh-CN"),
-    )
+    try:
+        runner.start_in_executor(
+            product_text=product_text,
+            persona=persona,
+            topic=row.get("topic") or "学习平板销售模拟",
+            max_rounds=int(row.get("max_rounds") or 50),
+            judge_interval=int(cfg.get("judge_interval") or 3),
+            memory_interval=int(cfg.get("memory_interval") or 3),
+            who_speaks_first=cfg.get("who_speaks_first") or "sales",
+            opening_line=row.get("opening_line") or "",
+            max_rounds_floor=int(cfg.get("max_rounds_floor") or 0),
+            output_dir="outputs",
+            product_kb_id=row.get("product_kb_id"),
+            enterprise_kb_id=row.get("enterprise_kb_id"),
+            handbook_id=row.get("handbook_id"),
+            language=(cfg.get("language") or "zh-CN"),
+        )
+    except Exception:
+        # 启动失败（未真正进入 _run_blocking）：立即归还名额并摘掉 runner，
+        # 否则名额会永久泄漏、闸门被逐步锁死。
+        runner.holds_slot = False
+        release_session_slot()
+        remove_runner(session_id)
+        raise
 
     logger.info("session %s started in executor", session_id)
     return {

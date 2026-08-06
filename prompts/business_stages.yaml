@@ -179,6 +179,9 @@ stages:
       - 销冠出现伪造证据（content 提到 URL / 订单号 / 论坛贴号但 tool_calls 无对应成功调用）→ next_stage=S2 重新挖
       - 客户 status = COMPLAINT → 中止全流程
       - 销冠连续 3 轮 playbook_action 全是 anchor_3a / align_3a 没有 3B → 原地停留并要求 sales_instruction="先消异议再加卖点"
+      # 快速收口闸门：客户已释放强购买信号却还卡在 S3 答疑 → 必须晋级 S4 让销冠主动收口，
+      # 避免出现"客户想买、销冠却一直在讲卖点 → 客户自我成交、S4/S5 全程缺位"的虚高成交。
+      - 客户 hidden_state.purchase_signal ≥ 0.7，或明确表达"那怎么买 / 今天能办吗 / 可以下单吗"等成交意向 → next_stage=S4，sales_instruction="客户已松口，立即停止答疑、主动发起成交邀约（开单/二选一/假设成交）"
 
   # ──────────────────────────────────────────────────────────
   - id: S4

@@ -2,35 +2,44 @@
 /**
  * 登录页（ref_01）
  * 严格对齐 design/DESIGN_SYSTEM.md §8.1
- * Stage 0：仅 UI，无鉴权。两个按钮都直接跳首页（D5 单人本地）
+ * 真鉴权：用户名 / 密码 → 后端 /api/auth/login 换取 token（存 sessionStorage）。
  */
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Mail, Lock, Eye, EyeOff, FolderOpen } from '@lucide/vue'
+import { User, Lock, Eye, EyeOff } from '@lucide/vue'
 import loginIllustration from '@/assets/login-illustration.png'
 import brandMark from '@/assets/dealmind-mark.png'
-import { setLoggedIn } from '@/router'
+import { setToken } from '@/router'
+import { http } from '@/api/http'
 
 const router = useRouter()
 
-const activeTab = ref<'login' | 'local'>('login')
-const email = ref('')
+const username = ref('')
 const password = ref('')
 const showPassword = ref(false)
+const loading = ref(false)
 
-function handleLogin() {
-  if (!email.value || !password.value) {
-    ElMessage.warning('请输入邮箱和密码')
+async function handleLogin() {
+  if (!username.value || !password.value) {
+    ElMessage.warning('请输入用户名和密码')
     return
   }
-  setLoggedIn()
-  router.push('/')
-}
-
-function enterWorkspace() {
-  setLoggedIn()
-  router.push('/')
+  loading.value = true
+  try {
+    const { data } = await http.post<{ token: string }>(
+      '/api/auth/login',
+      { username: username.value, password: password.value },
+      { silent: true },
+    )
+    setToken(data.token)
+    ElMessage.success('登录成功')
+    router.push('/')
+  } catch {
+    ElMessage.error('用户名或密码错误')
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
@@ -65,33 +74,19 @@ function enterWorkspace() {
 
       <section class="login-right">
         <div class="login-card">
-          <div class="tabs">
-            <button
-              class="tab"
-              :class="{ active: activeTab === 'login' }"
-              @click="activeTab = 'login'"
-            >
-              登录
-            </button>
-            <button
-              class="tab"
-              :class="{ active: activeTab === 'local' }"
-              @click="activeTab = 'local'"
-            >
-              本地模式
-            </button>
-          </div>
+          <h2 class="card-title">登录</h2>
 
-          <div v-if="activeTab === 'login'" class="form">
+          <div class="form">
             <div class="field">
-              <label>邮箱</label>
+              <label>用户名</label>
               <el-input
-                v-model="email"
-                placeholder="请输入邮箱..."
+                v-model="username"
+                placeholder="请输入用户名..."
                 size="large"
+                @keyup.enter="handleLogin"
               >
                 <template #prefix>
-                  <Mail :size="16" :stroke-width="1.6" />
+                  <User :size="16" :stroke-width="1.6" />
                 </template>
               </el-input>
             </div>
@@ -118,41 +113,18 @@ function enterWorkspace() {
                   />
                 </template>
               </el-input>
-              <div class="forgot">
-                <a href="javascript:void(0)">忘记密码？</a>
-              </div>
             </div>
 
             <el-button
               type="primary"
               size="large"
               class="login-btn"
+              :loading="loading"
               @click="handleLogin"
             >
               登录
             </el-button>
           </div>
-
-          <div v-else class="form local-form">
-            <p class="local-tip">
-              本地模式：使用本机配置的 LLM 与本地数据，无需账号即可直接开始。
-            </p>
-          </div>
-
-          <div class="divider">
-            <span class="line" />
-            <span class="or">或</span>
-            <span class="line" />
-          </div>
-
-          <el-button
-            size="large"
-            class="workspace-btn"
-            @click="enterWorkspace"
-          >
-            <FolderOpen :size="18" :stroke-width="1.6" class="btn-icon" />
-            进入工作区
-          </el-button>
         </div>
       </section>
     </main>
@@ -264,6 +236,12 @@ function enterWorkspace() {
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+.card-title {
+  font-size: 20px;
+  font-weight: var(--dm-fw-bold);
+  color: var(--dm-text);
+  margin: 0;
 }
 
 .tabs {

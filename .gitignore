@@ -24,6 +24,14 @@ dist/
 # ===== 编辑器 / IDE =====
 .idea/
 .vscode/
+.cursor/
+
+# ===== 部署工具二进制（用系统 ssh/scp 即可）=====
+tools/*.exe
+
+# ===== 本地调试 dump（含会话内容，勿入库）=====
+scripts/_recent_sessions_dump.txt
+scripts/_recent_sessions_dump*.txt
 
 # ===== Codegraph 索引 =====
 .codegraph/

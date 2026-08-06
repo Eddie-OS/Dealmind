@@ -341,6 +341,25 @@ def _dedup_rewrites(
     return out
 
 
+# 视为"子句边界"的字符：替换文本紧邻这些字符时无需再补逗号。
+_CLAUSE_BOUNDARY = set("。，、；：！？.,;:!?…—－-~～()（）【】[]{}「」『』\"'“”‘’《》 \t\r\n")
+
+
+def _clause_wrap(text: str, s: int, e: int, repl: str) -> str:
+    """给原地兜底替换补子句边界，避免插入句中粘成病句。
+
+    - 空替换（去重删除）原样返回，不补标点。
+    - 左邻是普通字（非边界）→ 兜底前补「，」；右邻是普通字 → 兜底后补「，」。
+    """
+    if not repl:
+        return repl
+    left = text[s - 1] if s > 0 else ""
+    right = text[e] if e < len(text) else ""
+    prefix = "，" if (left and left not in _CLAUSE_BOUNDARY) else ""
+    suffix = "，" if (right and right not in _CLAUSE_BOUNDARY) else ""
+    return f"{prefix}{repl}{suffix}"
+
+
 def _tidy_after_rewrite(text: str) -> str:
     """去重删除留下的标点 / 空白碎片清理。"""
     text = re.sub(r"[ \t]{2,}", " ", text)
@@ -448,10 +467,15 @@ def verify_and_rewrite(
         rewrites = _dedup_rewrites(rewrites, text)
 
         # 3. 按 span 倒序应用 rewrites（避免下标漂移）
+        #    边界包裹：兜底话术是完整子句（含主语"我"），若它顶替的数字正好嵌在
+        #    句子中段（如"售价RM2199很划算"→"售价{兜底}很划算"），会粘成读不通的
+        #    病句。这里按被替换位置的左右邻字补子句分隔符（逗号），让兜底成为独立
+        #    子句；兜底文本本身不变（保持既有话术与回归断言）。残留重复标点交给
+        #    _tidy_after_rewrite 收尾清理。
         rewrites.sort(key=lambda x: -x[0])
         new_text = text
         for s, e, _orig, repl in rewrites:
-            new_text = new_text[:s] + repl + new_text[e:]
+            new_text = new_text[:s] + _clause_wrap(text, s, e, repl) + new_text[e:]
 
         new_text = _tidy_after_rewrite(new_text)
         return new_text, warnings

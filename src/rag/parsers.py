@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import logging
 import re
+import unicodedata
 from pathlib import Path
 from typing import Any, TypedDict, Union
 
@@ -34,6 +35,51 @@ CHUNK_OVERLAP = 80
 MAX_CHUNKS_PER_FILE = 5000  # 防止异常大文件爆炸性切片
 
 PathLike = Union[str, Path]
+
+
+# ============================================================
+# CJK 部首/兼容字符归一化
+# ============================================================
+# 背景：部分 PDF（尤其是某些字体的中文 PDF）在 extract_text 时会把正常汉字
+# 输出成「康熙部首(U+2F00–U+2FDF)」或「CJK 部首补充(U+2E80–U+2EFF)」码位，
+# 外观几乎一致但 Unicode 不同。若不还原，下游 RAG 检索 / 关键词分类会失配
+# （搜「手感」匹配不到「⼿感」）。这里在解析阶段统一还原为标准汉字。
+#
+# - 康熙部首区：NFKC 即可还原（⽤→用、⼿→手…）。
+# - CJK 部首补充区：NFKC 多数无法还原，对常见「简化部首」建显式映射。
+_CJK_RADICAL_SUPPLEMENT_MAP = {
+    "\u2E80": "一", "\u2EA0": "民", "\u2EBF": "舌",
+    "\u2EC4": "西", "\u2EC5": "见", "\u2EC6": "角", "\u2ECB": "车",
+    "\u2ED0": "金", "\u2ED3": "长", "\u2ED4": "门",
+    "\u2EDA": "页", "\u2EDB": "风", "\u2EDC": "飞", "\u2EDD": "食",
+    "\u2EE2": "马", "\u2EE5": "鱼", "\u2EE6": "鸟", "\u2EE8": "麦",
+    "\u2EE9": "黄", "\u2EEA": "黾", "\u2EF0": "龙", "\u2EF2": "龟",
+}
+
+
+def normalize_cjk_text(text: str) -> str:
+    """把残留的康熙部首 / CJK 部首补充字符还原为标准汉字。
+
+    只针对这两个部首区做逐字处理，不对全文做整体 NFKC，避免误改正常的
+    全角标点（如「（终版）」）等正常排版字符。
+    """
+    if not text:
+        return text
+    out: list[str] = []
+    for ch in text:
+        o = ord(ch)
+        if 0x2F00 <= o <= 0x2FDF:  # 康熙部首 → NFKC 还原
+            out.append(unicodedata.normalize("NFKC", ch))
+        elif 0x2E80 <= o <= 0x2EFF:  # CJK 部首补充
+            mapped = _CJK_RADICAL_SUPPLEMENT_MAP.get(ch)
+            if mapped:
+                out.append(mapped)
+            else:
+                nf = unicodedata.normalize("NFKC", ch)
+                out.append(nf)
+        else:
+            out.append(ch)
+    return "".join(out)
 
 
 class ChunkDict(TypedDict, total=False):
@@ -397,4 +443,10 @@ def parse_file(path: PathLike) -> list[ChunkDict]:
             f"不支持的格式 {suffix}（{p.name}）。支持: {', '.join(SUPPORTED_SUFFIXES)}"
         )
     chunks = fn(p)
+    # 统一还原残留的 CJK 部首/兼容字符（root-cause 修复，覆盖所有格式）
+    for c in chunks:
+        if c.get("text"):
+            c["text"] = normalize_cjk_text(c["text"])
+        if c.get("section"):
+            c["section"] = normalize_cjk_text(c["section"])
     return chunks

@@ -18,6 +18,7 @@ from __future__ import annotations
 import logging
 import re as _re
 from collections import defaultdict
+from difflib import SequenceMatcher
 from typing import Any, Optional
 
 from src.analyzers.handbook_classifier import _iter_categories
@@ -66,6 +67,15 @@ _QUOTE_MIN_CONF = 0.6
 # 演示高度重叠，分类器会把对话中段的演示/报价轮高置信地误判成开场。开场的本质是
 # "对话起手"，因此其展示范例必须来自每场最靠前的销售轮（turn idx≤此阈值，即前几轮）。
 _OPEN_MAX_TURN_IDX = 2
+# 改动量阈值：改写与原文「去空白后」的字符相似度 ≥ 此值视为「伪改写」（只换了一两个词
+# 或在原文后拼一句问候），既触发二次精修、也用于最终的「微调·未实质重写」交付标记。
+# 开场板块原文是「客户识别线索」而非话术，天然与改写低相似，故对 open 不做此判定。
+_NEAR_IDENTICAL_SIM = 0.85
+# 开场范例里「体验邀请 / 人设钩子」信号词：用于在开场原声里优先选差异化范例、压低纯问候。
+_OPEN_HOOK_WORDS = (
+    "试", "体验", "上手", "感受", "拿", "摸", "对比", "演示", "画", "写", "记",
+    "看", "屏", "笔", "键盘", "续航", "分屏", "投屏", "出差", "会议", "课",
+)
 
 
 def _group_of_cid(cid: str) -> str:
@@ -94,8 +104,11 @@ def _non_accuracy_avg(scores: dict[str, Any]) -> float:
 # 各板块的改写标准（注入到 prompt，针对性约束 revised_text 的结构与重点）
 _GROUP_REWRITE_GUIDE = {
     # playbook_v1
-    "open": "【开场破冰】1–2 句短钩子。必须保留原文里的人设场景钩子（如“会议室到出差，一台搞定”），"
-            "不能删成纯功能罗列；命中该人设最痛的点，结尾可带一句轻量体验邀请；不要堆演示步骤、不要报价。",
+    "open": "【开场破冰】注意：本条目『原文』是该人设的**客户识别线索**（顾客自己会说的话，用来判断他属于哪类人设），"
+            "不是现成话术，**不要去改写这句客户的话**。你的任务是：基于该识别线索 + 给到的『通用开场白（手册原话术）』，"
+            "写出销冠面对这类顾客时的**开场话术**——1–2 句短钩子，第一句先共情/呼应他这类人最在意的场景，"
+            "第二句给一个能立刻上手的轻量体验邀请（如“要不您先拿笔在类纸屏上写两笔？”）；不堆演示步骤、不报价、不罗列参数。"
+            "revised_text 只写这段开场话术本身。",
     "say": "【核心卖点】结构=卖点是什么 → 对客户的具体收益 → 一个现场演示动作。保留原文已有的关键参数，"
            "把销冠验证有效的演示融进来，让导购能照着说、照着演。",
     "compete": "【竞品应对】保留“客户问 / 应答”多轮结构，客户问句逐字保留不改。每条应答=先认可竞品一句 → "
@@ -142,6 +155,28 @@ _LLM_SYSTEM = (
 )
 
 
+# 高/低分演绎分档阈值（非参数真实性维度均分，0~10）。
+_WIN_SCORE = 7.0
+_FAIL_SCORE = 5.5
+_SAMPLE_CAP = 6  # 每档最多喂给 LLM 的样本数，控体量
+
+
+def _split_samples(samples: list[dict[str, Any]]) -> tuple[list[dict], list[dict]]:
+    """把命中演绎分成「高分（有效打法）/ 低分（薄弱点）」两档喂给 LLM（修复④）。
+
+    让改写真正吃到 94 人设跑出来的信号：高分里验证有效的打法固化进改写，
+    低分暴露的问题在改写里针对性补强。没有明显高/低分时退回 TOP/BOTTOM 几条保证有上下文。
+    """
+    if not samples:
+        return [], []
+    wins = [s for s in samples if _to_float(s.get("score")) >= _WIN_SCORE][:_SAMPLE_CAP]
+    fails = [s for s in sorted(samples, key=lambda s: _to_float(s.get("score")))
+             if _to_float(s.get("score")) < _FAIL_SCORE][:_SAMPLE_CAP]
+    if not wins:
+        wins = sorted(samples, key=lambda s: -_to_float(s.get("score")))[:min(3, len(samples))]
+    return wins, fails
+
+
 def _build_llm_prompt(chunk: list[dict[str, Any]]) -> str:
     blocks = []
     for it in chunk:
@@ -153,19 +188,33 @@ def _build_llm_prompt(chunk: list[dict[str, Any]]) -> str:
             )
         else:
             cov_line = "本批 0 次被销冠引用（疑似死条目）"
-        samples = "\n".join(
-            f"    · {s['content'][:160]}" for s in it["_samples"]
-        ) or "    （无）"
+        wins, fails = _split_samples(it["_samples"])
+        win_block = "\n".join(f"    · {s['content'][:160]}" for s in wins) or "    （无）"
+        fail_block = "\n".join(f"    · {s['content'][:160]}" for s in fails) or "    （无）"
         lang = _lang_cn(it.get("handbook_text") or "")
+        is_open = it["group"] == "open"
+        # 开场条目：原文是「客户识别线索」，额外给出手册通用开场白作为话术参照基线（修复②）。
+        if is_open:
+            ref = (it.get("_open_ref") or "").strip()
+            orig_label = "客户识别线索（顾客的话，勿改写）"
+            ref_line = (
+                f"  通用开场白（手册原话术，作为改写参照）：{ref[:800]}\n" if ref
+                else "  通用开场白：（手册未提供，按识别线索自拟开场话术）\n"
+            )
+        else:
+            orig_label = "条目原文"
+            ref_line = ""
         blocks.append(
             f"- id={it['_pid']}\n"
             f"  条目类别：{_GROUP_CN.get(it['group'], it['group'])}\n"
             f"  本类改写标准：{_group_guide(it['group'])}\n"
             f"  条目标签：{it['label']}\n"
             f"  正文语言：{lang}（revised_text 必须用{lang}输出，绝不能改成其它语言）\n"
-            f"  条目原文：{(it['handbook_text'] or '（缺正文）')[:2000]}\n"
+            f"  {orig_label}：{(it['handbook_text'] or '（缺正文）')[:2000]}\n"
+            f"{ref_line}"
             f"  覆盖情况：{cov_line}\n"
-            f"  销冠全部真实演绎（本条目命中的所有原声，仅供学习表达/结构，不得照搬其中的新事实）：\n{samples}"
+            f"  高分演绎（说服力高、已被验证有效，请把其中的有效打法固化进改写）：\n{win_block}\n"
+            f"  低分/失败演绎（暴露了薄弱点，请在改写里针对性补强，但不得照搬其中的新事实）：\n{fail_block}"
         )
     body = "\n".join(blocks)
     return (
@@ -184,6 +233,8 @@ def _build_llm_prompt(chunk: list[dict[str, Any]]) -> str:
         "说服力一般或需补充内容 /『修正』演绎质量偏低需纠正；命中为 0 的死条目用『修正』，"
         "且 revised_text 必须原样返回条目原文（死条目不臆造）；每个 id 都要返回；"
         "assessment/suggestion 必须基于该条目的全部真实演绎与手册原文得出；"
+        "改写时务必：把『高分演绎』里验证有效的表达/打法固化进 revised_text，"
+        "并针对『低分/失败演绎』暴露的薄弱点做补强；"
         "revised_text 必须遵守上面的『本类改写标准』与质量目标 Q1–Q6，并把 suggestion 逐点落实。"
     )
 
@@ -298,6 +349,28 @@ def _norm(text: str) -> str:
     return _re.sub(r"\s+", " ", (text or "").lower())
 
 
+def _similarity(a: str, b: str) -> float:
+    """改写与原文的字符相似度（0~1）。去掉所有空白再比，避免标点/换行干扰判定。"""
+    na = _re.sub(r"\s+", "", a or "")
+    nb = _re.sub(r"\s+", "", b or "")
+    if not na and not nb:
+        return 1.0
+    if not na or not nb:
+        return 0.0
+    return SequenceMatcher(None, na, nb).ratio()
+
+
+def _dedup_similar(rows: list[dict], *, key: str = "content", thr: float = 0.8) -> list[dict]:
+    """按文本相似度去重近似条目（保留先到者）。用于开场范例去掉重复问候。"""
+    kept: list[dict] = []
+    for r in rows:
+        txt = (r.get(key) or "").strip()
+        if any(_similarity(txt, (k.get(key) or "").strip()) >= thr for k in kept):
+            continue
+        kept.append(r)
+    return kept
+
+
 def _handbook_corpus(struct: dict) -> str:
     """全手册可用事实语料（所有条目原文 + 标签）的归一化串，用作'允许事实'的判定底。"""
     parts: list[str] = []
@@ -361,7 +434,9 @@ def _lang_cn(text: str) -> str:
     return {"cjk": "中文", "en": "英文"}.get(_dominant_lang(text), "原文语言")
 
 
-def _quality_issues(original: str, revised: str, corpus: str) -> list[str]:
+def _quality_issues(
+    original: str, revised: str, corpus: str, *, grp: str = ""
+) -> list[str]:
     """检测覆盖类条目改写的硬伤（用于触发二次重写）。死条目不走这里。"""
     issues: list[str] = []
     original = (original or "").strip()
@@ -374,6 +449,10 @@ def _quality_issues(original: str, revised: str, corpus: str) -> list[str]:
         issues.append("照搬原文整段，未真正重写")
     if nr == no:
         issues.append("与原文几乎完全相同")
+    # 改动量阈值：相似度过高视为「伪改写」（只换一两个词 / 原文后拼一句问候）。
+    # open 板块原文是客户识别线索而非话术，与开场话术天然低相似，故跳过此判定。
+    elif grp != "open" and _similarity(original, revised) >= _NEAR_IDENTICAL_SIM:
+        issues.append("改动量过小，与原文高度相似（未实质重写）")
     # 正文主体语言与原文不一致（如原文英文、改写串成中文）
     if original and (_dominant_lang(original) != _dominant_lang(revised)):
         issues.append(f"正文语言与原文不一致（应保持{_lang_cn(original)}）")
@@ -392,19 +471,29 @@ _REWRITE_SYSTEM = (
 
 
 def _build_rewrite_prompt(item: dict[str, Any], prior: str, issues: list[str]) -> str:
-    samples = "\n".join(
-        f"    · {s['content'][:160]}" for s in item.get("_samples", [])
-    ) or "    （无）"
+    wins, fails = _split_samples(item.get("_samples", []))
+    win_block = "\n".join(f"    · {s['content'][:160]}" for s in wins) or "    （无）"
+    fail_block = "\n".join(f"    · {s['content'][:160]}" for s in fails) or "    （无）"
     lang = _lang_cn(item.get("handbook_text") or "")
+    is_open = item.get("group") == "open"
+    if is_open:
+        ref = (item.get("_open_ref") or "").strip()
+        orig_label = "客户识别线索（顾客的话，勿改写）"
+        ref_line = f"通用开场白（手册原话术，作为参照）：{ref[:800]}\n" if ref else ""
+    else:
+        orig_label = "条目原文"
+        ref_line = ""
     return (
         f"条目类别：{_GROUP_CN.get(item['group'], item['group'])}\n"
         f"本类改写标准：{_group_guide(item['group'])}\n"
         f"条目标签：{item['label']}\n"
         f"正文语言：{lang}（revised_text 必须用{lang}输出，绝不能改成其它语言）\n"
-        f"条目原文：{(item.get('handbook_text') or '')[:2000]}\n"
+        f"{orig_label}：{(item.get('handbook_text') or '')[:2000]}\n"
+        f"{ref_line}"
         f"上一版改写：{prior[:2000]}\n"
         f"上一版的问题（必须全部修掉）：{('；'.join(issues)) or '（质量不足，需更强）'}\n"
-        f"销冠真实演绎（仅供学习表达/结构，不得照搬其中的新事实）：\n{samples}\n\n"
+        f"高分演绎（固化其有效打法）：\n{win_block}\n"
+        f"低分/失败演绎（针对性补强，不得照搬新事实）：\n{fail_block}\n\n"
         f"请用{lang}输出修正后的成品话术。"
     )
 
@@ -428,12 +517,29 @@ def _rewrite_one(item: dict[str, Any], prior: str, issues: list[str]) -> str:
     return ""
 
 
-def _quality_flag(*, covered: bool, fact_warnings: list[str], issues: list[str]) -> str:
-    """每条改写的可交付标记：ok=可直接采纳 / review=需人工确认 / kept_original=仅保留原文。"""
+def _quality_flag(
+    *,
+    covered: bool,
+    fact_warnings: list[str],
+    issues: list[str],
+    near_identical: bool = False,
+) -> str:
+    """每条改写的可交付标记：
+    - kept_original=死条目仅保留原文；
+    - review=有事实越界/其它硬伤，需人工确认；
+    - minor=二次精修后改动量仍过小（实质未重写），价值有限、建议人工再强化；
+    - ok=实质改写、可直接采纳。
+    """
     if not covered:
         return "kept_original"
-    if fact_warnings or issues:
+    if fact_warnings:
         return "review"
+    # 「改动量过小」单独归为 minor；其它硬伤才算 review。
+    other_issues = [i for i in issues if "改动量过小" not in i and "几乎完全相同" not in i]
+    if other_issues:
+        return "review"
+    if near_identical:
+        return "minor"
     return "ok"
 
 
@@ -456,6 +562,17 @@ def build_handbook_revisions(
     cats = _iter_categories(struct)
     if not cats:
         return []
+
+    # 开场板块：手册里真正的「销冠开场话术」是 open.opener（通用开场白），而逐条 open_* 的
+    # 原文只是各人设的「客户识别线索」。把通用开场白 + 时机提示抽出来，作为 open 条目改写的
+    # 参照基线喂给 LLM（修复②：区分客户识别线索 vs 销冠开场话术）。
+    _open_blk = (struct or {}).get("open") or {}
+    _open_opener_ref = " ".join(
+        s for s in [
+            (_open_blk.get("opener") or "").strip(),
+            (_open_blk.get("timing_cue") or _open_blk.get("timing") or "").strip(),
+        ] if s
+    ).strip()
 
     # 命中每个 cid 的 turn（合并同 turn 多分类，取非 accuracy 维度均分）
     by_cid: dict[str, list[dict]] = defaultdict(list)
@@ -498,19 +615,28 @@ def build_handbook_revisions(
         if not coherent and turn_scored:
             coherent = sorted(turn_scored, key=lambda r: -r["confidence"])[:1]
         # 开场破冰：再用"对话位置"闸门——开场范例应是对话起手，优先取 idx≤阈值的早段轮；
-        # 早段无命中时退回全集，但一律按"最早优先"排序，避免把 idx 很大的中段演示轮当开场范例。
+        # 早段无命中时退回全集。修复③：先去重近似问候，再「差异化优先」排序——
+        # 含体验邀请/人设钩子词的范例排前，纯问候排后，避免 TOP 全是“您好欢迎光临”。
         if grp == "open":
             early = [t for t in coherent if int(t.get("turn_idx", 99)) <= _OPEN_MAX_TURN_IDX]
-            pool = early or coherent
-            quote_src = sorted(
-                pool, key=lambda r: (int(r.get("turn_idx", 99)), -r["score"])
-            )[:_TOP_QUOTES]
+            pool = _dedup_similar(early or coherent)
+
+            def _open_rank(r: dict) -> tuple:
+                content = r.get("content") or ""
+                has_hook = any(w in content for w in _OPEN_HOOK_WORDS)
+                # 钩子优先(0) > 纯问候(1)；同档内最早轮优先、长一点(信息多)优先
+                return (0 if has_hook else 1, int(r.get("turn_idx", 99)), -len(content))
+
+            quote_src = sorted(pool, key=_open_rank)[:_TOP_QUOTES]
         else:
             quote_src = sorted(coherent, key=lambda r: -r["score"])[:_TOP_QUOTES]
+        # 开场不打分（修复③）：开场是“起手破冰”，对它套用说服力评分没有意义，score 置空，
+        # 前端/导出端据此隐藏分数，只展示人设 + 范例本身。
         top_quotes = [
             {"content": t["content"][:200], "persona_name": t["persona_name"],
              "customer_question": t["customer_question"][:200],
-             "score": t["score"], "session_id": t["session_id"], "turn_idx": t["turn_idx"]}
+             "score": (None if grp == "open" else t["score"]),
+             "session_id": t["session_id"], "turn_idx": t["turn_idx"]}
             for t in quote_src
         ]
         items.append({
@@ -528,6 +654,8 @@ def build_handbook_revisions(
             # 喂给 LLM 的是本条目命中的**全部**真实演绎（不再只取 TOP-N 样本），
             # 评估/建议/改写后均基于全部记录得出。
             "_samples": turn_scored,
+            # open 条目专用：通用开场白原话术 + 时机提示，作为改写参照基线（修复②）。
+            "_open_ref": _open_opener_ref if grp == "open" else "",
         })
 
     # LLM 逐条建议（含对原文这一句的「修改后」改写）
@@ -551,19 +679,20 @@ def build_handbook_revisions(
         revised = (llm or {}).get("revised_text") or fb["revised_text"]
         covered = bool(it["coverage"]["covered"])
 
+        grp = it["group"]
         issues: list[str] = []
         if not covered:
             # 死条目（本批 0 命中）不臆造：改写一律回退到原文
             revised = original
         elif use_llm and llm:
-            # 质量门：命中条目若改写有硬伤（照搬/弱化/语言/事实越界）→ 单条二次精修
-            issues = _quality_issues(original, revised, corpus)
+            # 质量门：命中条目若改写有硬伤（照搬/弱化/改动量过小/语言/事实越界）→ 单条二次精修
+            issues = _quality_issues(original, revised, corpus, grp=grp)
             if issues:
                 it["_samples"] = samples  # 供精修 prompt 取演绎
                 better = _rewrite_one(it, revised, issues)
                 it.pop("_samples", None)
                 if better:
-                    new_issues = _quality_issues(original, better, corpus)
+                    new_issues = _quality_issues(original, better, corpus, grp=grp)
                     # 仅当精修确实变好（硬伤更少）才采纳
                     if len(new_issues) < len(issues):
                         revised, issues = better, new_issues
@@ -571,9 +700,18 @@ def build_handbook_revisions(
         it["revised_text"] = revised
         # 事实白名单后置校验：改写引入手册没有的认证/机型/参数/金额 → 告警（不强改）
         it["fact_warnings"] = _fact_warnings(revised, corpus) if covered else []
-        # 可交付标记：ok=可直接采纳 / review=需人工确认 / kept_original=仅保留原文
-        it["quality_flag"] = _quality_flag(
-            covered=covered, fact_warnings=it["fact_warnings"], issues=issues,
+        # 改动量复核：精修后仍与原文高度相似 → 标记为 minor（实质未重写、价值有限）。
+        near_identical = bool(
+            covered and grp != "open"
+            and _similarity(original, revised) >= _NEAR_IDENTICAL_SIM
         )
+        # 可交付标记：ok / review / minor / kept_original
+        it["quality_flag"] = _quality_flag(
+            covered=covered,
+            fact_warnings=it["fact_warnings"],
+            issues=issues,
+            near_identical=near_identical,
+        )
+        it.pop("_open_ref", None)  # 内部参照字段，不外泄到报告 JSON
         out.append(it)
     return out

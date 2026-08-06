@@ -42,9 +42,12 @@ try:
 except Exception:  # noqa: BLE001
     pass
 
+import os  # noqa: E402
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.api.auth import AuthMiddleware, router as auth_router
 from src.api.routes_batch import router as batch_router
 from src.api.routes_batch_report import router as batch_report_router
 from src.api.routes_cases import router as cases_router
@@ -113,6 +116,20 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
             logger.info("indexer thread requested · pending=%d started=%s",
                         len(pending), started)
 
+    # 开机预加载 embedding 模型：把 500MB~1GB 的内存峰值挪到"启动时"（此刻整机最空），
+    # 避免第一次有人跑会话/检索时才惰性加载，瞬间打满小内存机器导致整机卡死重启。
+    # 可用 DM_PRELOAD_EMBEDDER=0 关闭（例如本地开发不想等模型加载）。
+    if os.getenv("DM_PRELOAD_EMBEDDER", "1") == "1":
+        try:
+            from src.rag.embedder import get_embedder
+
+            logger.info("preloading embedding model at startup ...")
+            emb = get_embedder()
+            emb.ensure_loaded()
+            logger.info("embedding model preloaded · %s", emb.info())
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("preload embedder failed (会后续惰性加载): %s", exc)
+
     yield
     logger.info("DealMind API stopping")
 
@@ -124,18 +141,29 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# 鉴权中间件先加（内层）；CORS 后加（外层），保证 401 响应也带上 CORS 头，
+# 否则浏览器在跨域场景会把 401 误报成 CORS 错误。
+app.add_middleware(AuthMiddleware)
+
+# 允许的前端来源：默认本地 dev；上线时可用 DM_CORS_ORIGINS 追加（逗号分隔）。
+# 同源部署（Caddy 静态 + /api 同域）其实不触发 CORS，这里仅为保险。
+_cors_origins = [
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+]
+_extra_origins = os.getenv("DM_CORS_ORIGINS", "")
+_cors_origins += [o.strip() for o in _extra_origins.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://127.0.0.1:5173",
-        "http://localhost:5173",
-    ],
+    allow_origins=_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
+app.include_router(auth_router)
 app.include_router(providers_router)
 app.include_router(personas_router)
 app.include_router(kb_router)

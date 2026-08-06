@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
@@ -41,6 +42,52 @@ _executor = ThreadPoolExecutor(max_workers=8, thread_name_prefix="session-runner
 _QUEUE_SENTINEL: dict[str, Any] = {"__sentinel__": True}
 
 
+# ============================================================
+# 并发会话闸门（2GB 小机稳定性护栏）
+# ------------------------------------------------------------
+# 每场实时会话会长期占用 1 个线程 + 一路 LLM 调用 + 内存里的历史/记忆，
+# 同时跑太多会把小内存机器打满导致整机卡死。这里用一个进程内计数信号量
+# 限制"同时在跑的实时会话数"，超过上限的新会话直接被路由层拒绝（HTTP 429），
+# 前端提示"稍候再试"，而不是硬扛到 OOM。
+#
+# 通过环境变量 DM_MAX_CONCURRENT_SESSIONS 调整（默认 3）。
+# ============================================================
+def _resolve_max_concurrent() -> int:
+    try:
+        v = int(os.getenv("DM_MAX_CONCURRENT_SESSIONS", "3"))
+        return v if v > 0 else 3
+    except (TypeError, ValueError):
+        return 3
+
+
+_MAX_CONCURRENT_SESSIONS = _resolve_max_concurrent()
+_slot_lock = threading.Lock()
+_active_slots = 0
+
+
+def try_acquire_session_slot() -> bool:
+    """原子地尝试占用一个会话名额；满了返回 False。"""
+    global _active_slots
+    with _slot_lock:
+        if _active_slots >= _MAX_CONCURRENT_SESSIONS:
+            return False
+        _active_slots += 1
+        return True
+
+
+def release_session_slot() -> None:
+    """归还一个会话名额（幂等下限保护，不会减到负数）。"""
+    global _active_slots
+    with _slot_lock:
+        if _active_slots > 0:
+            _active_slots -= 1
+
+
+def session_slot_stats() -> dict[str, int]:
+    with _slot_lock:
+        return {"active": _active_slots, "max": _MAX_CONCURRENT_SESSIONS}
+
+
 @dataclass
 class SessionRunner:
     """单场 session 的运行容器。"""
@@ -54,6 +101,9 @@ class SessionRunner:
     status: str = "pending"  # pending / running / done / cancelled / failed
     final_state: Any = None
     error: Optional[str] = None
+    # 是否持有一个并发会话名额（由路由层 try_acquire_session_slot 占用，
+    # 本 runner 在 _run_blocking 结束时负责归还，保证名额不泄漏）。
+    holds_slot: bool = False
 
     def request_cancel(self) -> None:
         """请求中断。下一轮循环检查 cancel_flag 时停止。"""
@@ -200,6 +250,10 @@ class SessionRunner:
                 pass
 
         finally:
+            # 归还并发名额（无论成功/失败/中断都要放，避免名额泄漏把闸门锁死）
+            if self.holds_slot:
+                self.holds_slot = False
+                release_session_slot()
             # 无论成功/失败/中断，最后塞 sentinel 通知 stream 协程退出
             if self.loop and not self.loop.is_closed():
                 try:

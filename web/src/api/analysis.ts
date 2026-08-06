@@ -4,6 +4,7 @@
  * 对应后端 src/api/routes_analysis.py
  */
 import { http } from './http'
+import { getToken } from '@/router'
 
 // ============================================================
 // types
@@ -123,7 +124,8 @@ export interface RevisionQuote {
   content: string
   customer_question: string
   persona_name: string
-  score: number
+  // 开场板块不打分（起手破冰套说服力分无意义），此时为 null，前端隐藏分数
+  score: number | null
   session_id: string
   turn_idx: number
 }
@@ -386,9 +388,14 @@ export const analysisApi = {
       .delete<{ deleted: boolean }>(`/api/analysis/jobs/${jobId}`)
       .then((r) => r.data),
 
-  /** 单份分析报告导出 URL（md/json 走 <a download>；html 走新标签预览/打印 PDF） */
-  exportUrl: (jobId: number, format: 'md' | 'json' | 'html' = 'md') =>
-    `/api/analysis/jobs/${jobId}/export?format=${format}`,
+  /** 单份分析报告导出 URL（md/json 走 <a download>；html 走新标签预览/打印 PDF）
+   *  注意：这些链接是浏览器直连（<a href> / window.open），不走 axios 拦截器，
+   *  无法带 Authorization 头，因此把登录 token 以查询参数形式附上（后端中间件支持 ?token= 兜底）。 */
+  exportUrl: (jobId: number, format: 'md' | 'json' | 'html' = 'md') => {
+    const token = getToken()
+    const auth = token ? `&token=${encodeURIComponent(token)}` : ''
+    return `/api/analysis/jobs/${jobId}/export?format=${format}${auth}`
+  },
 
   /** 找该 session 最新一份已完成的分析任务（供 SessionHistory "分析" 按钮兜底） */
   findBySession: async (sessionId: string): Promise<AnalysisJob | null> => {

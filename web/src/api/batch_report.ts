@@ -10,6 +10,7 @@
  *   GET /api/batch/{id}/report/export        → 下载 Training Guide .md
  */
 import { http } from './http'
+import { getToken } from '@/router'
 
 export interface BatchReportOverview {
   batch_id: number
@@ -32,7 +33,11 @@ export interface BatchReportOverview {
 
 export interface ObjectionItem {
   text: string
+  // 命中固定主题时为主题名，长尾相似度簇为 null
+  theme?: string | null
   count: number
+  // 该主题/簇下的代表性原始措辞（频次倒序）
+  variants?: Array<{ text: string; count: number }>
   personas: string[]
   outcomes: Array<{ outcome: string; count: number }>
   session_ids: string[]
@@ -131,6 +136,14 @@ export interface StageCoverageItem {
   coverage_rate: number
 }
 
+export interface DealQuality {
+  deal_sessions: number
+  self_closed: number          // 成交但销冠从未进入 S4/S5（自我成交）
+  closed_by_sales: number
+  self_close_rate: number      // 自我成交占比（越高 = deal_rate 含金量越低）
+  max_stage_dist: Array<{ stage_id: string; count: number }>
+}
+
 export interface PlaybookStatsResp {
   batch_id: number
   total_sales_turns: number
@@ -139,6 +152,7 @@ export interface PlaybookStatsResp {
   stage_distribution: StageDistributionItem[]
   action_usage: ActionUsageItem[]
   stage_coverage: StageCoverageItem[]
+  deal_quality?: DealQuality
 }
 
 export const batchReportApi = {
@@ -172,6 +186,11 @@ export const batchReportApi = {
       .get<PlaybookStatsResp>(`/api/batch/${id}/report/playbook_stats`)
       .then((r) => r.data),
 
-  /** 仅返回 URL，给 <a download> 用 */
-  exportUrl: (id: number) => `/api/batch/${id}/report/export`,
+  /** 仅返回 URL，给 <a download> 用。
+   *  浏览器直连不走 axios 拦截器，token 以查询参数附上（后端中间件支持 ?token= 兜底）。 */
+  exportUrl: (id: number) => {
+    const token = getToken()
+    const auth = token ? `?token=${encodeURIComponent(token)}` : ''
+    return `/api/batch/${id}/report/export${auth}`
+  },
 }

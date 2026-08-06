@@ -225,9 +225,15 @@ def _proposals(s: dict[str, Any]) -> str:
             quotes = ""
             for q in (it.get("top_quotes") or [])[:3]:
                 cust = (q.get("customer_question") or "").strip()
+                # 开场不打分：score 为 None 时隐藏分数徽标（修复③）
+                sc = q.get("score")
+                score_html = (
+                    f'<span class="rev-quote-score">{_num(sc):.1f}</span>'
+                    if sc is not None else ""
+                )
                 quotes += f"""
         <div class="rev-quote">
-          <div class="rev-quote-meta"><span class="rev-quote-score">{_num(q.get("score")):.1f}</span>
+          <div class="rev-quote-meta">{score_html}
             <span class="rev-quote-by">{_e(q.get("persona_name"))}</span></div>
           {f'<div class="rev-quote-line"><b>客户原文</b>{_e(cust[:200])}</div>' if cust else ""}
           <div class="rev-quote-line"><b>销售原文</b>{_e((q.get("content") or "")[:200])}</div>
@@ -237,6 +243,7 @@ def _proposals(s: dict[str, Any]) -> str:
             qflag = it.get("quality_flag") or ""
             qmap = {
                 "review": ("q-review", "需人工确认"),
+                "minor": ("q-review", "微调·未实质重写"),
             }
             qcls, qtxt = qmap.get(qflag, ("", ""))
             qbadge = f'<span class="q-badge {qcls}">{qtxt}</span>' if qtxt else ""

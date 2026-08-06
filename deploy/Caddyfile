@@ -1,0 +1,37 @@
+# DealMind 反向代理配置（HTTPS · 正式域名 dealmind.top）
+#
+# 同时服务三个主机名，Caddy 会分别自动申请并续期 Let's Encrypt 证书：
+#   - dealmind.top        （正式域名）
+#   - www.dealmind.top    （www 子域）
+#   - 47.236.78.0.sslip.io（IP 泛解析域名，作为兜底/备用入口）
+#
+# 服务器在新加坡（海外），域名无需 ICP 备案即可使用。
+# 要求：安全组放行 80（证书校验 HTTP-01）与 443（HTTPS）。
+#
+# DealMind 后端由 systemd 服务 dealmind-api 提供，监听 127.0.0.1:8001。
+
+dealmind.top, www.dealmind.top, 47.236.78.0.sslip.io {
+	# 前端静态资源目录（本机 npm run build 后上传的 web/dist）
+	root * /opt/dealmind/web/dist
+	encode gzip
+
+	# 后端 API / 健康检查 / WebSocket 全部转发到本机 uvicorn:8001
+	@backend path /api/* /health /ws/*
+	handle @backend {
+		reverse_proxy 127.0.0.1:8001
+	}
+
+	# 带哈希的静态资源（/assets/*）：长期不可变缓存；缺失直接 404，绝不回退 HTML。
+	handle /assets/* {
+		header Cache-Control "public, max-age=31536000, immutable"
+		file_server
+	}
+
+	# 其余请求走 SPA：找不到文件回退 index.html（Vue Router history 模式）；
+	# index.html 永不缓存，确保总是拿到引用最新哈希资源的 HTML。
+	handle {
+		header Cache-Control "no-store, must-revalidate"
+		try_files {path} /index.html
+		file_server
+	}
+}

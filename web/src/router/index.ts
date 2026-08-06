@@ -1,17 +1,22 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 
-const AUTH_KEY = 'dm_logged_in'
+// token 存 sessionStorage：关闭浏览器/标签后失效，符合「每次打开都要登录」。
+const TOKEN_KEY = 'dm_token'
 
-export function isLoggedIn(): boolean {
-  return localStorage.getItem(AUTH_KEY) === '1'
+export function getToken(): string | null {
+  return sessionStorage.getItem(TOKEN_KEY)
 }
 
-export function setLoggedIn(): void {
-  localStorage.setItem(AUTH_KEY, '1')
+export function isLoggedIn(): boolean {
+  return !!sessionStorage.getItem(TOKEN_KEY)
+}
+
+export function setToken(token: string): void {
+  sessionStorage.setItem(TOKEN_KEY, token)
 }
 
 export function clearLogin(): void {
-  localStorage.removeItem(AUTH_KEY)
+  sessionStorage.removeItem(TOKEN_KEY)
 }
 
 const routes: RouteRecordRaw[] = [

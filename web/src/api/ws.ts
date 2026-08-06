@@ -49,7 +49,12 @@ export class WsClient {
     const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
     const host = window.location.host // 含 port，例如 127.0.0.1:5173
     const p = path.startsWith('/') ? path : `/${path}`
-    return `${proto}//${host}${p}`
+    // WebSocket 无法设置 header，登录 token 通过查询参数传给后端鉴权中间件
+    const token = sessionStorage.getItem('dm_token')
+    const auth = token
+      ? `${p.includes('?') ? '&' : '?'}token=${encodeURIComponent(token)}`
+      : ''
+    return `${proto}//${host}${p}${auth}`
   }
 
   on(handler: WsHandler): () => void {
