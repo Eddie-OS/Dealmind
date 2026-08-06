@@ -1,7 +1,7 @@
 """一次性脚本：从 PPTX 文件抽取 1/3/3/5/9/10 Handbook 结构。
 
 用法：
-    cd f:\\Langraph
+    cd f:\\Dealmind
     python scripts/extract_handbook_from_pptx.py
 
 输出：

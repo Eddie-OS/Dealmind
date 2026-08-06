@@ -3,7 +3,7 @@
 默认目标：HANDBOOK_NAME = '华为 MatePad 12X / Air 2025 · 销冠 Handbook'
 
 用法：
-    cd f:\\Langraph
+    cd f:\\Dealmind
     python scripts/bind_existing_sessions_to_handbook.py
 
 幂等：

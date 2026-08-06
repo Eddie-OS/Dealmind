@@ -8,7 +8,7 @@
 不调用任何 LLM，只读数据库，几秒出报告。
 
 用法：
-    cd f:\\Langraph
+    cd f:\\Dealmind
     python scripts/c3_handbook_baseline_report.py [--limit 50]
     python scripts/c3_handbook_baseline_report.py --hb-id 1 --since 2026-05-27
 """

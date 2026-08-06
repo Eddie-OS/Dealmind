@@ -4,7 +4,7 @@
 必须执行本脚本：旧模型生成的向量维度/语义空间与新模型不同，必须全部清空重建。
 
 使用方法：
-    cd f:\\Langraph
+    cd f:\\Dealmind
     python scripts/rebuild_vector_index.py
 """
 

@@ -1,4 +1,4 @@
-# 多人设销冠压力测试引擎 MVP
+# DealMind · 多人设销冠压力测试引擎
 
 用不同用户人设对销冠 Agent 进行多轮博弈压力测试，自动复盘并沉淀销售经验。
 
@@ -103,7 +103,7 @@ python -m src.runner --persona personas/tech_enthusiast.yaml --max-rounds 8 --ju
 ## 目录结构
 
 ```
-f:\Langraph\
+f:\Dealmind\
 ├── src/
 │   ├── __init__.py
 │   ├── config.py          # 环境变量加载

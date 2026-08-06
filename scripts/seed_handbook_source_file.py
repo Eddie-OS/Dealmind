@@ -5,7 +5,7 @@
 但跳过整条 HTTP 链路，方便首启示例 / 排查问题 / CI 重复执行。
 
 用法（PowerShell）：
-    cd f:\Langraph
+    cd f:\Dealmind
     python scripts/seed_handbook_source_file.py
 
 幂等：
