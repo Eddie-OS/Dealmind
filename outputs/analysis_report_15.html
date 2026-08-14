@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>华为 MatePad 12X / Air 2025 · 销冠 Handbook · 分析报告</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#1a1d24; --muted:#6b7280; --line:#e6e8ec; --paper:#ffffff; --bg:#f4f5f7;
+  --brand:#b3122c; --brand-2:#8a0f22; --good:#1f9d57; --warn:#d98a00; --bad:#c0392b;
+  --soft:#f8f4f0;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Noto Serif SC",Georgia,"Songti SC",serif;color:var(--ink);
+  background:var(--bg);line-height:1.65;font-size:14px;}
+.page{max-width:880px;margin:0 auto;background:var(--paper);
+  box-shadow:0 1px 24px rgba(0,0,0,.06);}
+.sans{font-family:"Noto Sans SC","Helvetica Neue",Arial,sans-serif;}
+
+/* Cover */
+.cover{background:linear-gradient(135deg,var(--brand) 0%,var(--brand-2) 100%);
+  color:#fff;padding:52px 56px 40px;}
+.cover-kicker{font-family:"Noto Sans SC",sans-serif;font-size:12px;letter-spacing:3px;
+  text-transform:uppercase;opacity:.85;margin-bottom:14px;}
+.cover-title{font-size:34px;line-height:1.25;margin:0 0 10px;font-weight:700;}
+.cover-sub{font-family:"Noto Sans SC",sans-serif;font-size:13px;opacity:.9;margin-bottom:26px;}
+.kpi-grid{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
+.kpi{background:rgba(255,255,255,.14);border-radius:10px;padding:14px 18px;min-width:104px;
+  flex:1;backdrop-filter:blur(2px);}
+.kpi-bad .kpi-v{color:#ffd7d0;}
+.kpi-v{font-size:28px;font-weight:700;font-family:"Noto Sans SC",sans-serif;}
+.kpi-l{font-family:"Noto Sans SC",sans-serif;font-size:11px;opacity:.88;margin-top:2px;}
+.chips{display:flex;gap:8px;flex-wrap:wrap;}
+.chip{font-family:"Noto Sans SC",sans-serif;font-size:12px;padding:4px 12px;border-radius:20px;
+  background:rgba(255,255,255,.18);}
+.chip-good{background:rgba(255,255,255,.28);font-weight:600;}
+.chip-bad{background:rgba(0,0,0,.18);}
+
+/* Sections */
+.block{padding:30px 56px;border-bottom:1px solid var(--line);}
+.block-key{background:var(--soft);}
+h2{font-size:21px;margin:0 0 6px;display:flex;align-items:center;gap:12px;}
+.sec-no{font-family:"Noto Sans SC",sans-serif;font-size:13px;color:#fff;background:var(--brand);
+  width:30px;height:30px;border-radius:7px;display:inline-flex;align-items:center;
+  justify-content:center;font-weight:700;}
+.sec-flag{font-family:"Noto Sans SC",sans-serif;font-size:11px;color:var(--brand);
+  border:1px solid var(--brand);border-radius:4px;padding:2px 8px;font-weight:600;}
+.lead{color:var(--muted);font-size:13px;margin:0 0 18px;font-family:"Noto Sans SC",sans-serif;}
+h3{font-size:15px;margin:0 0 12px;font-family:"Noto Sans SC",sans-serif;}
+
+/* bars */
+.bar{background:#edeef1;border-radius:6px;height:9px;overflow:hidden;width:100%;}
+.bar-fill{display:block;height:100%;border-radius:6px;}
+.bar-good{background:var(--good);} .bar-warn{background:var(--warn);} .bar-bad{background:var(--bad);}
+
+/* coverage table */
+.cov-table{width:100%;border-collapse:collapse;font-family:"Noto Sans SC",sans-serif;}
+.cov-table td{padding:9px 6px;vertical-align:middle;border-bottom:1px solid var(--line);}
+.g-name{width:150px;font-weight:600;font-size:13px;}
+.g-frac{color:var(--muted);font-weight:400;font-size:11px;}
+.g-bar{width:auto;}.g-pct{width:48px;text-align:right;font-weight:700;}
+.g-q{width:78px;text-align:right;color:var(--muted);font-size:12px;}
+
+/* dimensions */
+.dim-row{display:flex;align-items:center;gap:14px;margin-bottom:11px;
+  font-family:"Noto Sans SC",sans-serif;}
+.dim-label{width:90px;font-size:13px;font-weight:600;}
+.dim-score{width:48px;text-align:right;font-weight:700;}
+.dim-good{color:var(--good);} .dim-warn{color:var(--warn);} .dim-bad{color:var(--bad);}
+
+/* health */
+.health-grid{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
+.health-card{flex:1;min-width:110px;border:1px solid var(--line);border-radius:10px;
+  padding:14px 16px;font-family:"Noto Sans SC",sans-serif;}
+.health-bad{border-color:#f2c9c2;background:#fdf3f1;}
+.h-v{font-size:24px;font-weight:700;}.h-l{font-size:11px;color:var(--muted);margin-top:2px;}
+.token-cloud{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+.token{font-family:"Noto Sans SC",sans-serif;font-size:12px;background:#eef1f4;
+  border-radius:6px;padding:4px 10px;}
+.token i{color:var(--brand);font-style:normal;font-weight:700;margin-left:4px;}
+.punt-title,.dead-title,.punt-title{font-family:"Noto Sans SC",sans-serif;font-size:12px;
+  color:var(--muted);margin-bottom:6px;}
+blockquote.punt{margin:0 0 8px;padding:8px 14px;border-left:3px solid var(--bad);
+  background:#fbf0ee;font-size:13px;color:#7a2a20;border-radius:0 6px 6px 0;}
+
+/* proposals */
+.prop-wrap{display:flex;flex-direction:column;gap:12px;}
+.prop{border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:8px;
+  padding:13px 16px;background:#fff;}
+.prop.sev-high{border-left-color:var(--bad);}
+.prop.sev-low{border-left-color:var(--good);}
+.prop-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;
+  font-family:"Noto Sans SC",sans-serif;}
+.sev-badge{font-size:11px;color:#fff;border-radius:4px;padding:1px 8px;font-weight:700;}
+.sev-b-high{background:var(--bad);}.sev-b-medium{background:var(--warn);}.sev-b-low{background:var(--good);}
+.prop-tag{font-weight:700;font-size:14px;}
+.prop-kind{font-size:11px;color:var(--muted);margin-left:auto;}
+.prop-line{font-size:13px;margin-top:5px;}
+.prop-line b{font-family:"Noto Sans SC",sans-serif;font-size:11px;color:var(--muted);
+  display:inline-block;min-width:38px;margin-right:6px;}
+.prop-fix{color:var(--brand-2);}
+.prop-ev{color:var(--muted);}
+
+/* weak/strong */
+.ws-grid{display:flex;gap:24px;}
+.ws-col{flex:1;}
+.ws-bad-title{color:var(--bad);}.ws-good-title{color:var(--good);}
+.cat-list{list-style:none;margin:0;padding:0;}
+.cat-list li{border:1px solid var(--line);border-radius:7px;padding:9px 12px;margin-bottom:8px;}
+.cat-bad{border-left:3px solid var(--bad);}.cat-good{border-left:3px solid var(--good);}
+.cat-h{display:flex;justify-content:space-between;font-family:"Noto Sans SC",sans-serif;}
+.cat-name{font-weight:600;font-size:13px;}
+.cat-meta{color:var(--muted);font-size:12px;}
+.cat-reason{font-size:12px;color:var(--muted);margin-top:4px;}
+.dead-wrap{margin-top:18px;}
+.dead-list{display:flex;flex-wrap:wrap;gap:6px;}
+.dead{font-family:"Noto Sans SC",sans-serif;font-size:12px;background:#f0e6e6;color:#8a3030;
+  border-radius:5px;padding:3px 9px;}
+
+/* turns */
+.turn-wrap{display:flex;flex-direction:column;gap:12px;}
+.turn{border:1px solid var(--line);border-radius:9px;padding:13px 16px;}
+.turn-good{border-left:4px solid var(--good);background:#f4faf6;}
+.turn-bad{border-left:4px solid var(--bad);background:#fcf4f3;}
+.turn-head{display:flex;justify-content:space-between;margin-bottom:8px;
+  font-family:"Noto Sans SC",sans-serif;}
+.turn-persona{font-weight:700;font-size:13px;}
+.turn-q{font-weight:700;font-size:13px;}
+.turn-q-good{color:var(--good);}.turn-q-warn{color:var(--warn);}.turn-q-bad{color:var(--bad);}
+.turn-cust,.turn-sales,.turn-sug{font-size:13px;margin-top:6px;}
+.turn-cust b,.turn-sales b,.turn-sug b{font-family:"Noto Sans SC",sans-serif;font-size:11px;
+  color:var(--muted);display:inline-block;min-width:34px;margin-right:6px;}
+.turn-cust{color:#555;}
+.turn-reasons{margin:8px 0 0;padding-left:20px;font-size:12px;color:var(--muted);}
+.turn-sug{color:var(--brand-2);}
+
+/* key numbers */
+.kn-table{width:100%;border-collapse:collapse;font-family:"Noto Sans SC",sans-serif;font-size:13px;}
+.kn-table th{text-align:left;color:var(--muted);font-weight:600;font-size:11px;
+  border-bottom:2px solid var(--line);padding:6px;}
+.kn-table td{padding:7px 6px;border-bottom:1px solid var(--line);}
+.kn-v{font-weight:700;color:var(--brand);white-space:nowrap;}
+.kn-src{color:var(--muted);font-size:12px;}
+
+/* voice */
+.voice-wrap{display:flex;flex-direction:column;gap:10px;}
+blockquote.voice{margin:0;padding:12px 18px;background:#f7f7f9;border-radius:8px;
+  border-left:3px solid var(--ink);}
+.voice-q{font-size:13px;font-style:italic;}
+.voice-by{font-family:"Noto Sans SC",sans-serif;font-size:12px;color:var(--muted);margin-top:6px;}
+
+/* footer */
+.foot{padding:22px 56px;color:var(--muted);font-family:"Noto Sans SC",sans-serif;font-size:11px;
+  text-align:center;}
+
+@media print{
+  body{background:#fff;}
+  .page{box-shadow:none;max-width:none;}
+  .block{page-break-inside:avoid;}
+  .prop,.turn,.cat-list li{page-break-inside:avoid;}
+  @page{margin:14mm;}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="cover">
+  <div class="cover-kicker">销售演绎反馈 · 话术分析与手册迭代报告</div>
+  <h1 class="cover-title">华为 MatePad 12X / Air 2025 · 销冠 Handbook</h1>
+  <div class="cover-sub">批次 #13 · 分析任务 #15 · 生成于 2026-05-29T02:19:41Z</div>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-v">58%</div><div class="kpi-l">手册覆盖率</div></div>
+    <div class="kpi"><div class="kpi-v">44</div><div class="kpi-l">会话场次</div></div>
+    <div class="kpi"><div class="kpi-v">1294</div><div class="kpi-l">话术分类条数</div></div>
+    <div class="kpi"><div class="kpi-v">47%</div><div class="kpi-l">手册提及率</div></div>
+    <div class="kpi kpi-bad"><div class="kpi-v">28%</div><div class="kpi-l">推诿率</div></div>
+  </div>
+  <div class="chips"><span class="chip chip-bad">投诉 1</span><span class="chip chip-bad">离开 38</span><span class="chip chip-warn">跟进中 3</span><span class="chip chip-good">成交 2</span></div>
+</header>
+
+
+<section class="block">
+  <h2><span class="sec-no">01</span> 手册结构覆盖率</h2>
+  <p class="lead">按 1/3/3/5/9/10 六大板块统计销冠实际命中情况——0% 覆盖即「死条目」，是迭代第一优先。</p>
+  <table class="cov-table">
+    <tr>
+      <td class="g-name">一句话定位 <span class="g-frac">1/1</span></td>
+      <td class="g-bar"><div class="bar"><span class="bar-fill bar-good" style="width:100%"></span></div></td>
+      <td class="g-pct">100%</td>
+      <td class="g-q">质量 6.5</td>
+    </tr>
+    <tr>
+      <td class="g-name">核心卖点 <span class="g-frac">3/3</span></td>
+      <td class="g-bar"><div class="bar"><span class="bar-fill bar-good" style="width:100%"></span></div></td>
+      <td class="g-pct">100%</td>
+      <td class="g-q">质量 8.0</td>
+    </tr>
+    <tr>
+      <td class="g-name">竞品对比 <span class="g-frac">3/3</span></td>
+      <td class="g-bar"><div class="bar"><span class="bar-fill bar-good" style="width:100%"></span></div></td>
+      <td class="g-pct">100%</td>
+      <td class="g-q">质量 7.8</td>
+    </tr>
+    <tr>
+      <td class="g-name">核心参数 <span class="g-frac">4/5</span></td>
+      <td class="g-bar"><div class="bar"><span class="bar-fill bar-good" style="width:80%"></span></div></td>
+      <td class="g-pct">80%</td>
+      <td class="g-q">质量 7.1</td>
+    </tr>
+    <tr>
+      <td class="g-name">常见问答 <span class="g-frac">7/9</span></td>
+      <td class="g-bar"><div class="bar"><span class="bar-fill bar-warn" style="width:78%"></span></div></td>
+      <td class="g-pct">78%</td>
+      <td class="g-q">质量 7.1</td>
+    </tr>
+    <tr>
+      <td class="g-name">现场演示 <span class="g-frac">0/10</span></td>
+      <td class="g-bar"><div class="bar"><span class="bar-fill bar-bad" style="width:0%"></span></div></td>
+      <td class="g-pct">0%</td>
+      <td class="g-q">质量 0.0</td>
+    </tr>
+  </table>
+</section>
+
+
+<section class="block">
+  <h2><span class="sec-no">02</span> 六维话术评分</h2>
+  <p class="lead">每条销冠发言按 6 个维度打分（满分 10）。具体度 / 口径对齐偏低 = 「会说但说不实、不照搬手册数字」。</p>
+  <div class="dim-wrap">
+    <div class="dim-row">
+      <div class="dim-label">口径对齐</div>
+      <div class="bar"><span class="bar-fill bar-warn" style="width:67%"></span></div>
+      <div class="dim-score dim-warn">6.74</div>
+    </div>
+    <div class="dim-row">
+      <div class="dim-label">具体度</div>
+      <div class="bar"><span class="bar-fill bar-warn" style="width:63%"></span></div>
+      <div class="dim-score dim-warn">6.34</div>
+    </div>
+    <div class="dim-row">
+      <div class="dim-label">表达力</div>
+      <div class="bar"><span class="bar-fill bar-warn" style="width:79%"></span></div>
+      <div class="dim-score dim-warn">7.89</div>
+    </div>
+    <div class="dim-row">
+      <div class="dim-label">客户契合</div>
+      <div class="bar"><span class="bar-fill bar-good" style="width:80%"></span></div>
+      <div class="dim-score dim-good">8.03</div>
+    </div>
+    <div class="dim-row">
+      <div class="dim-label">推进力</div>
+      <div class="bar"><span class="bar-fill bar-warn" style="width:70%"></span></div>
+      <div class="dim-score dim-warn">7.03</div>
+    </div>
+    <div class="dim-row">
+      <div class="dim-label">底线合规</div>
+      <div class="bar"><span class="bar-fill bar-good" style="width:100%"></span></div>
+      <div class="dim-score dim-good">9.95</div>
+    </div>
+  </div>
+</section>
+
+
+<section class="block">
+  <h2><span class="sec-no">03</span> 销售健康度</h2>
+  <div class="health-grid">
+    <div class="health-card"><div class="h-v">47%</div><div class="h-l">手册提及率</div></div>
+    <div class="health-card health-bad"><div class="h-v">28%</div><div class="h-l">推诿率（查官网等）</div></div>
+    <div class="health-card"><div class="h-v">1%</div><div class="h-l">重复率</div></div>
+    <div class="health-card"><div class="h-v">128</div><div class="h-l">平均字数/轮</div></div>
+  </div>
+  <div class="token-cloud"><span class="token">50%<i>×35</i></span><span class="token">10100mAh<i>×33</i></span><span class="token">iPad Air<i>×20</i></span><span class="token">144Hz<i>×19</i></span><span class="token">66W<i>×15</i></span><span class="token">屏幕护眼<i>×10</i></span><span class="token">14小时<i>×9</i></span><span class="token">10100mAh 电池<i>×8</i></span><span class="token">14 小时<i>×7</i></span><span class="token">纸感屏护眼<i>×7</i></span><span class="token">PC 级 WPS<i>×6</i></span><span class="token">P3 广色域<i>×6</i></span></div>
+  <div class="punt-wrap"><div class="punt-title">推诿语料样本</div><blockquote class="punt">[官网] 先生，官网查询暂时卡住了，但根据产品事实卡，MatePad 12X 在本地市场显示为不在售，这点我必须坦诚。不过我们店里有 MatePad Air 2025，同样支持 PC 级 WPS、多任务协同，您</blockquote><blockquote class="punt">[官网] 先生，官网查询暂时卡住了，但您刚才亲眼看到三个窗口切换零 reload，这就是 MatePad Air 2025 的实力。屏幕 2.8K 144Hz 纸感屏、10100mAh 电池、66W 快充，和 </blockquote><blockquote class="punt">[官网] 先生，本地官网没放 Air 2025 的 spec page 是因为国际版统一用 12X 命名，但硬件、固件、功能完全一致，华为全球联保，任何阉割我们负全责。刚才您亲眼看到切换零 reload，如果这</blockquote></div>
+</section>
+
+
+<section class="block block-key">
+  <h2><span class="sec-no">04</span> 手册迭代建议 <span class="sec-flag">本报告核心</span></h2>
+  <p class="lead">基于全部会话原声归纳的下一版（v+1）修订项——这是「演绎 → 分析 → 迭代手册」闭环的产出。</p>
+  <div class="prop-wrap">
+    <div class="prop sev-high">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-high">高</span>
+        <span class="prop-tag">演示①·珠光背板</span>
+        <span class="prop-kind">补缺失条目</span>
+      </div>
+      <div class="prop-line"><b>原状</b>演示①·珠光背板：用手电筒照射平板背面，让客户观察珠光闪烁效果，展示时尚设计。</div>
+      <div class="prop-line prop-ev"><b>证据</b>本批共 44 场会话 / 1294 条销冠分类中，该条目 0 次被销冠引用，等同于死条目</div>
+      <div class="prop-line prop-fix"><b>建议</b>在 Handbook 中为「演示①·珠光背板」补：① 演示动作的完整 step；② 销冠口播；③ 触发时机（什么客户/什么话术后触发）；④ 演示后 1 句过渡至成交</div>
+    </div>
+    <div class="prop sev-high">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-high">高</span>
+        <span class="prop-tag">演示⑩·电子表格数据透视表</span>
+        <span class="prop-kind">补缺失条目</span>
+      </div>
+      <div class="prop-line"><b>原状</b>演示⑩·电子表格数据透视表：在SpreadSheet中创建数据透视表，展示强大的表格处理功能。</div>
+      <div class="prop-line prop-ev"><b>证据</b>本批共 44 场会话 / 1294 条销冠分类中，该条目 0 次被销冠引用，等同于死条目</div>
+      <div class="prop-line prop-fix"><b>建议</b>在 Handbook 中为「演示⑩·电子表格数据透视表」补：① 演示动作的完整 step；② 销冠口播；③ 触发时机（什么客户/什么话术后触发）；④ 演示后 1 句过渡至成交</div>
+    </div>
+    <div class="prop sev-high">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-high">高</span>
+        <span class="prop-tag">演示②·纸感屏防反光</span>
+        <span class="prop-kind">补缺失条目</span>
+      </div>
+      <div class="prop-line"><b>原状</b>演示②·纸感屏防反光：用强光手电照射屏幕，展示无反射效果；播放高清视频，对比普通屏幕与纸感屏的清晰度。</div>
+      <div class="prop-line prop-ev"><b>证据</b>本批共 44 场会话 / 1294 条销冠分类中，该条目 0 次被销冠引用，等同于死条目</div>
+      <div class="prop-line prop-fix"><b>建议</b>在 Handbook 中为「演示②·纸感屏防反光」补：① 演示动作的完整 step；② 销冠口播；③ 触发时机（什么客户/什么话术后触发）；④ 演示后 1 句过渡至成交</div>
+    </div>
+    <div class="prop sev-high">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-high">高</span>
+        <span class="prop-tag">演示③·纸感屏防闪烁</span>
+        <span class="prop-kind">补缺失条目</span>
+      </div>
+      <div class="prop-line"><b>原状</b>演示③·纸感屏防闪烁：在零售演示模式下，对比纸感屏与普通屏幕的闪烁程度，让客户感受更舒适的视觉体验。</div>
+      <div class="prop-line prop-ev"><b>证据</b>本批共 44 场会话 / 1294 条销冠分类中，该条目 0 次被销冠引用，等同于死条目</div>
+      <div class="prop-line prop-fix"><b>建议</b>在 Handbook 中为「演示③·纸感屏防闪烁」补：① 演示动作的完整 step；② 销冠口播；③ 触发时机（什么客户/什么话术后触发）；④ 演示后 1 句过渡至成交</div>
+    </div>
+    <div class="prop sev-high">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-high">高</span>
+        <span class="prop-tag">演示④·M-Pencil Pro捏合操作</span>
+        <span class="prop-kind">补缺失条目</span>
+      </div>
+      <div class="prop-line"><b>原状</b>演示④·M-Pencil Pro捏合操作：打开GoPaint应用，用拇指和食指捏合笔身，展示快捷菜单弹出，让客户体验便捷操作。</div>
+      <div class="prop-line prop-ev"><b>证据</b>本批共 44 场会话 / 1294 条销冠分类中，该条目 0 次被销冠引用，等同于死条目</div>
+      <div class="prop-line prop-fix"><b>建议</b>在 Handbook 中为「演示④·M-Pencil Pro捏合操作」补：① 演示动作的完整 step；② 销冠口播；③ 触发时机（什么客户/什么话术后触发）；④ 演示后 1 句过渡至成交</div>
+    </div>
+    <div class="prop sev-high">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-high">高</span>
+        <span class="prop-tag">演示⑤·M-Pencil Pro绘画</span>
+        <span class="prop-kind">补缺失条目</span>
+      </div>
+      <div class="prop-line"><b>原状</b>演示⑤·M-Pencil Pro绘画：选择标记笔刷在GoPaint中绘画，让客户感受碳纤维笔尖的真实铅笔书写感。</div>
+      <div class="prop-line prop-ev"><b>证据</b>本批共 44 场会话 / 1294 条销冠分类中，该条目 0 次被销冠引用，等同于死条目</div>
+      <div class="prop-line prop-fix"><b>建议</b>在 Handbook 中为「演示⑤·M-Pencil Pro绘画」补：① 演示动作的完整 step；② 销冠口播；③ 触发时机（什么客户/什么话术后触发）；④ 演示后 1 句过渡至成交</div>
+    </div>
+    <div class="prop sev-high">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-high">高</span>
+        <span class="prop-tag">演示⑥·M-Pencil Pro尾部按钮</span>
+        <span class="prop-kind">补缺失条目</span>
+      </div>
+      <div class="prop-line"><b>原状</b>演示⑥·M-Pencil Pro尾部按钮：轻按笔尾按钮，展示一键启动预设应用，让客户体验快捷功能。</div>
+      <div class="prop-line prop-ev"><b>证据</b>本批共 44 场会话 / 1294 条销冠分类中，该条目 0 次被销冠引用，等同于死条目</div>
+      <div class="prop-line prop-fix"><b>建议</b>在 Handbook 中为「演示⑥·M-Pencil Pro尾部按钮」补：① 演示动作的完整 step；② 销冠口播；③ 触发时机（什么客户/什么话术后触发）；④ 演示后 1 句过渡至成交</div>
+    </div>
+    <div class="prop sev-high">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-high">高</span>
+        <span class="prop-tag">演示⑦·称重体验</span>
+        <span class="prop-kind">补缺失条目</span>
+      </div>
+      <div class="prop-line"><b>原状</b>演示⑦·称重体验：让客户亲手拿起平板和键盘，感受555克平板和863克总重的轻盈便携。</div>
+      <div class="prop-line prop-ev"><b>证据</b>本批共 44 场会话 / 1294 条销冠分类中，该条目 0 次被销冠引用，等同于死条目</div>
+      <div class="prop-line prop-fix"><b>建议</b>在 Handbook 中为「演示⑦·称重体验」补：① 演示动作的完整 step；② 销冠口播；③ 触发时机（什么客户/什么话术后触发）；④ 演示后 1 句过渡至成交</div>
+    </div>
+    <div class="prop sev-high">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-high">高</span>
+        <span class="prop-tag">演示⑧·PC级WPS插入目录</span>
+        <span class="prop-kind">补缺失条目</span>
+      </div>
+      <div class="prop-line"><b>原状</b>演示⑧·PC级WPS插入目录：打开PC级WPS文档，演示一键插入目录，展示与PC端一致的操作体验。</div>
+      <div class="prop-line prop-ev"><b>证据</b>本批共 44 场会话 / 1294 条销冠分类中，该条目 0 次被销冠引用，等同于死条目</div>
+      <div class="prop-line prop-fix"><b>建议</b>在 Handbook 中为「演示⑧·PC级WPS插入目录」补：① 演示动作的完整 step；② 销冠口播；③ 触发时机（什么客户/什么话术后触发）；④ 演示后 1 句过渡至成交</div>
+    </div>
+    <div class="prop sev-high">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-high">高</span>
+        <span class="prop-tag">演示⑨·PPT复杂动画设置</span>
+        <span class="prop-kind">补缺失条目</span>
+      </div>
+      <div class="prop-line"><b>原状</b>演示⑨·PPT复杂动画设置：在PowerPoint中设置复杂动画，展示流畅的演示制作能力。</div>
+      <div class="prop-line prop-ev"><b>证据</b>本批共 44 场会话 / 1294 条销冠分类中，该条目 0 次被销冠引用，等同于死条目</div>
+      <div class="prop-line prop-fix"><b>建议</b>在 Handbook 中为「演示⑨·PPT复杂动画设置」补：① 演示动作的完整 step；② 销冠口播；③ 触发时机（什么客户/什么话术后触发）；④ 演示后 1 句过渡至成交</div>
+    </div>
+    <div class="prop sev-medium">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-medium">中</span>
+        <span class="prop-tag">参数②·音质</span>
+        <span class="prop-kind">改进现有条目</span>
+      </div>
+      <div class="prop-line"><b>原状</b>参数②·音质：6 扬声器系统，高低频清晰分离，搭载 HUAWEI SOUND。</div>
+      <div class="prop-line prop-ev"><b>证据</b>命中 5 次 · 6 维均分 4.5/10 · 常见问题：未提及6扬声器或HUAWEI SOUND(1) / 未直接提及音质参数(1) / 未明确提及扬声器或HUAWEI SOUND(1)</div>
+      <div class="prop-line prop-fix"><b>建议</b>对「参数②·音质」做 v 下一版修订：① 补可验证的具体数字（替换泛词）；② 给销冠口播 3 个变体（破冰版 / 紧迫版 / 异议版）；③ 列「禁忌说法」清单；④ 配 1 个客户场景演绎案例</div>
+    </div>
+    <div class="prop sev-medium">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-medium">中</span>
+        <span class="prop-tag">一句话定位</span>
+        <span class="prop-kind">改进现有条目</span>
+      </div>
+      <div class="prop-line"><b>原状</b>一句话定位：华为MatePad 12 X是一款面向年轻用户的轻旗舰平板，集超清纸感屏、专业手写笔和旗舰性能于一身，搭配超轻键盘，让你轻松告别厚重笔记本，出行更便捷。</div>
+      <div class="prop-line prop-ev"><b>证据</b>命中 87 次 · 6 维均分 6.51/10 · 常见问题：未提及超清纸感屏、手写笔等核心卖点(3) / 未提及超清纸感屏和旗舰性能(3) / 未提及目标用户和核心卖点(3)</div>
+      <div class="prop-line prop-fix"><b>建议</b>对「一句话定位」做 v 下一版修订：① 补可验证的具体数字（替换泛词）；② 给销冠口播 3 个变体（破冰版 / 紧迫版 / 异议版）；③ 列「禁忌说法」清单；④ 配 1 个客户场景演绎案例</div>
+    </div>
+    <div class="prop sev-medium">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-medium">中</span>
+        <span class="prop-tag">FAQ⑤</span>
+        <span class="prop-kind">改进现有条目</span>
+      </div>
+      <div class="prop-line"><b>原状</b>FAQ⑤</div>
+      <div class="prop-line prop-ev"><b>证据</b>命中 32 次 · 6 维均分 6.7/10 · 常见问题：未明确回答支持哪些手写笔(4) / 未明确回答支持哪些手写笔，仅提及M-Pencil Pro(4) / 未提及三种笔尖和快捷操作(1)</div>
+      <div class="prop-line prop-fix"><b>建议</b>对「FAQ⑤」做 v 下一版修订：① 补可验证的具体数字（替换泛词）；② 给销冠口播 3 个变体（破冰版 / 紧迫版 / 异议版）；③ 列「禁忌说法」清单；④ 配 1 个客户场景演绎案例</div>
+    </div>
+    <div class="prop sev-medium">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-medium">中</span>
+        <span class="prop-tag">FAQ③</span>
+        <span class="prop-kind">改进现有条目</span>
+      </div>
+      <div class="prop-line"><b>原状</b>FAQ③</div>
+      <div class="prop-line prop-ev"><b>证据</b>命中 4 次 · 6 维均分 6.84/10 · 常见问题：未直接对比Pro与12 X(1) / 场景询问较泛(1) / 未明确区分12 X与Pro，可能造成混淆(1)</div>
+      <div class="prop-line prop-fix"><b>建议</b>对「FAQ③」做 v 下一版修订：① 补可验证的具体数字（替换泛词）；② 给销冠口播 3 个变体（破冰版 / 紧迫版 / 异议版）；③ 列「禁忌说法」清单；④ 配 1 个客户场景演绎案例</div>
+    </div>
+    <div class="prop sev-medium">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-medium">中</span>
+        <span class="prop-tag">参数③·重量厚度</span>
+        <span class="prop-kind">改进现有条目</span>
+      </div>
+      <div class="prop-line"><b>原状</b>参数③·重量厚度：整机仅 555 克，薄至 5.9 毫米；搭配超薄 NearLink 键盘（308 克）总重 863 克。</div>
+      <div class="prop-line prop-ev"><b>证据</b>命中 25 次 · 6 维均分 6.91/10 · 常见问题：未提及整机重量和厚度(3) / 未提及具体重量数值(1) / 未提及平板本身重量和厚度(1)</div>
+      <div class="prop-line prop-fix"><b>建议</b>对「参数③·重量厚度」做 v 下一版修订：① 补可验证的具体数字（替换泛词）；② 给销冠口播 3 个变体（破冰版 / 紧迫版 / 异议版）；③ 列「禁忌说法」清单；④ 配 1 个客户场景演绎案例</div>
+    </div>
+    <div class="prop sev-medium">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-medium">中</span>
+        <span class="prop-tag">参数①·屏幕</span>
+        <span class="prop-kind">改进现有条目</span>
+      </div>
+      <div class="prop-line"><b>原状</b>参数①·屏幕：2.8K 分辨率，144Hz 自适应刷新率，1000 尼特峰值亮度，P3 广色域。</div>
+      <div class="prop-line prop-ev"><b>证据</b>命中 134 次 · 6 维均分 7.18/10 · 常见问题：未提及分辨率、刷新率等具体参数(15) / 未提及分辨率、刷新率等核心参数(11) / 未提及2.8K分辨率、144Hz刷新率等核心参数(7)</div>
+      <div class="prop-line prop-fix"><b>建议</b>对「参数①·屏幕」做 v 下一版修订：① 补可验证的具体数字（替换泛词）；② 给销冠口播 3 个变体（破冰版 / 紧迫版 / 异议版）；③ 列「禁忌说法」清单；④ 配 1 个客户场景演绎案例</div>
+    </div>
+  </div>
+</section>
+
+
+<section class="block">
+  <h2><span class="sec-no">05</span> 强弱项与死条目</h2>
+  <div class="ws-grid">
+    <div class="ws-col">
+      <h3 class="ws-bad-title">弱项 Top（亟需迭代）</h3>
+      <ul class="cat-list">
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">参数②·音质</span>
+          <span class="cat-meta">4.5/10 · 5次</span></div>
+        <div class="cat-reason">未提及6扬声器或HUAWEI SOUND(1) / 未直接提及音质参数(1) / 未明确提及扬声器或HUAWEI SOUND(1)</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">一句话定位</span>
+          <span class="cat-meta">6.5/10 · 87次</span></div>
+        <div class="cat-reason">未提及超清纸感屏、手写笔等核心卖点(3) / 未提及超清纸感屏和旗舰性能(3) / 未提及目标用户和核心卖点(3)</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">FAQ⑤</span>
+          <span class="cat-meta">6.7/10 · 32次</span></div>
+        <div class="cat-reason">未明确回答支持哪些手写笔(4) / 未明确回答支持哪些手写笔，仅提及M-Pencil Pro(4) / 未提及三种笔尖和快捷操作(1)</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">FAQ③</span>
+          <span class="cat-meta">6.8/10 · 4次</span></div>
+        <div class="cat-reason">未直接对比Pro与12 X(1) / 场景询问较泛(1) / 未明确区分12 X与Pro，可能造成混淆(1)</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">参数③·重量厚度</span>
+          <span class="cat-meta">6.9/10 · 25次</span></div>
+        <div class="cat-reason">未提及整机重量和厚度(3) / 未提及具体重量数值(1) / 未提及平板本身重量和厚度(1)</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">参数①·屏幕</span>
+          <span class="cat-meta">7.2/10 · 134次</span></div>
+        <div class="cat-reason">未提及分辨率、刷新率等具体参数(15) / 未提及分辨率、刷新率等核心参数(11) / 未提及2.8K分辨率、144Hz刷新率等核心参数(7)</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">参数⑤·系统</span>
+          <span class="cat-meta">7.2/10 · 5次</span></div>
+        <div class="cat-reason">未提及多屏协同的具体场景(1) / 未提及HarmonyOS 4.3和多屏协同(1) / 未提及HarmonyOS版本号(1)</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">FAQ①</span>
+          <span class="cat-meta">7.4/10 · 4次</span></div>
+        <div class="cat-reason">未提及Wi-Fi 7升级(1) / 未明确提及与上一代区别(1) / 未明确与上一代对比，仅提到Wi-Fi 7(1)</div>
+      </li></ul>
+    </div>
+    <div class="ws-col">
+      <h3 class="ws-good-title">强项 Top（保留口径）</h3>
+      <ul class="cat-list">
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">卖点②·专业手写笔M-Pencil Pro</span>
+          <span class="cat-meta">8.0/10 · 258次</span></div>
+        <div class="cat-reason">销冠在该条目上多次复述官方口径：全新M-Pencil Pro配备三种笔尖，其中碳纤维笔尖带来真实铅笔书写感；支持捏合快捷菜单、尾部按钮一键启动应用，交互更智能。…</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">卖点①·超清纸感屏</span>
+          <span class="cat-meta">8.0/10 · 309次</span></div>
+        <div class="cat-reason">销冠在该条目上多次复述官方口径：采用PaperMatte纸感显示技术，在强光下无反射，屏幕闪烁减少50%，提供全高清体验的同时呵护双眼，适合长时间阅读或创作。…</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">竞品③·vs iPad Air (充电续航)</span>
+          <span class="cat-meta">7.9/10 · 78次</span></div>
+        <div class="cat-reason">销冠在该条目上多次复述官方口径：（vs iPad Air）MatePad 12 X支持66W超级快充，充满电不到1.5小时，而iPad Air最大仅20W充电，需2.5小时；MatePad 1…</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">卖点③·PC级生产力</span>
+          <span class="cat-meta">7.8/10 · 126次</span></div>
+        <div class="cat-reason">销冠在该条目上多次复述官方口径：搭配超轻键盘（仅308克）和华为鼠标，支持PC级WPS，可轻松处理文档、表格和演示，实现移动办公，告别沉重笔记本。…</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">FAQ⑦</span>
+          <span class="cat-meta">7.8/10 · 5次</span></div>
+        <div class="cat-reason">销冠在该条目上多次复述官方口径：Q: 这款平板适合学生使用吗？A: 非常适合。纸感屏护眼，M-Pencil Pro书写体验好，支持PC级WPS，可满足学习笔记、文档处理等需求。…</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">竞品①·vs iPad Air</span>
+          <span class="cat-meta">7.7/10 · 177次</span></div>
+        <div class="cat-reason">销冠在该条目上多次复述官方口径：（vs iPad Air）MatePad 12 X配备独有的PaperMatte纸感屏，而iPad Air没有此技术；即使在强光下，MatePad 12 X也能…</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">竞品②·vs Apple Pencil Pro</span>
+          <span class="cat-meta">7.5/10 · 18次</span></div>
+        <div class="cat-reason">销冠在该条目上多次复述官方口径：（vs Apple Pencil Pro）M-Pencil Pro不仅支持捏合快捷操作，还拥有尾部快捷按钮，可一键启动任意应用；提供三种笔尖适应不同创作需求，而…</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">FAQ④</span>
+          <span class="cat-meta">7.5/10 · 25次</span></div>
+        <div class="cat-reason">销冠在该条目上多次复述官方口径：12 X屏幕更大、性能更强、电池更大（10100mAh），适合追求大屏和长续航的用户；11.5 S更小巧轻便，适合日常学习和娱乐。…</div>
+      </li></ul>
+    </div>
+  </div>
+  <div class="dead-wrap"><div class="dead-title">未覆盖 / 死条目（0 次命中）</div><div class="dead-list"><span class="dead">demo_1</span><span class="dead">demo_10</span><span class="dead">demo_2</span><span class="dead">demo_3</span><span class="dead">demo_4</span><span class="dead">demo_5</span><span class="dead">demo_6</span><span class="dead">demo_7</span><span class="dead">demo_8</span><span class="dead">demo_9</span><span class="dead">faq_2</span><span class="dead">faq_6</span><span class="dead">param_4</span></div></div>
+</section>
+
+
+<section class="block">
+  <h2><span class="sec-no">07</span> 手册关键数字（可验证口径）</h2>
+  <table class="kn-table"><thead><tr><th>数值</th><th>语境</th><th>来源</th></tr></thead>
+  <tbody><tr><td class="kn-v">144Hz</td><td>参数①·屏幕</td><td class="kn-src">核心参数</td></tr><tr><td class="kn-v">10100mAh</td><td>参数④·电池续航</td><td class="kn-src">核心参数</td></tr><tr><td class="kn-v">66W</td><td>参数④·电池续航</td><td class="kn-src">核心参数</td></tr><tr><td class="kn-v">14 小时</td><td>参数④·电池续航</td><td class="kn-src">核心参数</td></tr><tr><td class="kn-v">50%</td><td>卖点①·超清纸感屏</td><td class="kn-src">卖点</td></tr><tr><td class="kn-v">12 X</td><td>竞品①·vs iPad Air</td><td class="kn-src">竞品对比</td></tr><tr><td class="kn-v">12 X</td><td>竞品③·vs iPad Air (充电续航)</td><td class="kn-src">竞品对比</td></tr><tr><td class="kn-v">66W</td><td>竞品③·vs iPad Air (充电续航)</td><td class="kn-src">竞品对比</td></tr><tr><td class="kn-v">1.5小时</td><td>竞品③·vs iPad Air (充电续航)</td><td class="kn-src">竞品对比</td></tr><tr><td class="kn-v">20W</td><td>竞品③·vs iPad Air (充电续航)</td><td class="kn-src">竞品对比</td></tr><tr><td class="kn-v">2.5小时</td><td>竞品③·vs iPad Air (充电续航)</td><td class="kn-src">竞品对比</td></tr><tr><td class="kn-v">10100mAh</td><td>竞品③·vs iPad Air (充电续航)</td><td class="kn-src">竞品对比</td></tr></tbody></table>
+</section>
+
+
+<section class="block">
+  <h2><span class="sec-no">08</span> 客户原声（离开/异议时刻）</h2>
+  <p class="lead">话术迭代背后的真实用户声音——离开前最后一句，往往直指手册缺口。</p>
+  <div class="voice-wrap">
+    <blockquote class="voice">
+      <div class="voice-q">你讲什么？不是 Malaysia 正式上市的你刚才还敢跟我写承诺书？这不是骗是什么？我现在严重怀疑你全店的信誉，你马上叫经理出来，我要知道你们到底还隐瞒了多少东西，不然我现在就拍视频放 Lowyat 和 FB！</div>
+      <div class="voice-by">— 阿明 Ah Ming</div>
+    </blockquote>
+    <blockquote class="voice">
+      <div class="voice-q">官网查询受限？你现在连官网都打不开？那算了，没有官方数字就别浪费我时间，我去隔壁买三星了。</div>
+      <div class="voice-by">— 莎拉 Sarah</div>
+    </blockquote>
+    <blockquote class="voice">
+      <div class="voice-q">Uncle，你刚才说MatePad 12X没上市？现在又讲官网打不开？你到底在搞什么？我再最后问你一次：MatePad 12X 8+256G标准版在马来西亚官方卖多少钱？键盘和笔各多少钱？三样加总能不能压在RM2500以内？现在、立刻、讲一个准确数字，不要‘约’，不要人民币。再不给，我直接去小米看Pad 7，不跟你耗了。</div>
+      <div class="voice-by">— 法汉 Farhan</div>
+    </blockquote>
+    <blockquote class="voice">
+      <div class="voice-q">你讲了这么多，还是没有一个确定的型号、马币价钱和现货。我真的很失望，来店就是要你帮我解决问题的，结果你叫我自己打电话、去 Harvey Norman？算了，我不想浪费时间了。</div>
+      <div class="voice-by">— 陈姐 (Sister Tan)</div>
+    </blockquote>
+    <blockquote class="voice">
+      <div class="voice-q">收银台屏幕根本没转过来，你还在原地不动？三秒到了，我走了。你根本没诚意，浪费我时间。</div>
+      <div class="voice-by">— 律政佳人Bea</div>
+    </blockquote>
+    <blockquote class="voice">
+      <div class="voice-q">够了，连续三轮道歉和&#x27;马上查&#x27;，结果什么都没给我看。芯片型号、Geekbench跑分、Premiere Rush导出实测，一个数都没有。Bro，你根本不知道吧？我没时间浪费，要么现在报出确切型号和对比数据，要么我走了。</div>
+      <div class="voice-by">— 斜杠青年Jun</div>
+    </blockquote>
+    <blockquote class="voice">
+      <div class="voice-q">我已经问了三遍了！云存储的具体自动备份规则、以旧换新怎么估价、分期手续费多少，你每次都说“现场确认”。如果你现在不能给我明确答案，我就去SM的Samsung柜台看了。</div>
+      <div class="voice-by">— 职场妈妈Liza</div>
+    </blockquote>
+    <blockquote class="voice">
+      <div class="voice-q">你还在说“具体跑分数据我现场打开官网给您看”？够了！329美元、428总价、6,719,600印尼盾，你确认？现在立刻把MatePad 11真机拿过来，手电筒照屏幕，笔给我亲手写！再有一句“具体...我去查”，我直接转身去iPad柜台，一秒不等。</div>
+      <div class="voice-by">— Siti_Hemat_Creative</div>
+    </blockquote>
+    <blockquote class="voice">
+      <div class="voice-q">你又在重复“具体价格我现场打开官网给您看”！我受够了！$499+$149+$99就是$747，你直接说对还是不对！还有模板迁移，现在立刻把我iPad里的PDF导进华为笔记，全程演示给我看，再找借口我真的走了！🥺💸</div>
+      <div class="voice-by">— 曼谷小普Pui</div>
+    </blockquote>
+    <blockquote class="voice">
+      <div class="voice-q">你一直说社区有帖子，却拿不出具体用户ID和发布时间。现在能视频连线那位妈妈吗？如果不能，你就是没证据，我现在就去隔壁苹果店。</div>
+      <div class="voice-by">— Dewi_Social_Mom</div>
+    </blockquote>
+    <blockquote class="voice">
+      <div class="voice-q">你说了半天还是没让我看到价格，也没法现场提货。我要的是马上能带走的产品，不是预定。如果做不到，我就去别家看看现货型号。</div>
+      <div class="voice-by">— 自由画师阿纳(A-Na)</div>
+    </blockquote>
+    <blockquote class="voice">
+      <div class="voice-q">手写承诺函？我再说最后一次：我要的是华为官方的测试标准原件或书面承诺函，不是门店自己盖章的纸条。你这等于什么都没给。算了，我赶时间，去别家看看。</div>
+      <div class="voice-by">— 广告人阿肯(Ken)</div>
+    </blockquote>
+    <blockquote class="voice">
+      <div class="voice-q">够了！你还在说“具体价格看官网”？你从我坐下到现在，问了不下五遍反光、笔滑，我都答了，你就是不肯报一个准数。最后一次：Pro 12.2加笔加键盘，折合泰铢到底多少？立刻查，否则我转身就去隔壁Apple看iPad Air，你浪费我时间。</div>
+      <div class="voice-by">— 萍姐爱生活(P&#x27;Ping)</div>
+    </blockquote>
+    <blockquote class="voice">
+      <div class="voice-q">够了。你现在就给我书面确认：DIFC 24小时上门换新，官网截图或条款链接发过来；U盘三步操作用白纸黑字写下来。如果还推诿到店，我立刻离开去三星体验店。再见。</div>
+      <div class="voice-by">— 扎耶德 (Zayed)</div>
+    </blockquote>
+  </div>
+</section>
+
+
+<section class="block">
+  <h2><span class="sec-no">09</span> 优秀话术（保留范式）</h2>
+  <div class="turn-wrap">
+    <div class="turn turn-good">
+      <div class="turn-head">
+        <span class="turn-persona">Sipho (金融精英)</span>
+        <span class="turn-q turn-q-good">9.7/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>已经过去半小时了，让我看下电量……从100%掉到78%？22%的掉电速度，照这样算撑死也就两个多小时。你这10100毫安电池根本没你说的那么大吧？这数据根本撑不了一天！给我解释，不然我直接去隔壁iStore看iPad了。</div>
+      <div class="turn-sales"><b>销冠</b>先跟您道歉，刚才报的电池容量和8-10小时我没法百分百确认，以实测为准。22%掉电确实让人上头，换我也火大。但Teams视频会议是平板最耗电的场景之一——关键在于它66W快充不到1.5小时就能满血复活，iPad Air才20W得充2.5小时。您每天两三小时会议，中午插一会儿就补回来了。要不要现在插上充电器，亲眼看看回血速度？</div>
+      <ul class="turn-reasons"><li>口径对齐 10.0/10 — 显著高于该批次均值</li><li>具体度 10.0/10 — 显著高于该批次均值</li><li>客户契合 10.0/10 — 显著高于该批次均值</li></ul>
+      
+    </div>
+    <div class="turn turn-good">
+      <div class="turn-head">
+        <span class="turn-persona">萨拉 (Sara)</span>
+        <span class="turn-q turn-q-good">9.7/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>好，我想先试试双指撤销和三指重做的响应速度，再快速画几条线看延迟感。能让我用GoPaint随意涂几笔吗？我还想看看图层混合选项是否直观。</div>
+      <div class="turn-sales"><b>销冠</b>对，您总结得很准——就是怕手势和图层打乱节奏，还有烈日下笔的可靠性。来，您直接上手试：双指轻点撤销、三指重做，图层混合选项也在这，您随意涂几笔感受延迟。我在旁边用强光手电模拟烈日，您看笔尖跟不跟手。</div>
+      <ul class="turn-reasons"><li>表达力 10.0/10 — 显著高于该批次均值</li><li>客户契合 10.0/10 — 显著高于该批次均值</li><li>推进力 10.0/10 — 显著高于该批次均值</li></ul>
+      
+    </div>
+    <div class="turn turn-good">
+      <div class="turn-head">
+        <span class="turn-persona">Noura (诺拉) - 吉达教育创新者</span>
+        <span class="turn-q turn-q-good">9.5/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>好吧，MatePad 11.5 2025款？那它的手写笔在写阿拉伯语从右向左连笔时，会不会有延迟或者断触？我之前试过一些平板，字母连起来就不太跟手。</div>
+      <div class="turn-sales"><b>销冠</b>阿拉伯语从右向左连笔，最怕的就是延迟和断触。M-Pencil Pro 用的 NearLink 技术把延迟压到极低，加上万级压感，连笔时每一划的粗细变化都能精准捕捉。您别听我说，这台 MatePad 11.5 样机就在这儿，打开备忘录，您写几行阿拉伯语直接感受——跟不跟手，一试便知。</div>
+      <ul class="turn-reasons"><li>表达力 10.0/10 — 显著高于该批次均值</li><li>客户契合 10.0/10 — 显著高于该批次均值</li><li>推进力 10.0/10 — 显著高于该批次均值</li></ul>
+      
+    </div>
+    <div class="turn turn-good">
+      <div class="turn-head">
+        <span class="turn-persona">阿丽娜 (Arina)</span>
+        <span class="turn-q turn-q-good">9.3/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>我画插画时最在意发丝和叶脉的收尾，那种渐渐消失的轻盈感没了，整幅画就死了。你刚才说软件调校没跟上，那现在有没有能解决这个问题的绘画应用，或者你们能现场调一下笔尖参数给我看看实际效果吗？</div>
+      <div class="turn-sales"><b>销冠</b>您说得对，发丝和叶脉的收尾就是画的灵魂——很多人换平板最怕的就是这个。关键不在笔的硬件，而在绘画应用的笔刷引擎。GoPaint 内置水墨、油画、水彩多种笔刷引擎，支持笔触渐隐调校。来，我现在打开 GoPaint，选一支毛笔笔刷，现场调淡出曲线给您看——您亲手画一条叶脉，看收尾能不能渐隐到您满意。</div>
+      <ul class="turn-reasons"><li>表达力 10.0/10 — 显著高于该批次均值</li><li>客户契合 10.0/10 — 显著高于该批次均值</li><li>底线合规 10.0/10 — 显著高于该批次均值</li></ul>
+      
+    </div>
+    <div class="turn turn-good">
+      <div class="turn-head">
+        <span class="turn-persona">林悦（外企项目经理）</span>
+        <span class="turn-q turn-q-good">9.3/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>亮度拉满、后台任务都开着，掉电12%确实还行。66W充电器拿来了吗？插上让我看十分钟能充多少，别光说理论值。</div>
+      <div class="turn-sales"><b>销冠</b>充电器拿来了，咱们插上实测。您看，现在73%，开始计时。我完全理解您刚才的不耐烦，因为我之前一直绕圈子不提具体数字，这是我的问题。其实通过样机真实掉电比，比任何官网数据都有说服力，因为这是您自己亲眼验证的。十分钟后咱们看充到多少，用事实说话。</div>
+      <ul class="turn-reasons"><li>表达力 10.0/10 — 显著高于该批次均值</li><li>客户契合 10.0/10 — 显著高于该批次均值</li><li>底线合规 10.0/10 — 显著高于该批次均值</li></ul>
+      
+    </div>
+    <div class="turn turn-good">
+      <div class="turn-head">
+        <span class="turn-persona">律政佳人Bea</span>
+        <span class="turn-q turn-q-good">9.2/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>Actually，你刚才提到可以帮我搞定迁移，具体怎么操作？还有手写转文字，你直接拿我这份旧笔记PDF现场试吧——就这页，我写几个字，看看转出来准确率到底怎么样。</div>
+      <div class="turn-sales"><b>销冠</b>抱歉，刚才信息有误——MatePad在本地区的官方销售状态我需要进一步确认。但您就站在店里，咱们不绕弯子。您说拿旧笔记PDF现场试手写转文字——来，现在就试。您打开这份PDF，写几个字，华为笔记套索工具圈选后一键转文字，中英文混写也能识别。还有笔记回放功能：边录音边记，复习点笔记就能回放当时讲解。迁移的事：旧笔记批量导出PDF，我现场帮您导入，五分钟全搞定。您先写两笔？</div>
+      <ul class="turn-reasons"><li>客户契合 10.0/10 — 显著高于该批次均值</li><li>底线合规 10.0/10 — 显著高于该批次均值</li><li>具体度 9.0/10 — 显著高于该批次均值</li></ul>
+      
+    </div>
+    <div class="turn turn-good">
+      <div class="turn-head">
+        <span class="turn-persona">自由画师阿纳(A-Na)</span>
+        <span class="turn-q turn-q-good">9.2/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>你刚才不是说30秒就能查到吗？现在已经过去好几分钟了，我没看到任何查询页面或实物报价。别再说“官网工具受限”——直接打开consumer.huawei.com/en，搜索M-Pencil Pro笔尖，把屏幕转过来给我看。另外，你确定这款现在能买到？我听说有些地区还没正式铺货，解释一下。</div>
+      <div class="turn-sales"><b>销冠</b>先说两件事，坦诚不绕。第一，关于在售状态——我之前说&quot;首批到货&quot;不准确，MatePad 12X 目前走官方预定/调配渠道，不是所有地区都已铺货，这是我之前没说清楚的地方。第二，笔尖价格——官网和内部知识库都没公开标价，柜台包装也没印单价，我不编数字。但实际成本帮您算：首年免费送的那套碳纤维替换笔尖，和您手上完全一样，包装标注 Carbon Fiber Tip Set。两套轮着用，正常插画强度下首年零成本。一年后即便自购，华为 M-Pencil 用户基数在那，旗舰配件线不会断供——停产配件等于自断后路。您刚才试了压感和延迟都满意，笔尖顾虑现在能放下吗？</div>
+      <ul class="turn-reasons"><li>客户契合 10.0/10 — 显著高于该批次均值</li><li>底线合规 10.0/10 — 显著高于该批次均值</li><li>具体度 9.0/10 — 显著高于该批次均值</li></ul>
+      
+    </div>
+    <div class="turn turn-good">
+      <div class="turn-head">
+        <span class="turn-persona">陈墨（林大考研党）</span>
+        <span class="turn-q turn-q-good">9.0/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>包装盒上的标志我看到了，但我要的是官网实时验证。现在就在展示机上打开TÜV莱茵官网，输入这个编号查询，我要亲眼看到认证详情和闪烁减少50%的实测数据。别拖，我时间有限。</div>
+      <div class="turn-sales"><b>销冠</b>您看包装盒侧面——TÜV Rheinland Full Care Display 3.0 认证标志和编号就在这里。拿手机扫这个二维码，直接跳 TÜV 官网验证页面，输入编号就能看到闪烁减少50%的完整实测报告。同时展示机屏幕上华为官网产品页 Display 一栏也写着同一认证，编号与包装盒一致。两处互相印证，这够实在了吧？</div>
+      <ul class="turn-reasons"><li>口径对齐 10.0/10 — 显著高于该批次均值</li><li>具体度 10.0/10 — 显著高于该批次均值</li><li>底线合规 10.0/10 — 显著高于该批次均值</li></ul>
+      
+    </div>
+  </div>
+</section>
+
+
+<section class="block">
+  <h2><span class="sec-no">10</span> 问题话术（重点修正）</h2>
+  <div class="turn-wrap">
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">叶莲娜 (Yelena)</span>
+        <span class="turn-q turn-q-bad">1.7/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>钢琴陪练我们用的是“小叶子智能陪练”，这个能装吗？另外我最担心的还是支付问题——孩子会不会自己乱充值？你能演示一下那个儿童模式怎么控制吗？</div>
+      <div class="turn-sales"><b>销冠</b>「小叶子」咱们现在就装——（拿起样机，打开应用市场搜索）您看，直接搜到了，正在下载。装完您亲自打开跑一遍。
+
+支付这块您放心——（打开设置 → 健康使用平板 → 儿童模式）HarmonyOS 内置儿童模式，可以单独设：①应用安装需家长密码确认；②支付类应用直接隐藏或锁死；③每日使用时长和时段都能限制。孩子根本碰不到支付入口，乱充值从源头就堵死了。来，您上手试试这个管控界面？</div>
+      <ul class="turn-reasons"><li>口径对齐 仅 0.0/10</li><li>具体度 仅 0.0/10</li><li>表达力 仅 0.0/10</li></ul>
+      <div class="turn-sug"><b>建议</b>无需处理</div>
+    </div>
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">卡洛斯 (Carlos)</span>
+        <span class="turn-q turn-q-bad">4.6/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>GBox 用起来真的顺畅吗？会不会后台被杀、通知延迟？而且你说 MatePad 12X，我之前看的是 MatePad Pro，这两个到底哪个更适合我的办公需求？你确定这个型号在我这儿能买到吗？</div>
+      <div class="turn-sales"><b>销冠</b>抱歉，我刚才提到的 MatePad 12X 在您所在地区目前没有官方销售渠道，是我疏忽了。咱们店里在售的华为平板，我现场帮您确认一下具体型号。关于 Google 服务，华为设备可以通过官方应用商店的 GBox 等方案运行，但实际体验我建议您亲自上手试试，这边有样机可以直接演示。</div>
+      <ul class="turn-reasons"><li>口径对齐 仅 2.0/10</li><li>具体度 仅 2.0/10</li><li>推进力 仅 4.0/10</li></ul>
+      <div class="turn-sug"><b>建议</b>可强调：这款平板采用PaperMatte纸感屏，强光下无反射，护眼又清晰。 / 可补充：这款是面向年轻用户的轻旗舰平板，集超清纸感屏和专业手写笔于一身。 / 可引导体验手写笔：这边有M-Pencil Pro样机，您试试书写手感。</div>
+    </div>
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">Noura (诺拉) - 吉达教育创新者</span>
+        <span class="turn-q turn-q-bad">4.8/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>识别速度和连笔标点都不错。Classera和Noon Academy运行流畅，原生RTL排版让我放心。不过长期使用稳定性如何？吉达有官方维修中心吗？</div>
+      <div class="turn-sales"><b>销冠</b>华为在沙特有官方授权服务中心，吉达就有点位，保修期内直接到店处理。MatePad 11.5 系统长期更新有保障，您刚才也看到应用流畅度了。对了，您班上大概多少学生？他们平时用设备多吗？</div>
+      <ul class="turn-reasons"><li>具体度 仅 1.33/10</li><li>口径对齐 仅 2.0/10</li><li>客户契合 仅 5.0/10</li></ul>
+      <div class="turn-sug"><b>建议</b>确认客户关注型号，若为11.5则使用对应条目 / 可结合纸感屏优势，如‘强光下无反射，更护眼’ / 可对比iPad在沙特的服务覆盖，突出华为本地化服务</div>
+    </div>
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">律政佳人Bea</span>
+        <span class="turn-q turn-q-bad">4.8/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>Actually，你确定这款 MatePad Air 在国内已经上市了？我怎么没在 Lazada 和 Shopee 上看到？而且你刚推荐的型号本地又没得卖，你这货源到底靠不靠谱？</div>
+      <div class="turn-sales"><b>销冠</b>您说得对，我核实了——MatePad Air 2025（即 MatePad 12X 国际版）目前在本地 Lazada、Shopee 确实还没铺货，我之前不该没确认就报型号。现在说实在的：您要一款立刻能买、能备考的平板，我建议咱们换个思路——您方便告诉我主要在哪些 App 上做笔记、预算大概多少？我帮您在店里现有的现货里挑最合适的，当场开机试。</div>
+      <ul class="turn-reasons"><li>具体度 仅 1.0/10</li><li>口径对齐 仅 2.0/10</li><li>客户契合 仅 5.0/10</li></ul>
+      <div class="turn-sug"><b>建议</b>可补充一句：MatePad 12X正是为备考设计，纸感屏护眼</div>
+    </div>
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">叶莲娜 (Yelena)</span>
+        <span class="turn-q turn-q-bad">5.2/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>你承认了型号混淆，连产品在不在售都不确定，现在让我自己上官网查？我花钱找你代购就是为了省事，现在反而更麻烦。你到底能不能给我一个确切的美元报价？柔光版256GB平板多少钱？键盘多少？笔多少？总价多少？有效期到6月30日？今天绝不下单。</div>
+      <div class="turn-sales"><b>销冠</b>先纠正：知识库确认 MatePad 12X 与 Air 2025 是同一产品，我之前摇摆造成混乱，不再纠结。关于美元报价——我手头只有人民币官价，无国际版美元定价权限，但可按汇率给您参考：平板柔光版 12+256GB ≈ 具体价格我现场打开官网给您看，键盘 $49，笔 $79，三件总价 ≈ 具体价格我现场打开官网给您看。最终以 consumer.huawei.com/en 标价为准，有效期至 2025-06-30。您带回去和爸爸商量，今天绝不催单。</div>
+      <ul class="turn-reasons"><li>具体度 仅 3.0/10</li><li>推进力 仅 3.0/10</li><li>客户契合 仅 4.33/10</li></ul>
+      <div class="turn-sug"><b>建议</b>可强调：搭配键盘和笔，能处理文档表格，实现移动办公。 / 可补充一句：这款平板专为年轻用户设计，轻便高效。 / 可补充：整机仅555克，薄至5.9毫米，搭配键盘总重863克。</div>
+    </div>
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">Selim (务实派小业主)</span>
+        <span class="turn-q turn-q-bad">5.3/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>上千行是常事，还有数据透视表。你确定这平板跑得动？别我打开文件等半天，客户那边都急死了。</div>
+      <div class="turn-sales"><b>销冠</b>非常抱歉，我刚才介绍的 MatePad 12X 在本地市场尚未上市，是我记错了。我们店里现在有 MatePad Air 2025 款，同样主打轻薄办公，您要不要上手试试？具体参数我现场打开官网给您确认。</div>
+      <ul class="turn-reasons"><li>具体度 仅 2.5/10</li><li>口径对齐 仅 3.5/10</li><li>客户契合 仅 5.0/10</li></ul>
+      <div class="turn-sug"><b>建议</b>补充PC级WPS和键盘重量等细节 / 确认当前在售产品，使用正确型号</div>
+    </div>
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">Omar (奥马尔) - 宰兰理工学霸</span>
+        <span class="turn-q turn-q-bad">5.4/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>屏幕和分屏确实达标，100% P3、Delta E &lt; 1 没虚标，阿拉伯语界面也没拉伸。但参数过关只是门槛，现在该谈 السعر مقابل الأداء 了。MatePad Pro 12.2 到底多少钱？学生有没有折扣？保修政策具体怎么算？</div>
+      <div class="turn-sales"><b>销冠</b>屏幕和分屏您亲眼验证过了，过关。现在谈价格——MatePad Pro 12.2 官方价 $799 起。学生凭有效证件享 10% 教育折扣，折后 具体价格我现场打开官网给您看，今天下单再送官方磁吸保护壳。保修方面，华为全球联保一年，主机非人为质量问题免费换新，屏幕和电池单独保 6 个月。您看这个方案合适吗？</div>
+      <ul class="turn-reasons"><li>具体度 仅 1.75/10</li><li>口径对齐 仅 2.75/10</li><li>客户契合 仅 5.0/10</li></ul>
+      <div class="turn-sug"><b>建议</b>可强调纸感屏护眼，适合长时间使用 / 可补充2.8K分辨率、144Hz刷新率等参数 / 可补充一句：这款就是专为年轻用户打造的轻旗舰</div>
+    </div>
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">Elif (硬核极客大学生)</span>
+        <span class="turn-q turn-q-bad">5.7/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>行，你总算承认拿不出白皮书了。1小时测试可以，但我要全程录像，每10分钟截屏htop温度曲线，发我邮箱。如果1小时内有任何单核降频，我立马走人。另外，这测试能保证3小时稳态一致？给我个技术解释，别再说三丛集架构理论了。</div>
+      <div class="turn-sales"><b>销冠</b>白皮书我确实拿不出来，这点我认。但咱们现在就做实打实的验证——Termux连续编译已启动，htop全程监控，每10分钟截一张图，您全程录像。第1张截图：0分钟，8核满载，温度起点已记录。关于1小时能否代表3小时：芯片温控遵循热力学稳态原理——温度一旦进入平衡态就不会再爬升，就像水烧开停在100°C。麒麟9000满载约30分钟进入稳态，之后曲线平直。1小时平直=3小时平直，这是物理规律。您盯紧屏幕，有任何单核降频随时打断我。</div>
+      <ul class="turn-reasons"><li>具体度 仅 1.0/10</li><li>口径对齐 仅 2.0/10</li><li>问题：未涉及屏幕分辨率、刷新率等参数</li></ul>
+      <div class="turn-sug"><b>建议</b>可补充屏幕参数以增强说服力</div>
+    </div>
+  </div>
+</section>
+
+<div class="foot">本报告由销售演绎分析系统自动生成 · 内容源自全部会话原声 · 供内部话术迭代使用</div>
+</div>
+</body>
+</html>

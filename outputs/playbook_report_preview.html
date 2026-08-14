@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>HUAWEI MatePad Air · Global Playbook · 分析报告</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#1a1d24; --muted:#6b7280; --line:#e6e8ec; --paper:#ffffff; --bg:#f4f5f7;
+  --brand:#b3122c; --brand-2:#8a0f22; --good:#1f9d57; --warn:#d98a00; --bad:#c0392b;
+  --soft:#f8f4f0;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Noto Serif SC",Georgia,"Songti SC",serif;color:var(--ink);
+  background:var(--bg);line-height:1.65;font-size:14px;}
+.page{max-width:880px;margin:0 auto;background:var(--paper);
+  box-shadow:0 1px 24px rgba(0,0,0,.06);}
+.sans{font-family:"Noto Sans SC","Helvetica Neue",Arial,sans-serif;}
+
+/* Cover */
+.cover{background:linear-gradient(135deg,var(--brand) 0%,var(--brand-2) 100%);
+  color:#fff;padding:52px 56px 40px;}
+.cover-kicker{font-family:"Noto Sans SC",sans-serif;font-size:12px;letter-spacing:3px;
+  text-transform:uppercase;opacity:.85;margin-bottom:14px;}
+.cover-title{font-size:34px;line-height:1.25;margin:0 0 10px;font-weight:700;}
+.cover-sub{font-family:"Noto Sans SC",sans-serif;font-size:13px;opacity:.9;margin-bottom:26px;}
+.kpi-grid{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
+.kpi{background:rgba(255,255,255,.14);border-radius:10px;padding:14px 18px;min-width:104px;
+  flex:1;backdrop-filter:blur(2px);}
+.kpi-bad .kpi-v{color:#ffd7d0;}
+.kpi-v{font-size:28px;font-weight:700;font-family:"Noto Sans SC",sans-serif;}
+.kpi-l{font-family:"Noto Sans SC",sans-serif;font-size:11px;opacity:.88;margin-top:2px;}
+.chips{display:flex;gap:8px;flex-wrap:wrap;}
+.chip{font-family:"Noto Sans SC",sans-serif;font-size:12px;padding:4px 12px;border-radius:20px;
+  background:rgba(255,255,255,.18);}
+.chip-good{background:rgba(255,255,255,.28);font-weight:600;}
+.chip-bad{background:rgba(0,0,0,.18);}
+
+/* Sections */
+.block{padding:30px 56px;border-bottom:1px solid var(--line);}
+.block-key{background:var(--soft);}
+h2{font-size:21px;margin:0 0 6px;display:flex;align-items:center;gap:12px;}
+.sec-no{font-family:"Noto Sans SC",sans-serif;font-size:13px;color:#fff;background:var(--brand);
+  width:30px;height:30px;border-radius:7px;display:inline-flex;align-items:center;
+  justify-content:center;font-weight:700;}
+.sec-flag{font-family:"Noto Sans SC",sans-serif;font-size:11px;color:var(--brand);
+  border:1px solid var(--brand);border-radius:4px;padding:2px 8px;font-weight:600;}
+.lead{color:var(--muted);font-size:13px;margin:0 0 18px;font-family:"Noto Sans SC",sans-serif;}
+.mth-sec{margin:0 0 16px;font-family:"Noto Sans SC",sans-serif;}
+.mth-sec-t{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:3px;}
+.mth-sec-d{font-size:12.5px;line-height:1.6;color:var(--muted);margin-bottom:7px;}
+.mth-items{margin:0;padding:0;list-style:none;}
+.mth-items li{font-size:12.5px;line-height:1.55;padding:5px 0 5px 14px;
+  border-bottom:1px dashed var(--line);position:relative;}
+.mth-items li:before{content:"";position:absolute;left:0;top:11px;width:5px;height:5px;
+  border-radius:50%;background:var(--brand);}
+.mth-name{font-weight:600;color:var(--ink);margin-right:6px;}
+.mth-desc{color:#374151;}
+h3{font-size:15px;margin:0 0 12px;font-family:"Noto Sans SC",sans-serif;}
+
+/* bars */
+.bar{background:#edeef1;border-radius:6px;height:9px;overflow:hidden;width:100%;}
+.bar-fill{display:block;height:100%;border-radius:6px;}
+.bar-good{background:var(--good);} .bar-warn{background:var(--warn);} .bar-bad{background:var(--bad);}
+
+/* coverage table */
+.cov-table{width:100%;border-collapse:collapse;font-family:"Noto Sans SC",sans-serif;}
+.cov-table td{padding:9px 6px;vertical-align:middle;border-bottom:1px solid var(--line);}
+.g-name{width:150px;font-weight:600;font-size:13px;}
+.g-frac{color:var(--muted);font-weight:400;font-size:11px;}
+.g-bar{width:auto;}.g-pct{width:48px;text-align:right;font-weight:700;}
+.g-q{width:78px;text-align:right;color:var(--muted);font-size:12px;}
+
+/* dimensions */
+.dim-row{display:flex;align-items:center;gap:14px;margin-bottom:11px;
+  font-family:"Noto Sans SC",sans-serif;}
+.dim-label{width:90px;font-size:13px;font-weight:600;}
+.dim-score{width:48px;text-align:right;font-weight:700;}
+.dim-good{color:var(--good);} .dim-warn{color:var(--warn);} .dim-bad{color:var(--bad);}
+
+/* health */
+.health-grid{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
+.health-card{flex:1;min-width:110px;border:1px solid var(--line);border-radius:10px;
+  padding:14px 16px;font-family:"Noto Sans SC",sans-serif;}
+.health-bad{border-color:#f2c9c2;background:#fdf3f1;}
+.h-v{font-size:24px;font-weight:700;}.h-l{font-size:11px;color:var(--muted);margin-top:2px;}
+.token-cloud{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+.token{font-family:"Noto Sans SC",sans-serif;font-size:12px;background:#eef1f4;
+  border-radius:6px;padding:4px 10px;}
+.token i{color:var(--brand);font-style:normal;font-weight:700;margin-left:4px;}
+.punt-title,.dead-title,.punt-title{font-family:"Noto Sans SC",sans-serif;font-size:12px;
+  color:var(--muted);margin-bottom:6px;}
+blockquote.punt{margin:0 0 8px;padding:8px 14px;border-left:3px solid var(--bad);
+  background:#fbf0ee;font-size:13px;color:#7a2a20;border-radius:0 6px 6px 0;}
+
+/* proposals */
+.prop-wrap{display:flex;flex-direction:column;gap:12px;}
+.prop{border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:8px;
+  padding:13px 16px;background:#fff;}
+.prop.sev-high{border-left-color:var(--bad);}
+.prop.sev-low{border-left-color:var(--good);}
+.prop-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;
+  font-family:"Noto Sans SC",sans-serif;}
+.sev-badge{font-size:11px;color:#fff;border-radius:4px;padding:1px 8px;font-weight:700;}
+.sev-b-high{background:var(--bad);}.sev-b-medium{background:var(--warn);}.sev-b-low{background:var(--good);}
+.prop-tag{font-weight:700;font-size:14px;}
+.prop-kind{font-size:11px;color:var(--muted);margin-left:auto;}
+.prop-line{font-size:13px;margin-top:5px;}
+.prop-line b{font-family:"Noto Sans SC",sans-serif;font-size:11px;color:var(--muted);
+  display:inline-block;min-width:38px;margin-right:6px;}
+.prop-fix{color:var(--brand-2);}
+.prop-ev{color:var(--muted);}
+.prop.sev-good{border-left-color:var(--good);}
+.prop.sev-warn{border-left-color:var(--warn);}
+.prop.sev-bad{border-left-color:var(--bad);}
+.sev-b-good{background:var(--good);}.sev-b-warn{background:var(--warn);}.sev-b-bad{background:var(--bad);}
+.prop-cov{font-size:11px;color:var(--muted);margin-left:auto;}
+.rev-grp{font-size:14px;font-weight:700;margin:16px 0 8px;
+  border-bottom:2px solid var(--line);padding-bottom:5px;font-family:"Noto Sans SC",sans-serif;}
+.rev-quotes{margin-top:8px;border-top:1px dashed var(--line);padding-top:6px;}
+.rev-quote{font-size:12px;padding:7px 0;border-bottom:1px dashed var(--line);}
+.rev-quote:last-child{border-bottom:none;}
+.rev-quote-meta{display:flex;align-items:baseline;gap:8px;margin-bottom:3px;}
+.rev-quote-score{font-weight:700;color:var(--good);min-width:28px;}
+.rev-quote-by{color:var(--muted);font-size:11px;}
+.rev-quote-line{font-size:12.5px;line-height:1.55;margin-top:2px;}
+.rev-quote-line b{font-family:"Noto Sans SC",sans-serif;font-size:11px;color:var(--muted);
+  display:inline-block;min-width:52px;margin-right:6px;vertical-align:top;}
+.rev-quote-fix{color:var(--brand-2);}
+
+/* weak/strong */
+.ws-grid{display:flex;gap:24px;}
+.ws-col{flex:1;}
+.ws-bad-title{color:var(--bad);}.ws-good-title{color:var(--good);}
+.cat-list{list-style:none;margin:0;padding:0;}
+.cat-list li{border:1px solid var(--line);border-radius:7px;padding:9px 12px;margin-bottom:8px;}
+.cat-bad{border-left:3px solid var(--bad);}.cat-good{border-left:3px solid var(--good);}
+.cat-h{display:flex;justify-content:space-between;font-family:"Noto Sans SC",sans-serif;}
+.cat-name{font-weight:600;font-size:13px;}
+.cat-meta{color:var(--muted);font-size:12px;}
+.cat-reason{font-size:12px;color:var(--muted);margin-top:4px;}
+.dead-wrap{margin-top:18px;}
+.dead-list{display:flex;flex-wrap:wrap;gap:6px;}
+.dead{font-family:"Noto Sans SC",sans-serif;font-size:12px;background:#f0e6e6;color:#8a3030;
+  border-radius:5px;padding:3px 9px;}
+
+/* turns */
+.turn-wrap{display:flex;flex-direction:column;gap:12px;}
+.turn{border:1px solid var(--line);border-radius:9px;padding:13px 16px;}
+.turn-good{border-left:4px solid var(--good);background:#f4faf6;}
+.turn-bad{border-left:4px solid var(--bad);background:#fcf4f3;}
+.turn-head{display:flex;justify-content:space-between;margin-bottom:8px;
+  font-family:"Noto Sans SC",sans-serif;}
+.turn-persona{font-weight:700;font-size:13px;}
+.turn-q{font-weight:700;font-size:13px;}
+.turn-q-good{color:var(--good);}.turn-q-warn{color:var(--warn);}.turn-q-bad{color:var(--bad);}
+.turn-cust,.turn-sales,.turn-sug{font-size:13px;margin-top:6px;}
+.turn-cust b,.turn-sales b,.turn-sug b{font-family:"Noto Sans SC",sans-serif;font-size:11px;
+  color:var(--muted);display:inline-block;min-width:34px;margin-right:6px;}
+.turn-cust{color:#555;}
+.turn-reasons{margin:8px 0 0;padding-left:20px;font-size:12px;color:var(--muted);}
+.turn-sug{color:var(--brand-2);}
+.exc-group{margin-bottom:16px;}
+.exc-group-head{display:flex;align-items:center;gap:10px;margin:4px 0 10px;
+  font-family:"Noto Sans SC",sans-serif;}
+.exc-badge{font-weight:700;font-size:13px;padding:3px 12px;border-radius:6px;color:#fff;}
+.exc-badge-hb{background:var(--brand-2,#2563eb);}
+.exc-badge-off{background:#d97706;}
+.exc-count{font-size:12px;color:var(--muted);}
+.exc-hint{font-size:11px;color:#d97706;font-style:italic;}
+.exc-card{border:1px solid var(--line);border-left:4px solid var(--good);
+  border-radius:9px;padding:11px 14px;margin-bottom:8px;background:#f4faf6;}
+.exc-top{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px;
+  font-family:"Noto Sans SC",sans-serif;}
+.exc-score{font-weight:700;font-size:13px;color:var(--good);}
+.exc-sig{font-size:11px;color:var(--muted);}
+.exc-tag{font-size:11px;background:#eef2ff;color:#3730a3;border-radius:4px;padding:1px 7px;}
+.exc-by{margin-left:auto;font-size:11px;color:var(--muted);}
+.exc-cust{font-size:12.5px;color:#555;margin-top:4px;}
+.exc-cust b{font-family:"Noto Sans SC",sans-serif;font-size:11px;color:var(--muted);
+  display:inline-block;min-width:34px;margin-right:6px;}
+.exc-sales{font-size:13px;margin-top:5px;line-height:1.6;}
+.exc-why{margin:7px 0 0;padding-left:20px;font-size:12px;color:#047857;}
+
+/* key numbers */
+.kn-table{width:100%;border-collapse:collapse;font-family:"Noto Sans SC",sans-serif;font-size:13px;}
+.kn-table th{text-align:left;color:var(--muted);font-weight:600;font-size:11px;
+  border-bottom:2px solid var(--line);padding:6px;}
+.kn-table td{padding:7px 6px;border-bottom:1px solid var(--line);}
+.kn-v{font-weight:700;color:var(--brand);white-space:nowrap;}
+.kn-src{color:var(--muted);font-size:12px;}
+
+/* voice */
+.voice-wrap{display:flex;flex-direction:column;gap:10px;}
+blockquote.voice{margin:0;padding:12px 18px;background:#f7f7f9;border-radius:8px;
+  border-left:3px solid var(--ink);}
+.voice-q{font-size:13px;font-style:italic;}
+.voice-by{font-family:"Noto Sans SC",sans-serif;font-size:12px;color:var(--muted);margin-top:6px;}
+
+/* footer */
+.foot{padding:22px 56px;color:var(--muted);font-family:"Noto Sans SC",sans-serif;font-size:11px;
+  text-align:center;}
+
+@media print{
+  body{background:#fff;}
+  .page{box-shadow:none;max-width:none;}
+  .block{page-break-inside:avoid;}
+  .prop,.turn,.cat-list li{page-break-inside:avoid;}
+  @page{margin:14mm;}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="cover">
+  <div class="cover-kicker">销售演绎反馈 · 话术分析与手册迭代报告</div>
+  <h1 class="cover-title">HUAWEI MatePad Air · Global Playbook</h1>
+  <div class="cover-sub">批次 # · 分析任务 #999 · 生成于 2026-06-11T11:40:45Z</div>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-v">53%</div><div class="kpi-l">手册覆盖率</div></div>
+    <div class="kpi"><div class="kpi-v">4</div><div class="kpi-l">会话场次</div></div>
+    <div class="kpi"><div class="kpi-v">10</div><div class="kpi-l">话术分类条数</div></div>
+  </div>
+  <div class="chips"></div>
+</header>
+
+
+<section class="block">
+  <h2><span class="sec-no">01</span> 手册结构覆盖率</h2>
+  <p class="lead">按 1/3/3/9 四大板块统计销冠实际命中情况——0% 覆盖即「死条目」，是迭代第一优先。</p>
+  <table class="cov-table">
+    <tr>
+      <td class="g-name">open <span class="g-frac">1/4</span></td>
+      <td class="g-bar"><div class="bar"><span class="bar-fill bar-bad" style="width:25%"></span></div></td>
+      <td class="g-pct">25%</td>
+      <td class="g-q">质量 8.0</td>
+    </tr>
+    <tr>
+      <td class="g-name">say <span class="g-frac">5/8</span></td>
+      <td class="g-bar"><div class="bar"><span class="bar-fill bar-warn" style="width:62%"></span></div></td>
+      <td class="g-pct">62%</td>
+      <td class="g-q">质量 7.6</td>
+    </tr>
+    <tr>
+      <td class="g-name">compete <span class="g-frac">2/3</span></td>
+      <td class="g-bar"><div class="bar"><span class="bar-fill bar-warn" style="width:67%"></span></div></td>
+      <td class="g-pct">67%</td>
+      <td class="g-q">质量 6.0</td>
+    </tr>
+    <tr>
+      <td class="g-name">respond <span class="g-frac">2/4</span></td>
+      <td class="g-bar"><div class="bar"><span class="bar-fill bar-warn" style="width:50%"></span></div></td>
+      <td class="g-pct">50%</td>
+      <td class="g-q">质量 7.5</td>
+    </tr>
+  </table>
+</section>
+
+
+<section class="block block-key">
+  <h2><span class="sec-no">02</span> 手册迭代建议 · 逐条 <span class="sec-flag">本报告核心</span></h2>
+  <p class="lead">按 1/3/3/9 对各条目逐条给建议——即使表现好也给增强点，每条附 TOP3 命中原声。</p>
+  
+  <h3 class="rev-grp">① 开场破冰</h3>
+  <div class="prop-wrap">
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">开场·A·Business Professional</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Keyboard + WPS in the box.</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「开场·A·Business Professional」补：① 一句话定位的销冠口播；② 适用客户画像；③ 接续话术。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Keyboard + WPS in the box.</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">开场·B·Content Creator</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>M-Pencil 2ms, GoPaint free.</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「开场·B·Content Creator」补：① 一句话定位的销冠口播；② 适用客户画像；③ 接续话术。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>M-Pencil 2ms, GoPaint free.</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">开场·C·Student</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Write on lecture notes, M-Pencil free.</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「开场·C·Student」补：① 一句话定位的销冠口播；② 适用客户画像；③ 接续话术。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Write on lecture notes, M-Pencil free.</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">开场·D·Parent / Family</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>SGS Eye Care, six speakers.</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「开场·D·Parent / Family」补：① 一句话定位的销冠口播；② 适用客户画像；③ 接续话术。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>SGS Eye Care, six speakers.</div>
+      
+    </div>
+  </div>
+  <h3 class="rev-grp">② 核心卖点（按人设）</h3>
+  <div class="prop-wrap">
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">A·NearLink Keyboard + WPS</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Full WPS, no subscription.
+演示：ATTACH→OPEN WPS</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「A·NearLink Keyboard + WPS」补：① 一句话定位的销冠口播；② 适用客户画像；③ 接续话术。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Full WPS, no subscription.
+演示：ATTACH→OPEN WPS</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">A·PaperMatte Anti-Glare</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>99% glare eliminated.
+演示：TILT→NOTE</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「A·PaperMatte Anti-Glare」补：① 一句话定位的销冠口播；② 适用客户画像；③ 接续话术。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>99% glare eliminated.
+演示：TILT→NOTE</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">B·M-Pencil + GoPaint</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>2ms, 10000 levels.
+演示：OPEN GoPaint</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「B·M-Pencil + GoPaint」补：① 一句话定位的销冠口播；② 适用客户画像；③ 接续话术。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>2ms, 10000 levels.
+演示：OPEN GoPaint</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">B·144Hz Display</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Smoother than 60Hz.
+演示：SCROLL fast</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「B·144Hz Display」补：① 一句话定位的销冠口播；② 适用客户画像；③ 接续话术。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Smoother than 60Hz.
+演示：SCROLL fast</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">C·M-Pencil Free</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Annotate PDFs.
+演示：OPEN PDF</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「C·M-Pencil Free」补：① 一句话定位的销冠口播；② 适用客户画像；③ 接续话术。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Annotate PDFs.
+演示：OPEN PDF</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">C·SGS Eye Care</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>No glare for study.
+演示：TILT</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「C·SGS Eye Care」补：① 一句话定位的销冠口播；② 适用客户画像；③ 接续话术。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>No glare for study.
+演示：TILT</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">D·SGS Eye Care</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Safe for kids.
+演示：SHOW Eye Care</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「D·SGS Eye Care」补：① 一句话定位的销冠口播；② 适用客户画像；③ 接续话术。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Safe for kids.
+演示：SHOW Eye Care</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">D·144Hz + Six Speakers</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Fills the room.
+演示：OPEN YouTube</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「D·144Hz + Six Speakers」补：① 一句话定位的销冠口播；② 适用客户画像；③ 接续话术。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Fills the room.
+演示：OPEN YouTube</div>
+      
+    </div>
+  </div>
+  <h3 class="rev-grp">③ 竞品应对</h3>
+  <div class="prop-wrap">
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">竞品·iPad Air / Pro</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>客户：Apple is more trusted.
+应答：We include keyboard/M-Pencil in box.
+客户：iPad has Apple Pencil.
+应答：M-Pencil is free in box.</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「竞品·iPad Air / Pro」补：① 一句话定位的销冠口播；② 适用客户画像；③ 接续话术。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>客户：Apple is more trusted.
+应答：We include keyboard/M-Pencil in box.
+客户：iPad has Apple Pencil.
+应答：M-Pencil is free in box.</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">竞品·Samsung Galaxy Tab</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>客户：S Pen + Android familiar.
+应答：We have SGS Eye Care; keyboard in box.</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「竞品·Samsung Galaxy Tab」补：① 一句话定位的销冠口播；② 适用客户画像；③ 接续话术。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>客户：S Pen + Android familiar.
+应答：We have SGS Eye Care; keyboard in box.</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">竞品·Xiaomi Pad</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>客户：Higher specs, cheaper.
+应答：Stylus/keyboard not included.</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「竞品·Xiaomi Pad」补：① 一句话定位的销冠口播；② 适用客户画像；③ 接续话术。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>客户：Higher specs, cheaper.
+应答：Stylus/keyboard not included.</div>
+      
+    </div>
+  </div>
+  <h3 class="rev-grp">④ 常见问答</h3>
+  <div class="prop-wrap">
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">FAQ·No GMS — can I use my ap</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Q: No GMS — can I use my apps?
+A: AppGallery + browser.</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「FAQ·No GMS — can I use my ap」补：① 一句话定位的销冠口播；② 适用客户画像；③ 接续话术。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Q: No GMS — can I use my apps?
+A: AppGallery + browser.</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">FAQ·Switching from iPad comp</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Q: Switching from iPad complicated?
+A: Files safe via browser.</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「FAQ·Switching from iPad comp」补：① 一句话定位的销冠口播；② 适用客户画像；③ 接续话术。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Q: Switching from iPad complicated?
+A: Files safe via browser.</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">FAQ·Buy M-Pencil separately?</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Q: Buy M-Pencil separately?
+A: No, in the box.</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「FAQ·Buy M-Pencil separately?」补：① 一句话定位的销冠口播；② 适用客户画像；③ 接续话术。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Q: Buy M-Pencil separately?
+A: No, in the box.</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">FAQ·Battery last a full day?</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Q: Battery last a full day?
+A: 10100mAh, 66W fast charge.</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「FAQ·Battery last a full day?」补：① 一句话定位的销冠口播；② 适用客户画像；③ 接续话术。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Q: Battery last a full day?
+A: 10100mAh, 66W fast charge.</div>
+      
+    </div>
+  </div>
+</section>
+
+
+<section class="block">
+  <h2><span class="sec-no">03</span> 按客户人设的话术演绎 · A/B/C/D</h2>
+  <p class="lead">面向各类客户的话术（开场 + 卖点）被销冠在真实对话里实际演绎的覆盖率与质量——看哪类客户的剧本最该补强。</p>
+  <div style="display:flex;gap:12px;flex-wrap:wrap"><div style="flex:1;min-width:190px;border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px"><div style="font-weight:700;font-size:14px;margin-bottom:6px">A · Business Professional</div><div style="font-size:12.5px;color:#374151">话术覆盖 3/3（100%）</div><div style="font-size:12.5px;color:#374151">命中 3 次 · 均分 8.0/10</div></div><div style="flex:1;min-width:190px;border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px"><div style="font-weight:700;font-size:14px;margin-bottom:6px">B · Content Creator</div><div style="font-size:12.5px;color:#374151">话术覆盖 1/3（33%）</div><div style="font-size:12.5px;color:#374151">命中 1 次 · 均分 8.0/10</div></div><div style="flex:1;min-width:190px;border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px"><div style="font-weight:700;font-size:14px;margin-bottom:6px">C · Student</div><div style="font-size:12.5px;color:#374151">话术覆盖 1/3（33%）</div><div style="font-size:12.5px;color:#374151">命中 1 次 · 均分 6.0/10</div></div><div style="flex:1;min-width:190px;border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px"><div style="font-weight:700;font-size:14px;margin-bottom:6px">D · Parent / Family</div><div style="font-size:12.5px;color:#374151">话术覆盖 1/3（33%）</div><div style="font-size:12.5px;color:#374151">命中 1 次 · 均分 8.0/10</div></div></div>
+</section>
+
+
+<section class="block">
+  <h2><span class="sec-no">03</span> 强弱项与死条目</h2>
+  <div class="ws-grid">
+    <div class="ws-col">
+      <h3 class="ws-bad-title">弱项 Top（亟需迭代）</h3>
+      <ul class="cat-list">
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">竞品·Samsung Galaxy Tab</span>
+          <span class="cat-meta">5.0/10 · 1次</span></div>
+        <div class="cat-reason">缺少明确的 issue 反馈，建议人工抽检最低分样本</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">C·M-Pencil Free</span>
+          <span class="cat-meta">6.0/10 · 1次</span></div>
+        <div class="cat-reason">缺少明确的 issue 反馈，建议人工抽检最低分样本</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">FAQ·Battery last a full day?</span>
+          <span class="cat-meta">6.0/10 · 1次</span></div>
+        <div class="cat-reason">缺少明确的 issue 反馈，建议人工抽检最低分样本</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">A·PaperMatte Anti-Glare</span>
+          <span class="cat-meta">7.0/10 · 1次</span></div>
+        <div class="cat-reason">缺少明确的 issue 反馈，建议人工抽检最低分样本</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">竞品·iPad Air / Pro</span>
+          <span class="cat-meta">7.0/10 · 1次</span></div>
+        <div class="cat-reason">缺少明确的 issue 反馈，建议人工抽检最低分样本</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">B·M-Pencil + GoPaint</span>
+          <span class="cat-meta">8.0/10 · 1次</span></div>
+        <div class="cat-reason">缺少明确的 issue 反馈，建议人工抽检最低分样本</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">D·144Hz + Six Speakers</span>
+          <span class="cat-meta">8.0/10 · 1次</span></div>
+        <div class="cat-reason">缺少明确的 issue 反馈，建议人工抽检最低分样本</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">开场·A·Business Professional</span>
+          <span class="cat-meta">8.0/10 · 1次</span></div>
+        <div class="cat-reason">缺少明确的 issue 反馈，建议人工抽检最低分样本</div>
+      </li></ul>
+    </div>
+    <div class="ws-col">
+      <h3 class="ws-good-title">强项 Top（保留口径）</h3>
+      <ul class="cat-list">
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">A·NearLink Keyboard + WPS</span>
+          <span class="cat-meta">9.0/10 · 1次</span></div>
+        <div class="cat-reason">销冠在该条目上表现稳定，建议沉淀为标准范本</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">FAQ·No GMS — can I use my ap</span>
+          <span class="cat-meta">9.0/10 · 1次</span></div>
+        <div class="cat-reason">销冠在该条目上表现稳定，建议沉淀为标准范本</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">B·M-Pencil + GoPaint</span>
+          <span class="cat-meta">8.0/10 · 1次</span></div>
+        <div class="cat-reason">销冠在该条目上表现稳定，建议沉淀为标准范本</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">D·144Hz + Six Speakers</span>
+          <span class="cat-meta">8.0/10 · 1次</span></div>
+        <div class="cat-reason">销冠在该条目上表现稳定，建议沉淀为标准范本</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">开场·A·Business Professional</span>
+          <span class="cat-meta">8.0/10 · 1次</span></div>
+        <div class="cat-reason">销冠在该条目上表现稳定，建议沉淀为标准范本</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">A·PaperMatte Anti-Glare</span>
+          <span class="cat-meta">7.0/10 · 1次</span></div>
+        <div class="cat-reason">销冠在该条目上表现稳定，建议沉淀为标准范本</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">竞品·iPad Air / Pro</span>
+          <span class="cat-meta">7.0/10 · 1次</span></div>
+        <div class="cat-reason">销冠在该条目上表现稳定，建议沉淀为标准范本</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">C·M-Pencil Free</span>
+          <span class="cat-meta">6.0/10 · 1次</span></div>
+        <div class="cat-reason">销冠在该条目上表现稳定，建议沉淀为标准范本</div>
+      </li></ul>
+    </div>
+  </div>
+  <div class="dead-wrap"><div class="dead-title">未覆盖 / 死条目（0 次命中）</div><div class="dead-list"><span class="dead">comp_3</span><span class="dead">faq_2</span><span class="dead">faq_3</span><span class="dead">open_B</span><span class="dead">open_C</span><span class="dead">open_D</span><span class="dead">say_B_2</span><span class="dead">say_C_2</span><span class="dead">say_D_1</span></div></div>
+</section>
+
+<div class="foot">本报告由销售演绎分析系统自动生成 · 内容源自全部会话原声 · 供内部话术迭代使用</div>
+</div>
+</body>
+</html>

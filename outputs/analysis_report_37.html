@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>MatePad Air Playbook · atypica · 分析报告</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#1a1d24; --muted:#6b7280; --line:#e6e8ec; --paper:#ffffff; --bg:#f4f5f7;
+  --brand:#b3122c; --brand-2:#8a0f22; --good:#1f9d57; --warn:#d98a00; --bad:#c0392b;
+  --soft:#f8f4f0;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Noto Serif SC",Georgia,"Songti SC",serif;color:var(--ink);
+  background:var(--bg);line-height:1.65;font-size:14px;}
+.page{max-width:880px;margin:0 auto;background:var(--paper);
+  box-shadow:0 1px 24px rgba(0,0,0,.06);}
+.sans{font-family:"Noto Sans SC","Helvetica Neue",Arial,sans-serif;}
+
+/* Cover */
+.cover{background:linear-gradient(135deg,var(--brand) 0%,var(--brand-2) 100%);
+  color:#fff;padding:52px 56px 40px;}
+.cover-kicker{font-family:"Noto Sans SC",sans-serif;font-size:12px;letter-spacing:3px;
+  text-transform:uppercase;opacity:.85;margin-bottom:14px;}
+.cover-title{font-size:34px;line-height:1.25;margin:0 0 10px;font-weight:700;}
+.cover-sub{font-family:"Noto Sans SC",sans-serif;font-size:13px;opacity:.9;margin-bottom:26px;}
+.kpi-grid{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
+.kpi{background:rgba(255,255,255,.14);border-radius:10px;padding:14px 18px;min-width:104px;
+  flex:1;backdrop-filter:blur(2px);}
+.kpi-bad .kpi-v{color:#ffd7d0;}
+.kpi-v{font-size:28px;font-weight:700;font-family:"Noto Sans SC",sans-serif;}
+.kpi-l{font-family:"Noto Sans SC",sans-serif;font-size:11px;opacity:.88;margin-top:2px;}
+.chips{display:flex;gap:8px;flex-wrap:wrap;}
+.chip{font-family:"Noto Sans SC",sans-serif;font-size:12px;padding:4px 12px;border-radius:20px;
+  background:rgba(255,255,255,.18);}
+.chip-good{background:rgba(255,255,255,.28);font-weight:600;}
+.chip-bad{background:rgba(0,0,0,.18);}
+
+/* Sections */
+.block{padding:30px 56px;border-bottom:1px solid var(--line);}
+.block-key{background:var(--soft);}
+h2{font-size:21px;margin:0 0 6px;display:flex;align-items:center;gap:12px;}
+.sec-no{font-family:"Noto Sans SC",sans-serif;font-size:13px;color:#fff;background:var(--brand);
+  width:30px;height:30px;border-radius:7px;display:inline-flex;align-items:center;
+  justify-content:center;font-weight:700;}
+.sec-flag{font-family:"Noto Sans SC",sans-serif;font-size:11px;color:var(--brand);
+  border:1px solid var(--brand);border-radius:4px;padding:2px 8px;font-weight:600;}
+.lead{color:var(--muted);font-size:13px;margin:0 0 18px;font-family:"Noto Sans SC",sans-serif;}
+.mth-sec{margin:0 0 16px;font-family:"Noto Sans SC",sans-serif;}
+.mth-sec-t{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:3px;}
+.mth-sec-d{font-size:12.5px;line-height:1.6;color:var(--muted);margin-bottom:7px;}
+.mth-items{margin:0;padding:0;list-style:none;}
+.mth-items li{font-size:12.5px;line-height:1.55;padding:5px 0 5px 14px;
+  border-bottom:1px dashed var(--line);position:relative;}
+.mth-items li:before{content:"";position:absolute;left:0;top:11px;width:5px;height:5px;
+  border-radius:50%;background:var(--brand);}
+.mth-name{font-weight:600;color:var(--ink);margin-right:6px;}
+.mth-desc{color:#374151;}
+h3{font-size:15px;margin:0 0 12px;font-family:"Noto Sans SC",sans-serif;}
+
+/* bars */
+.bar{background:#edeef1;border-radius:6px;height:9px;overflow:hidden;width:100%;}
+.bar-fill{display:block;height:100%;border-radius:6px;}
+.bar-good{background:var(--good);} .bar-warn{background:var(--warn);} .bar-bad{background:var(--bad);}
+
+/* coverage table */
+.cov-table{width:100%;border-collapse:collapse;font-family:"Noto Sans SC",sans-serif;}
+.cov-table td{padding:9px 6px;vertical-align:middle;border-bottom:1px solid var(--line);}
+.g-name{width:150px;font-weight:600;font-size:13px;}
+.g-frac{color:var(--muted);font-weight:400;font-size:11px;}
+.g-bar{width:auto;}.g-pct{width:48px;text-align:right;font-weight:700;}
+.g-q{width:78px;text-align:right;color:var(--muted);font-size:12px;}
+
+/* dimensions */
+.dim-row{display:flex;align-items:center;gap:14px;margin-bottom:11px;
+  font-family:"Noto Sans SC",sans-serif;}
+.dim-label{width:90px;font-size:13px;font-weight:600;}
+.dim-score{width:48px;text-align:right;font-weight:700;}
+.dim-good{color:var(--good);} .dim-warn{color:var(--warn);} .dim-bad{color:var(--bad);}
+
+/* health */
+.health-grid{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
+.health-card{flex:1;min-width:110px;border:1px solid var(--line);border-radius:10px;
+  padding:14px 16px;font-family:"Noto Sans SC",sans-serif;}
+.health-bad{border-color:#f2c9c2;background:#fdf3f1;}
+.h-v{font-size:24px;font-weight:700;}.h-l{font-size:11px;color:var(--muted);margin-top:2px;}
+.token-cloud{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+.token{font-family:"Noto Sans SC",sans-serif;font-size:12px;background:#eef1f4;
+  border-radius:6px;padding:4px 10px;}
+.token i{color:var(--brand);font-style:normal;font-weight:700;margin-left:4px;}
+.punt-title,.dead-title,.punt-title{font-family:"Noto Sans SC",sans-serif;font-size:12px;
+  color:var(--muted);margin-bottom:6px;}
+blockquote.punt{margin:0 0 8px;padding:8px 14px;border-left:3px solid var(--bad);
+  background:#fbf0ee;font-size:13px;color:#7a2a20;border-radius:0 6px 6px 0;}
+
+/* proposals */
+.prop-wrap{display:flex;flex-direction:column;gap:12px;}
+.prop{border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:8px;
+  padding:13px 16px;background:#fff;}
+.prop.sev-high{border-left-color:var(--bad);}
+.prop.sev-low{border-left-color:var(--good);}
+.prop-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;
+  font-family:"Noto Sans SC",sans-serif;}
+.sev-badge{font-size:11px;color:#fff;border-radius:4px;padding:1px 8px;font-weight:700;}
+.sev-b-high{background:var(--bad);}.sev-b-medium{background:var(--warn);}.sev-b-low{background:var(--good);}
+.prop-tag{font-weight:700;font-size:14px;}
+.prop-kind{font-size:11px;color:var(--muted);margin-left:auto;}
+.prop-line{font-size:13px;margin-top:5px;}
+.prop-line b{font-family:"Noto Sans SC",sans-serif;font-size:11px;color:var(--muted);
+  display:inline-block;min-width:38px;margin-right:6px;}
+.prop-fix{color:var(--brand-2);}
+.prop-warn{color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:4px 8px;margin-top:4px;font-size:12.5px;}
+.q-badge{font-size:11px;padding:1px 7px;border-radius:10px;font-weight:600;}
+.q-ok{background:#dcfce7;color:#166534;}
+.q-review{background:#fef3c7;color:#92400e;}
+.q-keep{background:#e5e7eb;color:#4b5563;}
+.prop-ev{color:var(--muted);}
+.prop.sev-good{border-left-color:var(--good);}
+.prop.sev-warn{border-left-color:var(--warn);}
+.prop.sev-bad{border-left-color:var(--bad);}
+.sev-b-good{background:var(--good);}.sev-b-warn{background:var(--warn);}.sev-b-bad{background:var(--bad);}
+.prop-cov{font-size:11px;color:var(--muted);margin-left:auto;}
+.rev-legend{font-size:12px;color:var(--muted);margin:0 0 14px;line-height:1.9;
+  font-family:"Noto Sans SC",sans-serif;background:#f8fafc;border:1px solid var(--line);
+  border-radius:6px;padding:8px 12px;}
+.rev-legend .lg{display:inline-block;font-size:11px;font-weight:700;color:#fff;
+  padding:1px 7px;border-radius:9px;margin:0 4px 0 10px;}
+.rev-legend .lg.good{background:var(--good);}
+.rev-legend .lg.warn{background:var(--warn);}
+.rev-legend .lg.bad{background:var(--bad);}
+.rev-grp{font-size:14px;font-weight:700;margin:16px 0 8px;
+  border-bottom:2px solid var(--line);padding-bottom:5px;font-family:"Noto Sans SC",sans-serif;}
+.rev-quotes{margin-top:8px;border-top:1px dashed var(--line);padding-top:6px;}
+.rev-quote{font-size:12px;padding:7px 0;border-bottom:1px dashed var(--line);}
+.rev-quote:last-child{border-bottom:none;}
+.rev-quote-meta{display:flex;align-items:baseline;gap:8px;margin-bottom:3px;}
+.rev-quote-score{font-weight:700;color:var(--good);min-width:28px;}
+.rev-quote-by{color:var(--muted);font-size:11px;}
+.rev-quote-line{font-size:12.5px;line-height:1.55;margin-top:2px;}
+.rev-quote-line b{font-family:"Noto Sans SC",sans-serif;font-size:11px;color:var(--muted);
+  display:inline-block;min-width:52px;margin-right:6px;vertical-align:top;}
+.rev-quote-fix{color:var(--brand-2);}
+
+/* weak/strong */
+.ws-grid{display:flex;gap:24px;}
+.ws-col{flex:1;}
+.ws-bad-title{color:var(--bad);}.ws-good-title{color:var(--good);}
+.cat-list{list-style:none;margin:0;padding:0;}
+.cat-list li{border:1px solid var(--line);border-radius:7px;padding:9px 12px;margin-bottom:8px;}
+.cat-bad{border-left:3px solid var(--bad);}.cat-good{border-left:3px solid var(--good);}
+.cat-h{display:flex;justify-content:space-between;font-family:"Noto Sans SC",sans-serif;}
+.cat-name{font-weight:600;font-size:13px;}
+.cat-meta{color:var(--muted);font-size:12px;}
+.cat-reason{font-size:12px;color:var(--muted);margin-top:4px;}
+.dead-wrap{margin-top:18px;}
+.dead-list{display:flex;flex-wrap:wrap;gap:6px;}
+.dead{font-family:"Noto Sans SC",sans-serif;font-size:12px;background:#f0e6e6;color:#8a3030;
+  border-radius:5px;padding:3px 9px;}
+
+/* turns */
+.turn-wrap{display:flex;flex-direction:column;gap:12px;}
+.turn{border:1px solid var(--line);border-radius:9px;padding:13px 16px;}
+.turn-good{border-left:4px solid var(--good);background:#f4faf6;}
+.turn-bad{border-left:4px solid var(--bad);background:#fcf4f3;}
+.turn-head{display:flex;justify-content:space-between;margin-bottom:8px;
+  font-family:"Noto Sans SC",sans-serif;}
+.turn-persona{font-weight:700;font-size:13px;}
+.turn-q{font-weight:700;font-size:13px;}
+.turn-q-good{color:var(--good);}.turn-q-warn{color:var(--warn);}.turn-q-bad{color:var(--bad);}
+.turn-cust,.turn-sales,.turn-sug{font-size:13px;margin-top:6px;}
+.turn-cust b,.turn-sales b,.turn-sug b{font-family:"Noto Sans SC",sans-serif;font-size:11px;
+  color:var(--muted);display:inline-block;min-width:34px;margin-right:6px;}
+.turn-cust{color:#555;}
+.turn-reasons{margin:8px 0 0;padding-left:20px;font-size:12px;color:var(--muted);}
+.turn-sug{color:var(--brand-2);}
+.exc-group{margin-bottom:16px;}
+.exc-group-head{display:flex;align-items:center;gap:10px;margin:4px 0 10px;
+  font-family:"Noto Sans SC",sans-serif;}
+.exc-badge{font-weight:700;font-size:13px;padding:3px 12px;border-radius:6px;color:#fff;}
+.exc-badge-hb{background:var(--brand-2,#2563eb);}
+.exc-badge-off{background:#d97706;}
+.exc-count{font-size:12px;color:var(--muted);}
+.exc-hint{font-size:11px;color:#d97706;font-style:italic;}
+.exc-card{border:1px solid var(--line);border-left:4px solid var(--good);
+  border-radius:9px;padding:11px 14px;margin-bottom:8px;background:#f4faf6;}
+.exc-top{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px;
+  font-family:"Noto Sans SC",sans-serif;}
+.exc-score{font-weight:700;font-size:13px;color:var(--good);}
+.exc-sig{font-size:11px;color:var(--muted);}
+.exc-tag{font-size:11px;background:#eef2ff;color:#3730a3;border-radius:4px;padding:1px 7px;}
+.exc-by{margin-left:auto;font-size:11px;color:var(--muted);}
+.exc-cust{font-size:12.5px;color:#555;margin-top:4px;}
+.exc-cust b{font-family:"Noto Sans SC",sans-serif;font-size:11px;color:var(--muted);
+  display:inline-block;min-width:34px;margin-right:6px;}
+.exc-sales{font-size:13px;margin-top:5px;line-height:1.6;}
+.exc-why{margin:7px 0 0;padding-left:20px;font-size:12px;color:#047857;}
+
+/* key numbers */
+.kn-table{width:100%;border-collapse:collapse;font-family:"Noto Sans SC",sans-serif;font-size:13px;}
+.kn-table th{text-align:left;color:var(--muted);font-weight:600;font-size:11px;
+  border-bottom:2px solid var(--line);padding:6px;}
+.kn-table td{padding:7px 6px;border-bottom:1px solid var(--line);}
+.kn-v{font-weight:700;color:var(--brand);white-space:nowrap;}
+.kn-src{color:var(--muted);font-size:12px;}
+
+/* voice */
+.voice-wrap{display:flex;flex-direction:column;gap:10px;}
+blockquote.voice{margin:0;padding:12px 18px;background:#f7f7f9;border-radius:8px;
+  border-left:3px solid var(--ink);}
+.voice-q{font-size:13px;font-style:italic;}
+.voice-by{font-family:"Noto Sans SC",sans-serif;font-size:12px;color:var(--muted);margin-top:6px;}
+
+/* footer */
+.foot{padding:22px 56px;color:var(--muted);font-family:"Noto Sans SC",sans-serif;font-size:11px;
+  text-align:center;}
+
+@media print{
+  body{background:#fff;}
+  .page{box-shadow:none;max-width:none;}
+  .block{page-break-inside:avoid;}
+  .prop,.turn,.cat-list li{page-break-inside:avoid;}
+  @page{margin:14mm;}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="cover">
+  <div class="cover-kicker">销售演绎反馈 · 话术分析与手册迭代报告</div>
+  <h1 class="cover-title">MatePad Air Playbook · atypica</h1>
+  <div class="cover-sub">批次 #25 · 分析任务 #37 · 生成于 2026-06-18T08:20:57Z</div>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-v">79%</div><div class="kpi-l">手册覆盖率</div></div>
+    <div class="kpi"><div class="kpi-v">20</div><div class="kpi-l">会话场次</div></div>
+    <div class="kpi"><div class="kpi-v">648</div><div class="kpi-l">话术分类条数</div></div>
+  </div>
+  <div class="chips"><span class="chip chip-warn">跟进中 7</span><span class="chip chip-good">成交 11</span><span class="chip chip-bad">离开 2</span></div>
+</header>
+
+
+<section class="block">
+  <h2><span class="sec-no">01</span> 手册结构覆盖率</h2>
+  <p class="lead">按 开场/卖点/竞品/FAQ 四大板块统计销冠实际命中情况——0% 覆盖即「死条目」，是迭代第一优先。</p>
+  <table class="cov-table">
+    <tr>
+      <td class="g-name">open <span class="g-frac">4/4</span></td>
+      <td class="g-bar"><div class="bar"><span class="bar-fill bar-good" style="width:100%"></span></div></td>
+      <td class="g-pct">100%</td>
+      <td class="g-q">质量 8.0</td>
+    </tr>
+    <tr>
+      <td class="g-name">say <span class="g-frac">7/8</span></td>
+      <td class="g-bar"><div class="bar"><span class="bar-fill bar-good" style="width:88%"></span></div></td>
+      <td class="g-pct">88%</td>
+      <td class="g-q">质量 8.2</td>
+    </tr>
+    <tr>
+      <td class="g-name">compete <span class="g-frac">5/9</span></td>
+      <td class="g-bar"><div class="bar"><span class="bar-fill bar-warn" style="width:56%"></span></div></td>
+      <td class="g-pct">56%</td>
+      <td class="g-q">质量 8.2</td>
+    </tr>
+    <tr>
+      <td class="g-name">respond <span class="g-frac">6/7</span></td>
+      <td class="g-bar"><div class="bar"><span class="bar-fill bar-good" style="width:86%"></span></div></td>
+      <td class="g-pct">86%</td>
+      <td class="g-q">质量 8.5</td>
+    </tr>
+  </table>
+</section>
+
+
+<section class="block block-key">
+  <h2><span class="sec-no">02</span> 手册迭代建议 · 逐条 <span class="sec-flag">本报告核心</span></h2>
+  <p class="lead">按 开场/卖点/竞品/FAQ 各条目逐条给建议——即使表现好也给增强点，每条附 TOP3 命中原声。</p>
+  <p class="rev-legend"><b>状态说明：</b><span class="lg good">保持</span>演绎良好、作范本沉淀（仍给增强点）　<span class="lg warn">强化 / 补充</span>已被使用但说服力一般，需加强　<span class="lg bad">修正</span>演绎质量偏低，需纠正口径 / 具体度　<span class="lg bad">新增</span>本批 0 次被销冠引用（死条目），需激活，或考虑删减</p>
+  
+  <h3 class="rev-grp">① 开场破冰</h3>
+  <div class="prop-wrap">
+    <div class="prop sev-good">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-good">保持</span>
+        <span class="prop-tag">开场·A·Business Professional</span>
+        
+        <span class="prop-cov">命中 19 次 · 6 场 · 均分 7.9</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Keyboard and WPS already in the box — meeting room to business trip, one device. Full Word / Excel / PPT, no subscription needed.</div>
+      <div class="prop-line"><b>评估</b>销冠演绎丰富，能灵活从键盘、WPS切入并引导体验，但原文偏功能罗列，缺乏情感钩子和体验邀请。</div>
+      <div class="prop-line prop-fix"><b>建议</b>保留“Keyboard and WPS in the box”和“meeting room to business trip”场景钩子，改为1-2句短钩子，结尾加轻量体验邀请，去掉“Full Word/Excel/PPT, no subscription needed”这类功能堆砌。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Keyboard and WPS already in the box — meeting room to business trip, one device. Want to see how it handles your Excel files live?</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">6.6</span>
+            <span class="rev-quote-by">索菲亚 (Sofia)</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Work, mostly. I need something that can handle legal docs and client presentations smoothly.</div>
+          <div class="rev-quote-line"><b>销售原文</b>For legal docs and presentations, the MatePad Air&#x27;s PaperMatte display reduces glare — great for long reading sessions. The keyboard and M-Pencil come in the box, so you&#x27;re ready to work right away.</div>
+        </div></div>
+    </div>
+    <div class="prop sev-good">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-good">保持</span>
+        <span class="prop-tag">开场·B·Content Creator</span>
+        
+        <span class="prop-cov">命中 39 次 · 12 场 · 均分 8.0</span>
+      </div>
+      <div class="prop-line"><b>原文</b>M-Pencil in the box, 2ms latency — start today. GoPaint is free, no separate stylus purchase. 144Hz display makes every scroll and edit visibly smoother.</div>
+      <div class="prop-line"><b>评估</b>销冠演绎覆盖广，能结合演示和提问，但原文参数堆砌，缺乏场景钩子和体验邀请。</div>
+      <div class="prop-line prop-fix"><b>建议</b>保留“M-Pencil in the box, 2ms latency”和“GoPaint free”，但改为1-2句短钩子，结尾加轻量体验邀请，去掉“144Hz display makes every scroll and edit visibly smoother”这类功能描述。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>M-Pencil in the box, 2ms latency — start drawing today. GoPaint is free, no extra purchase. Want to test it on a complex file?</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.4</span>
+            <span class="rev-quote-by">优希 Yuki</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Ah, just browsing for now. I draw a lot—illustrator. What&#x27;s the latency on this one?</div>
+          <div class="rev-quote-line"><b>销售原文</b>For illustrators, latency is everything—this one&#x27;s M-Pencil hits just 2ms, feels like real pen on paper. Want to try a quick sketch?</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.0</span>
+            <span class="rev-quote-by">Thandi (自由插画师)</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Yebo, just looking! I&#x27;m after a tablet for my art and TikTok edits, you know?</div>
+          <div class="rev-quote-line"><b>销售原文</b>Art and TikTok edits — nice combo! This MatePad Air comes with the M-Pencil in the box, and the screen feels like paper when you draw. Want to try a quick sketch?</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.0</span>
+            <span class="rev-quote-by">自由画师阿纳(A-Na)</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Just looking for now, but I do a lot of digital art — curious what tablets you carry.</div>
+          <div class="rev-quote-line"><b>销售原文</b>Oh, a digital artist — you&#x27;ll want something with a great stylus. The MatePad series is right over here, and they all support a pen. Feel free to take a closer look.</div>
+        </div></div>
+    </div>
+    <div class="prop sev-good">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-good">保持</span>
+        <span class="prop-tag">开场·C·Student</span>
+        
+        <span class="prop-cov">命中 28 次 · 10 场 · 均分 7.8</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Write directly on your lecture notes. M-Pencil is free, inside the box. Keyboard and WPS included — complete academic toolkit, nothing extra to buy.</div>
+      <div class="prop-line"><b>评估</b>销冠演绎能结合学生场景，但原文偏功能罗列，缺乏情感钩子和体验邀请。</div>
+      <div class="prop-line prop-fix"><b>建议</b>保留“Write directly on your lecture notes”和“M-Pencil free inside the box”，改为1-2句短钩子，结尾加轻量体验邀请，去掉“Keyboard and WPS included — complete academic toolkit”这类功能堆砌。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Write directly on your lecture notes — M-Pencil is free, inside the box. Want to try annotating a PDF right now?</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.4</span>
+            <span class="rev-quote-by">索菲亚 (Sofia)</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Just browsing for now. What do you have in the premium tablet range?</div>
+          <div class="rev-quote-line"><b>销售原文</b>The MatePad Air just landed — PaperMatte display, really easy on the eyes, and it comes with the keyboard and M-Pencil in the box. Are you leaning more toward work, study, or creative stuff?</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.4</span>
+            <span class="rev-quote-by">明 Minh</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Just looking... but I need a tablet for study. Budget around 9-12 million VND. Heard MatePad is good value, thật không?</div>
+          <div class="rev-quote-line"><b>销售原文</b>Study is a great reason to get a tablet. What subjects are you focusing on — mostly reading PDFs and note-taking, or also drawing and design work?</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">7.6</span>
+            <span class="rev-quote-by">Budi_Ambisius_Student</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Hi Kak, I&#x27;m just looking around for now. I need a tablet for my law studies—something for heavy note-taking and PDFs.</div>
+          <div class="rev-quote-line"><b>销售原文</b>Law studies means hours of PDFs and notes—our MatePad comes with the M-Pencil in the box, no extra cost. Want to try annotating a document right now?</div>
+        </div></div>
+    </div>
+    <div class="prop sev-good">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-good">保持</span>
+        <span class="prop-tag">开场·D·Parent / Family</span>
+        
+        <span class="prop-cov">命中 107 次 · 11 场 · 均分 7.9</span>
+      </div>
+      <div class="prop-line"><b>原文</b>SGS Eye Care certified — kids can study all day without eye strain. PaperMatte scatters light so no harsh glare. Six speakers fill the room for family viewing.</div>
+      <div class="prop-line"><b>评估</b>销冠演绎丰富，但原文偏功能罗列，缺少人设场景钩子和体验邀请，未完全遵循开场破冰标准。</div>
+      <div class="prop-line prop-fix"><b>建议</b>保留SGS认证和六扬声器核心卖点，加入家长场景钩子（如孩子长时间学习），结尾带轻量体验邀请（如“想看看效果吗？”）。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>SGS Eye Care certified — your kids can study all day without eye strain, even near a window. PaperMatte scatters light so no harsh glare, and six speakers fill the room for family movie night. Want to see how it looks under bright light?</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.8</span>
+            <span class="rev-quote-by">茱莉娅 Giulia</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Allora, just looking a bit for now. We need a tablet for the whole family, per tutta la famiglia.</div>
+          <div class="rev-quote-line"><b>销售原文</b>Nice — &quot;per tutta la famiglia,&quot; got it. The MatePad Air actually gets a lot of love from families — big screen, easy to share across users, and it handles everything from kids&#x27; apps to streaming. Take</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.4</span>
+            <span class="rev-quote-by">玛丽亚姆 (Mariam)</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Just looking around a bit, thanks. The kids need something for their online classes, but I&#x27;m not in a rush.</div>
+          <div class="rev-quote-line"><b>销售原文</b>Online classes, huh? That&#x27;s a smart move — a good tablet makes a real difference for the kids. Are they in primary or secondary school?</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.0</span>
+            <span class="rev-quote-by">法蒂玛 Fatima</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>As-salamu alaykum. I&#x27;m looking at tablets for my kids, especially the MatePad 12 X. Can you show me the screen?</div>
+          <div class="rev-quote-line"><b>销售原文</b>Wa alaykum as-salam! The MatePad Air has a 12-inch PaperMatte display — anti-glare, 144Hz, and SGS Eye Care certified. Perfect for kids&#x27; eyes during long use. Want to see how it handles glare compared</div>
+        </div></div>
+    </div>
+  </div>
+  <h3 class="rev-grp">② 核心卖点（按人设）</h3>
+  <div class="prop-wrap">
+    <div class="prop sev-good">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-good">保持</span>
+        <span class="prop-tag">A·NearLink Keyboard + WPS</span>
+        
+        <span class="prop-cov">命中 43 次 · 12 场 · 均分 8.2</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Full WPS pre-installed — Word, Excel, PowerPoint, no monthly subscription. The NearLink keyboard has proper key travel: lower latency than Bluetooth, feels like a wired connection. Attach the keyboard and it&#x27;s a laptop — at one third the weight. Everything is already in the box.
+演示：Attach keyboard → Open WPS with a document → Show three-window split-screen</div>
+      <div class="prop-line"><b>评估</b>销冠演绎充分，但原文演示动作不够具体，可融入销冠验证的现场演示细节。</div>
+      <div class="prop-line prop-fix"><b>建议</b>保留WPS预装和NearLink键盘卖点，加入具体演示动作：打开WPS文档，展示三窗口分屏，强调无延迟切换。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Full WPS pre-installed — Word, Excel, PowerPoint, no monthly subscription. The NearLink keyboard has proper key travel: lower latency than Bluetooth, feels like a wired connection. Attach the keyboard and it&#x27;s a laptop — at one third the weight. Everything is already in the box. Let me show you: I&#x27;ll open a WPS document, then split-screen with email and a floating video call — all three live, no lag.</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.2</span>
+            <span class="rev-quote-by">詹森 Jason</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Fine, you&#x27;ve made your point—the macro ran. But I&#x27;m still not convinced WPS won&#x27;t glitch during a live client demo versus Excel on Mac. Show me one more thing: open a heavy PPT while this spreadsheet</div>
+          <div class="rev-quote-line"><b>销售原文</b>PPT&#x27;s open — your spreadsheet is still running in split-screen, no lag switching between them. The macro results are intact, no redraw glitches. That&#x27;s two heavy files side by side on a tablet, and it</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.0</span>
+            <span class="rev-quote-by">詹森 Jason</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Fair enough, it ran without errors. But let&#x27;s be honest—how often does WPS on this thing break complex macros compared to Excel on Mac? I can&#x27;t have a summary report crash mid-presentation.</div>
+          <div class="rev-quote-line"><b>销售原文</b>That&#x27;s a fair question — and the fact that your macro just ran clean on your own file is the best proof. WPS on MatePad Air uses the same macro engine across devices, and we&#x27;ve seen complex VBA workfl</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.8</span>
+            <span class="rev-quote-by">广告人阿肯(Ken)</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>I need a tablet that can replace my laptop for light tasks—PPT, emails, multitasking.</div>
+          <div class="rev-quote-line"><b>销售原文</b>That&#x27;s exactly where MatePad Air shines — full WPS suite pre-installed, NearLink keyboard included, handles PPT edits and multitasking smoothly. What device are you currently using for work on the go?</div>
+        </div></div>
+    </div>
+    <div class="prop sev-good">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-good">保持</span>
+        <span class="prop-tag">A·PaperMatte Anti-Glare Screen</span>
+        
+        <span class="prop-cov">命中 117 次 · 13 场 · 均分 8.3</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Working all day on a mirror screen is exhausting — you fight the glare constantly. PaperMatte uses nano-etching to scatter light instead of reflecting it: 99% glare eliminated. Colors stay accurate and comfortable even next to a window. SGS Eye Care certified — independently tested, not a self-declared badge.
+演示：Tilt toward nearest light source → Note zero reflection → Compare with competitor display unit nearby</div>
+      <div class="prop-line"><b>评估</b>销冠演绎非常出色，原文结构清晰，但演示动作可更具体，融入销冠常用的侧对比和倾斜动作。</div>
+      <div class="prop-line prop-fix"><b>建议</b>保留原文卖点和收益，演示动作明确为：倾斜向光源，对比竞品屏幕，强调零反射和SGS认证。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Working all day on a mirror screen is exhausting — you fight the glare constantly. PaperMatte uses nano-etching to scatter light instead of reflecting it: 99% glare eliminated. Colors stay accurate and comfortable even next to a window. SGS Eye Care certified — independently tested, not a self-declared badge. Watch: I&#x27;ll tilt this toward the light — see zero reflection? Now compare with this regular tablet — the difference is clear.</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.8</span>
+            <span class="rev-quote-by">索菲亚 (Sofia)</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Exactly. Let&#x27;s do it — pull up the same dense contract on both, right here under these lights. I want to see if that PaperMatte really keeps the fine print legible without me tilting like a fool.</div>
+          <div class="rev-quote-line"><b>销售原文</b>*Pulls up the same dense contract PDF on both tablets, tilts both toward the bright lights.* Watch: on the iPad Pro, the glossy glass throws a white reflection right across the fine print — you&#x27;d inst</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.8</span>
+            <span class="rev-quote-by">索菲亚 (Sofia)</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Ten hours forty-seven minutes at full brightness — that’s exactly the number I needed. If it can hold through a six-hour deposition with margin, I’m satisfied. Now, how does this screen handle outdoor</div>
+          <div class="rev-quote-line"><b>销售原文</b>The same nano-etching that killed glare under store lights works on a sunlit terrace — it scatters light at the glass level, so direct sun becomes diffuse instead of a mirror. SGS Eye Care certified. </div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.6</span>
+            <span class="rev-quote-by">Thandi (自由插画师)</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Yebo, smooth as butter even with 25 layers and blends — no stutter at all. I’m sold on the performance. But before we wrap up, can you pop the PaperMatte and glossy side by side again? I want to see h</div>
+          <div class="rev-quote-line"><b>销售原文</b>Here you go — both screens side by side, same brightness, same sketch. PaperMatte on the left scatters light so no reflection hits your eyes; glossy on the right bounces the store lights right back at</div>
+        </div></div>
+    </div>
+    <div class="prop sev-warn">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-warn">强化</span>
+        <span class="prop-tag">B·M-Pencil + GoPaint (Free)</span>
+        
+        <span class="prop-cov">命中 44 次 · 9 场 · 均分 8.2</span>
+      </div>
+      <div class="prop-line"><b>原文</b>2ms latency — the line appears the instant your pen touches the screen. Ten-thousand pressure levels: press light for a thin line, press hard for a thick one. That&#x27;s how a real brush works. GoPaint is free — no separate app purchase, no top-up fee. Open the box, start creating.
+演示：Open GoPaint → Hand pen to customer → Watch them draw and feel the paper-like resistance</div>
+      <div class="prop-line"><b>评估</b>销冠演绎丰富，但原文结构松散，缺少清晰的卖点→收益→演示闭环，且未充分利用销冠验证的对比和追问技巧。</div>
+      <div class="prop-line prop-fix"><b>建议</b>重组为：先点明2ms+10000级是系统级优势，再强调GoPaint免费且原生支持，最后用现场画线演示+追问客户创作类型来收尾。融入销冠常用的“light stroke thin, heavy bold”对比和“what kind of art”追问。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>2ms latency means the line appears the instant your pen touches the screen — system-wide, so it works in any app. And 10,000 pressure levels: press light for a thin line, press harder for a bold stroke — just like a real brush. GoPaint is completely free, no subscription or in-app purchase, and it reads every one of those levels natively. Here, try a quick sketch — light stroke, thin line; heavy stroke, thick line. What kind of art do you usually create?</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.2</span>
+            <span class="rev-quote-by">Thandi (自由插画师)</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Yebo, that&#x27;s right — both checked out. Now let me test those 20+ layers with blending myself. Hand me the stylus, I&#x27;ll paint and see if it stays smooth.</div>
+          <div class="rev-quote-line"><b>销售原文</b>Perfect — you&#x27;ve confirmed the pressure and sharpness. Now take the stylus, open this 25-layer file with overlay and multiply blends, and paint freely. You&#x27;ll feel zero lag, even with complex brushes.</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.2</span>
+            <span class="rev-quote-by">自由画师阿纳(A-Na)</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Yes, let me try it. I want to feel the pen-on-paper texture and see if the line response is as instant as my Wacom. But I&#x27;ll be honest: if it has that &#x27;tapping glass&#x27; feel, I&#x27;ll know in the first few</div>
+          <div class="rev-quote-line"><b>销售原文</b>Here, try it yourself — the PaperMatte etched glass gives a subtle drag, not that hollow tapping feel. GoPaint is open, draw a few strokes and see how the line responds instantly with pressure.</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.0</span>
+            <span class="rev-quote-by">Thandi (自由插画师)</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Mostly Procreate on iPad, but I&#x27;m open to switching. Does the MatePad Air support pro-grade apps well?</div>
+          <div class="rev-quote-line"><b>销售原文</b>Procreate is iPad-only, I&#x27;ll be straight with you. But GoPaint — our free pro app — handles layers, custom brushes, and fine line work just as deep. Want to see it in action?</div>
+        </div></div>
+    </div>
+    <div class="prop sev-warn">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-warn">强化</span>
+        <span class="prop-tag">B·True-Color 144Hz Display</span>
+        
+        <span class="prop-cov">命中 64 次 · 18 场 · 均分 7.8</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Colors are accurate before you post — thumbnails, photos, and graphics look true-to-life on screen. 144Hz makes every scroll and video transition visibly smoother than a 60Hz tablet. When you&#x27;re editing content for social media, that difference is immediate and obvious.
+演示：Open a video or social feed → Scroll fast → Say &quot;see how smooth that is&quot;</div>
+      <div class="prop-line"><b>评估</b>销冠演绎充分，但原文缺少具体的对比场景和追问，演示动作单一。</div>
+      <div class="prop-line prop-fix"><b>建议</b>重组为：先点明True-Color校准+144Hz双重优势，再给出具体收益（色彩准确、滚动流畅），最后用快速滚动演示+追问客户用途来收尾。融入销冠常用的“scroll fast”演示和“what do you usually use a tablet for”追问。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Colors are accurate right out of the box — True-Color calibration means your photos and graphics look true-to-life before you post. And the 144Hz refresh rate makes every scroll and video transition visibly smoother than a 60Hz tablet — no blur, no stutter. Here, try scrolling through this gallery fast — see how smooth that is? What do you usually use a tablet for?</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.0</span>
+            <span class="rev-quote-by">Andi_Jaksel_Techie</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Do you have any tablets with a really smooth screen, like 120Hz? Jujurly, that&#x27;s kinda important to me.</div>
+          <div class="rev-quote-line"><b>销售原文</b>You actually just walked past the one with the smoothest screen here — the MatePad Air runs at 144Hz, not just 120. Want to see how it feels scrolling?</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.8</span>
+            <span class="rev-quote-by">Andi_Jaksel_Techie</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Yeah, let&#x27;s see it — open Jira, a doc, and Zoom floating. If it stays smooth and the text is readable side-by-side, that&#x27;s literally my daily workflow sorted.</div>
+          <div class="rev-quote-line"><b>销售原文</b>See that? All three running live, zero stutter. The 144Hz keeps every scroll and transition buttery — text stays crisp even split-screen. That&#x27;s HarmonyOS app multiplier at work. This is your Senopati</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.8</span>
+            <span class="rev-quote-by">索菲亚 (Sofia)</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Show me that runtime estimate at my typical brightness — I want to see the number right on the screen. A six-hour deposition with the screen fully lit is non-negotiable.</div>
+          <div class="rev-quote-line"><b>销售原文</b>Here&#x27;s the live battery estimate at your current 100% brightness: 10 hours 47 minutes remaining. That&#x27;s nearly double your six-hour deposition — with margin to spare. And 66W fast charging gives you r</div>
+        </div></div>
+    </div>
+    <div class="prop sev-warn">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-warn">强化</span>
+        <span class="prop-tag">C·M-Pencil (Free in Box)</span>
+        
+        <span class="prop-cov">命中 61 次 · 13 场 · 均分 8.0</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Write directly on PDF lecture notes — annotate, highlight, draw diagrams right on the page. M-Pencil is already in the box — no extra cost. Way faster than typing, more organized than loose paper. Unlike iPad where the Apple Pencil is a separate purchase, ours comes complete from day one.
+演示：Open a PDF → Hand pen to customer → Watch them annotate directly on the page</div>
+      <div class="prop-line"><b>评估</b>销冠演绎充分，但原文对比略显生硬，缺少现场演示的具体引导和追问。</div>
+      <div class="prop-line prop-fix"><b>建议</b>重组为：先点明M-Pencil在PDF上直接标注的便利，再强调免费包含，最后用现场PDF演示+追问学习场景来收尾。融入销冠常用的“open a PDF, hand pen to customer”演示和“what subjects are you focusing on”追问。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Write directly on PDF lecture notes — annotate, highlight, draw diagrams right on the page. Way faster than typing, more organized than loose paper. And the M-Pencil is already in the box — no extra cost, unlike iPad where the Apple Pencil is a separate purchase. Here, open this PDF and try annotating — see how natural it feels? What subjects are you focusing on — mostly reading and note-taking?</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.0</span>
+            <span class="rev-quote-by">Budi_Ambisius_Student</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Kak, that sounds amazing—saving almost 30 minutes per session would really help. But how smooth is it actually? Can I open a heavy scanned law textbook PDF on one side and annotate on the other withou</div>
+          <div class="rev-quote-line"><b>销售原文</b>Yes, it&#x27;s smooth—MatePad Air handles heavy scanned PDFs and annotations side by side without lag. The three-window split-screen keeps your textbook, notes, and statutes open simultaneously. Imagine sa</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.0</span>
+            <span class="rev-quote-by">Budi_Ambisius_Student</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Switching tabs costs me maybe 5-10 minutes every hour—it breaks my focus. Three-window split-screen sounds perfect for comparing cases and statutes side by side.</div>
+          <div class="rev-quote-line"><b>销售原文</b>That 5-10 minutes lost per hour adds up—over a 4-hour session, you could lose nearly half an hour just switching tabs. That&#x27;s time you could spend mastering case law. MatePad Air&#x27;s three-window split-</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.0</span>
+            <span class="rev-quote-by">Budi_Ambisius_Student</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>That sounds amazing, Kak! Being able to tag and search handwritten notes instantly would be a game-changer for organizing my case summaries. Could you show me how the tagging works with a sample annot</div>
+          <div class="rev-quote-line"><b>销售原文</b>Let me show you—tap the tag icon here, type &quot;tort law,&quot; and it instantly links to this annotation. Later, search &quot;tort&quot; and every tagged note appears. No more flipping through files. How would instant</div>
+        </div></div>
+    </div>
+    <div class="prop sev-good">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-good">保持</span>
+        <span class="prop-tag">C·SGS Eye Care Certification</span>
+        
+        <span class="prop-cov">命中 45 次 · 8 场 · 均分 7.7</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Study sessions run long — libraries, cafés, late nights. Your eyes take the hit. PaperMatte scatters light so there&#x27;s no harsh glare hitting your eyes during hours of reading. SGS Eye Care certified — that&#x27;s a Swiss independent organization, not a brand claim. The safest display for all-day study use.
+演示：Open Settings → Display → Show Eye Care mode → Tilt toward light — &quot;see, no reflection at all&quot;</div>
+      <div class="prop-line"><b>评估</b>演绎丰富，销冠能结合场景（图书馆、孩子学习）和竞品对比，演示动作清晰。但部分演绎偏长，未严格遵循“卖点→收益→演示”结构，且SGS认证的权威性强调不够。</div>
+      <div class="prop-line prop-fix"><b>建议</b>强化SGS独立认证的权威性，增加“Swiss independent lab”的强调。演示动作更具体：直接对比竞品（如iPad）的反射。缩短话术，保持结构紧凑。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Study sessions run long — libraries, cafés, late nights. Your eyes take the hit. PaperMatte scatters light so there&#x27;s no harsh glare hitting your eyes during hours of reading. SGS Eye Care certified — that&#x27;s a Swiss independent organization, not a brand claim. The safest display for all-day study use. Let me show you: Open Settings → Display → Show Eye Care mode → Tilt toward light — see, no reflection at all, while a regular tablet would mirror the light.</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.2</span>
+            <span class="rev-quote-by">罗莎 Rosa</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Yes, that eBook mode sounds useful—if it really feels like paper, two hours of math wouldn&#x27;t be so bad. But does it also reduce blue light? My son sometimes does homework until late, and I worry about</div>
+          <div class="rev-quote-line"><b>销售原文</b>Yes, the eBook mode also reduces blue light — it shifts to warmer tones that are gentler on his eyes, especially during late-night homework. So instead of the harsh white glow that can disrupt his sle</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.0</span>
+            <span class="rev-quote-by">罗莎 Rosa</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>I can see the glare is gone on the PaperMatte, and the colors are clear, but I&#x27;m still worried my son will miss the bright pop. But I also don&#x27;t want him squinting. Can you tell me more about how the</div>
+          <div class="rev-quote-line"><b>销售原文</b>I completely understand — you want his cartoons to feel vibrant and fun, and that matters. But here&#x27;s the thing: the real strain on his eyes isn&#x27;t during the 30-minute cartoon. It&#x27;s during those 2+ ho</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.6</span>
+            <span class="rev-quote-by">索菲亚 (Sofia)</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Ten hours forty-seven minutes at full brightness — that’s exactly the number I needed. If it can hold through a six-hour deposition with margin, I’m satisfied. Now, how does this screen handle outdoor</div>
+          <div class="rev-quote-line"><b>销售原文</b>The same nano-etching that killed glare under store lights works on a sunlit terrace — it scatters light at the glass level, so direct sun becomes diffuse instead of a mirror. SGS Eye Care certified. </div>
+        </div></div>
+    </div>
+    <div class="prop sev-good">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-good">保持</span>
+        <span class="prop-tag">D·SGS Eye Care Certification</span>
+        
+        <span class="prop-cov">命中 4 次 · 3 场 · 均分 8.8</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Kids spend hours on screens — online lessons, YouTube, games. PaperMatte scatters light like paper so there&#x27;s no harsh glare hitting their eyes. SGS Eye Care certified — Swiss independent lab, not a marketing claim. The safest display for all-day use by children.
+演示：Open Settings → Display → Show Eye Care on by default → Tilt toward store lights — zero reflection</div>
+      <div class="prop-line"><b>评估</b>演绎有效，销冠通过侧光对比演示突出无反射，但次数少，结构可更清晰。SGS认证的权威性可更突出。</div>
+      <div class="prop-line prop-fix"><b>建议</b>增加“Swiss independent lab”的明确表述。演示动作更具体：对比竞品或普通屏幕。保持简洁，突出儿童场景。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Kids spend hours on screens — online lessons, YouTube, games. PaperMatte scatters light like paper so there&#x27;s no harsh glare hitting their eyes. SGS Eye Care certified — Swiss independent lab, not a marketing claim. The safest display for all-day use by children. Watch this: Open Settings → Display → Show Eye Care on by default → Tilt toward store lights — zero reflection, unlike a glossy screen that mirrors everything.</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.0</span>
+            <span class="rev-quote-by">玛丽亚姆 (Mariam)</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>He usually spends about an hour to an hour and a half on the tablet after school—mostly Zoom classes, some math apps, and reading e-books. I really need to see how the PaperMatte screen handles bright</div>
+          <div class="rev-quote-line"><b>销售原文</b>Absolutely — let&#x27;s see it under bright light right now. I&#x27;m sharing a live video where I tilt the MatePad Air under our ceiling lights: notice zero reflection, just a soft matte surface. Your son&#x27;s Zo</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.0</span>
+            <span class="rev-quote-by">茱莉娅 Giulia</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Allora, I see the anti-glare—it&#x27;s good, no mirror. But can you play a YouTube clip now, tilt the screen wide, and let me walk to the side? I need to know if the kids see the same colors from the sofa</div>
+          <div class="rev-quote-line"><b>销售原文</b>Giulia, let&#x27;s play a YouTube clip right now — tilt it wide and walk to the side. The PaperMatte nano-etched display eliminates 99% of glare and keeps colors accurate even at sharp angles, so the kids </div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.8</span>
+            <span class="rev-quote-by">玛丽亚姆 (Mariam)</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>That paper-like feel sounds lovely. But with my youngest doing homework for over an hour, I really worry about eye strain. How exactly does this PaperMatte screen help reduce that during long sessions</div>
+          <div class="rev-quote-line"><b>销售原文</b>Here&#x27;s the key for long sessions: the nano-etched surface scatters light instead of bouncing it back — so after an hour, your child&#x27;s eyes aren&#x27;t fighting constant glare. SGS Eye Care certified by a S</div>
+        </div></div>
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">D·144Hz + Six Speakers</span>
+        
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Six speakers — the sound fills the room, not just the person holding it. Everyone watching from across the table can hear everything clearly. 144Hz makes YouTube and Netflix visibly smoother than a regular tablet — motion is crisp, no blur. Kids finish their online lessons, then the family switches to evening entertainment. Same device, same screen, whole family covered.
+演示：Open YouTube → Full screen → Turn volume up → Step back and say &quot;hear it from here&quot;</div>
+      <div class="prop-line"><b>评估</b>本批未被销冠引用，可能是死条目。原文结构完整，但缺乏演示细节和收益场景化。</div>
+      <div class="prop-line prop-fix"><b>建议</b>该条目未被触发，可能因导购不熟悉或场景不匹配。建议在培训中强调“家庭娱乐”场景，并增加演示动作的引导。原文无需修改，但需激活使用。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Six speakers — the sound fills the room, not just the person holding it. Everyone watching from across the table can hear everything clearly. 144Hz makes YouTube and Netflix visibly smoother than a regular tablet — motion is crisp, no blur. Kids finish their online lessons, then the family switches to evening entertainment. Same device, same screen, whole family covered.
+演示：Open YouTube → Full screen → Turn volume up → Step back and say &quot;hear it from here&quot;</div>
+      
+      
+    </div>
+  </div>
+  <h3 class="rev-grp">③ 竞品应对</h3>
+  <div class="prop-wrap">
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">竞品·iPad Air / Pro·Apple brand is more trus</span>
+        
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>客户：&quot;Apple brand is more trusted — the ecosystem is complete.&quot;
+应答：&quot;Apple is a proven brand — fair point. What&#x27;s worth knowing: MatePad Air includes keyboard or M-Pencil already in the box — Apple includes neither. No accessories to add separately. PaperMatte display with SGS Eye Care certification — no iPad equivalent for anti-glare eye protection. Official HUAWEI warranty with local service centers.&quot;</div>
+      <div class="prop-line"><b>评估</b>本批0次被引用，疑似死条目。原文结构完整，但缺少邀请体验环节，且未主动引导客户对比。</div>
+      <div class="prop-line prop-fix"><b>建议</b>增加邀请客户现场体验的语句，如“Let me show you the PaperMatte display side by side with an iPad.”；同时将“Apple includes neither”改为更具体的对比，如“Apple charges extra for keyboard and pencil.”</div>
+      <div class="prop-line prop-fix"><b>修改后</b>客户：&quot;Apple brand is more trusted — the ecosystem is complete.&quot;
+应答：&quot;Apple is a proven brand — fair point. What&#x27;s worth knowing: MatePad Air includes keyboard or M-Pencil already in the box — Apple includes neither. No accessories to add separately. PaperMatte display with SGS Eye Care certification — no iPad equivalent for anti-glare eye protection. Official HUAWEI warranty with local service centers.&quot;</div>
+      
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">竞品·iPad Air / Pro·iPad has Apple Pencil — </span>
+        
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>客户：&quot;iPad has Apple Pencil — that&#x27;s what I use.&quot;
+应答：&quot;Apple Pencil is an extra purchase on top. M-Pencil is free in the box — open the box, it&#x27;s already there. Same annotation experience: write on PDFs, annotate slides, sketch in GoPaint. Try it right now and feel the difference.&quot;</div>
+      <div class="prop-line"><b>评估</b>本批0次被引用，疑似死条目。原文结构合理，但缺少具体功能对比和现场体验邀请。</div>
+      <div class="prop-line prop-fix"><b>建议</b>增加具体功能对比，如“M-Pencil supports tilt and pressure sensitivity just like Apple Pencil”；并邀请客户现场试用，如“Pick up the M-Pencil and try writing on this PDF.”</div>
+      <div class="prop-line prop-fix"><b>修改后</b>客户：&quot;iPad has Apple Pencil — that&#x27;s what I use.&quot;
+应答：&quot;Apple Pencil is an extra purchase on top. M-Pencil is free in the box — open the box, it&#x27;s already there. Same annotation experience: write on PDFs, annotate slides, sketch in GoPaint. Try it right now and feel the difference.&quot;</div>
+      
+      
+    </div>
+    <div class="prop sev-warn">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-warn">强化</span>
+        <span class="prop-tag">竞品·iPad Air / Pro·iPad has all the apps I </span>
+        
+        <span class="prop-cov">命中 2 次 · 2 场 · 均分 7.6</span>
+      </div>
+      <div class="prop-line"><b>原文</b>客户：&quot;iPad has all the apps I need.&quot;
+应答：&quot;Tell me which apps you use and I&#x27;ll show you right now. AppGallery covers all major apps — banking, navigation, productivity, social. For any app not in AppGallery, GBox or Gspace gets it in minutes. Let me search your apps live.&quot;</div>
+      <div class="prop-line"><b>评估</b>命中2次，均分7.6，演绎中销冠通过现场演示和具体银行应用增强了说服力，但原文缺少“邀请体验”环节。</div>
+      <div class="prop-line prop-fix"><b>建议</b>在原文末尾增加邀请客户现场体验的语句，如“Let me open your banking app right now and show you it works.”；同时将“Let me search your apps live.”改为更具体的行动引导。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>客户：&quot;iPad has all the apps I need.&quot;
+应答：&quot;Tell me which apps you use and I&#x27;ll show you right now. AppGallery covers all major apps — banking, navigation, productivity, social. For any app not in AppGallery, GBox or Gspace gets it in minutes. Let me open your banking app right now and show you it works — here&#x27;s Vietcombank running smoothly.&quot;</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.0</span>
+            <span class="rev-quote-by">明 Minh</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Finally, you opened GBox and I see both apps running. Notifications pop up—thật không? That&#x27;s what I needed. Okay, I trust it now. But one more thing: will my Vietnamese banking app like Vietcombank w</div>
+          <div class="rev-quote-line"><b>销售原文</b>I understand — banking apps are critical. Let me open GBox right now and search for Vietcombank. Here it is, installing... and it&#x27;s running. See? It works just like YouTube and Gmail. Most Vietnamese </div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">6.2</span>
+            <span class="rev-quote-by">马克西姆 (Maxim)</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>500 nits and 10,100mAh with 66W charging — that&#x27;s a solid combo. How&#x27;s the software experience though? I side-load Google apps and tweak ROMs, so I need it to be flexible without locking me out.</div>
+          <div class="rev-quote-line"><b>销售原文</b>HarmonyOS lets you sideload APKs freely — no lock-in. For Google apps, GBox or Gspace runs them seamlessly, and AppGallery covers banking, social, and productivity natively. It&#x27;s stable, independent, </div>
+        </div></div>
+    </div>
+    <div class="prop sev-good">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-good">保持</span>
+        <span class="prop-tag">竞品·iPad Air / Pro·No GMS on HUAWEI — YouTu</span>
+        
+        <span class="prop-cov">命中 9 次 · 1 场 · 均分 8.8</span>
+      </div>
+      <div class="prop-line"><b>原文</b>客户：&quot;No GMS on HUAWEI — YouTube, Maps, Gmail won&#x27;t work.&quot;
+应答：&quot;YouTube, Maps, and Gmail all work through the browser — same experience, no difference. AppGallery covers the apps that matter for daily life. For anything else, GBox or Gspace handles it. iPhone in mainland China has no Google — 1.4 billion people use it smoothly. Same principle.&quot;</div>
+      <div class="prop-line"><b>评估</b>销冠演绎充分，9次命中，均分8.8，结构灵活。但原文应答未先认可客户担忧，且未邀请体验，不符合竞品应对标准。</div>
+      <div class="prop-line prop-fix"><b>建议</b>开头先认可客户担忧，如&#x27;That&#x27;s a common concern&#x27;；结尾邀请现场体验GBox或浏览器演示。保留原文核心卖点（浏览器、AppGallery、GBox、中国案例），重组语言。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>客户：&quot;No GMS on HUAWEI — YouTube, Maps, Gmail won&#x27;t work.&quot;
+应答：&quot;That&#x27;s a common concern — and it&#x27;s fair. Here&#x27;s the reality: YouTube, Maps, and Gmail all work perfectly through the browser — same experience, no difference. AppGallery covers the apps that matter for daily life. For anything else, GBox or Gspace handles it in 2 minutes, free. iPhone in mainland China has no Google — 1.4 billion people use it smoothly. Same principle. Want me to show you how GBox works right now?&quot;</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.8</span>
+            <span class="rev-quote-by">明 Minh</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>You keep saying I&#x27;ve seen it, but I haven&#x27;t! You never opened GBox and ran YouTube and Gmail together with notifications. I&#x27;m still scared GMS won&#x27;t work. Do it now on the demo unit, or I&#x27;m leaving, t</div>
+          <div class="rev-quote-line"><b>销售原文</b>I understand your frustration — you&#x27;ve asked multiple times and I kept saying &#x27;you saw it&#x27; without actually showing you. That&#x27;s not fair. Let me open GBox right now on this demo unit. I&#x27;m launching Yo</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.2</span>
+            <span class="rev-quote-by">明 Minh</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Okay, you said it&#x27;s smarter at managing apps. But if I really push it with 10+ apps — notes, PDFs, YouTube, Gmail — will it stay smooth? And about YouTube and Gmail: can I install them easily? That&#x27;s</div>
+          <div class="rev-quote-line"><b>销售原文</b>Your biggest fear is valid — and you&#x27;re not alone. Every MatePad buyer asks the same thing. Here&#x27;s the reality: **GBox** installs in 2 minutes, free. Then YouTube, Gmail, Maps, Drive — all run with fu</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.2</span>
+            <span class="rev-quote-by">明 Minh</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Thật không? So HarmonyOS keeps apps alive smarter, not just killing them. But if I keep 10+ apps open — notes, PDFs, YouTube, Gmail — will it still stay smooth? And speaking of YouTube and Gmail: can</div>
+          <div class="rev-quote-line"><b>销售原文</b>Your GMS worry is totally valid — it&#x27;s the #1 question every MatePad buyer asks. Here&#x27;s the fix: install **GBox** (free, 2 minutes), and YouTube, Gmail, Maps, Drive all run natively — notifications in</div>
+        </div></div>
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">竞品·Samsung Galaxy Tab·Samsung has S Pen and ru</span>
+        
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>客户：&quot;Samsung has S Pen and runs Android — it&#x27;s familiar.&quot;
+应答：&quot;Samsung is a solid choice — reliable brand. The difference: MatePad Air has PaperMatte display with SGS Eye Care certified anti-glare. Samsung Galaxy Tab has no equivalent eye care certification. Our keyboard is already in the box — Samsung&#x27;s keyboard cover is a separate purchase.&quot;</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>此条目未被触发，可能因客户未提及S Pen或Android熟悉度。建议在演示时主动对比，或加入场景化钩子如&#x27;If you&#x27;re used to S Pen, let me show you M-Pencil latency&#x27;。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>客户：&quot;Samsung has S Pen and runs Android — it&#x27;s familiar.&quot;
+应答：&quot;Samsung is a solid choice — reliable brand. The difference: MatePad Air has PaperMatte display with SGS Eye Care certified anti-glare. Samsung Galaxy Tab has no equivalent eye care certification. Our keyboard is already in the box — Samsung&#x27;s keyboard cover is a separate purchase.&quot;</div>
+      
+      
+    </div>
+    <div class="prop sev-good">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-good">保持</span>
+        <span class="prop-tag">竞品·Samsung Galaxy Tab·Samsung Galaxy Tab price</span>
+        
+        <span class="prop-cov">命中 4 次 · 3 场 · 均分 7.0</span>
+      </div>
+      <div class="prop-line"><b>原文</b>客户：&quot;Samsung Galaxy Tab price is similar — I&#x27;m comfortable with it.&quot;
+应答：&quot;Similar body price — but Samsung&#x27;s S Pen and keyboard cover are both separate purchases. MatePad Air: keyboard or M-Pencil + WPS already included — one price, complete bundle. Feel the difference yourself — try the PaperMatte display right now.&quot;</div>
+      <div class="prop-line"><b>评估</b>命中4次，均分7.0，但销冠演绎未严格遵循&#x27;先认可竞品一句&#x27;的结构，且部分演绎未提及键盘或M-Pencil包含。原文已包含认可和对比，但结尾缺少邀请体验。</div>
+      <div class="prop-line prop-fix"><b>建议</b>开头明确认可竞品价格，如&#x27;You&#x27;re right, the price is similar&#x27;；结尾邀请体验PaperMatte或完整套装。保留原文核心卖点（键盘包含、M-Pencil、WPS），重组语言。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>客户：&quot;Samsung Galaxy Tab price is similar — I&#x27;m comfortable with it.&quot;
+应答：&quot;You&#x27;re right, the price is similar — but Samsung&#x27;s S Pen and keyboard cover are both separate purchases. MatePad Air: keyboard or M-Pencil + WPS already included — one price, complete bundle. Feel the difference yourself — try the PaperMatte display and the included keyboard right now.&quot;</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">7.4</span>
+            <span class="rev-quote-by">卡茨珀 Kacper</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>No lag, no ghosting—clear. That 144Hz panel is legit. I&#x27;m convinced. Let&#x27;s wrap this up: I&#x27;ll take it.</div>
+          <div class="rev-quote-line"><b>销售原文</b>Done. You saw it — 41°C, 60fps at 15%, zero ghosting. MatePad Air comes with NearLink Keyboard + M-Pencil + WPS, one price, complete. I&#x27;ll start your order now. Want a protective folio case as the onl</div>
+        </div></div>
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">竞品·Samsung Galaxy Tab·Samsung display and perf</span>
+        
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>客户：&quot;Samsung display and performance are good enough for me.&quot;
+应答：&quot;Good screen — no argument. But put them side by side under these store lights: PaperMatte vs Samsung&#x27;s mirror panel. SGS Eye Care is a real daily difference, not a spec sheet number. Your eyes notice after 30 minutes of use.&quot;</div>
+      <div class="prop-line"><b>评估</b>该条目本批未被任何销冠引用，属于死条目。原文结构符合竞品应对标准，但缺乏真实演绎验证，可能因场景触发不足或话术不够具体。</div>
+      <div class="prop-line prop-fix"><b>建议</b>建议在话术中增加具体使用场景（如阅读、办公）和可感知的时间点（如30分钟后），并强化邀请体验的动作。同时可在培训中强调该话术的适用场景（如客户对屏幕不敏感时）。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>客户：&quot;Samsung display and performance are good enough for me.&quot;
+应答：&quot;Good screen — no argument. But put them side by side under these store lights: PaperMatte vs Samsung&#x27;s mirror panel. SGS Eye Care is a real daily difference, not a spec sheet number. Your eyes notice after 30 minutes of use.&quot;</div>
+      
+      
+    </div>
+    <div class="prop sev-good">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-good">保持</span>
+        <span class="prop-tag">竞品·Xiaomi Pad·Xiaomi has higher specs </span>
+        
+        <span class="prop-cov">命中 9 次 · 3 场 · 均分 8.0</span>
+      </div>
+      <div class="prop-line"><b>原文</b>客户：&quot;Xiaomi has higher specs and is cheaper.&quot;
+应答：&quot;Xiaomi has solid specs — fair. But stylus and keyboard aren&#x27;t included — both need to be bought separately. Add those up and the sticker price is not the real price. MatePad Air: keyboard or M-Pencil, plus WPS — open the box, it&#x27;s already there. PaperMatte + SGS Eye Care — Xiaomi has a standard mirror screen. Try them side by side.&quot;</div>
+      <div class="prop-line"><b>评估</b>该条目被高频引用（9次），销冠演绎均遵循了先认可、转向差异化、给出可验证对比的结构，且加入了具体金额和场景。但部分演绎中未明确邀请现场体验，且对‘隐藏成本’的强调可以更直接。</div>
+      <div class="prop-line prop-fix"><b>建议</b>强化‘隐藏成本’的对比，用具体数字（如键盘+笔的价格）让客户直观感受。在结尾明确邀请现场体验，如‘我们到这边对比一下总价和实际体验’。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>客户：&quot;Xiaomi has higher specs and is cheaper.&quot;
+应答：&quot;Xiaomi&#x27;s specs are solid — fair point. But here&#x27;s what the sticker price doesn&#x27;t show: the stylus and keyboard aren&#x27;t included. Add those separately and the total jumps. MatePad Air includes the NearLink Keyboard or M-Pencil plus WPS in the box — no extra cost. Plus, our PaperMatte display with SGS Eye Care reduces glare, while Xiaomi uses a standard mirror screen. Let me show you the real total side by side — and you can feel the difference in your hands right now.&quot;</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.8</span>
+            <span class="rev-quote-by">罗莎 Rosa</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Wait—so the keyboard or M-Pencil is included, but what about a basic case and screen protector? I don&#x27;t need the pencil for my son. You said the anti-glare is built in, so no screen protector needed,</div>
+          <div class="rev-quote-line"><b>销售原文</b>I hear you — hidden costs are the real budget killer. Let me be fully transparent: MatePad Air includes the NearLink Keyboard or M-Pencil + WPS in the box. The anti-glare is built into the glass, so n</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.8</span>
+            <span class="rev-quote-by">罗莎 Rosa</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>So what is the total price for the MatePad Air including a case? I need to compare that to the Xiaomi total. And you said you&#x27;d show me a PDF with small text—can we do that now?</div>
+          <div class="rev-quote-line"><b>销售原文</b>Here&#x27;s the honest breakdown: MatePad Air includes NearLink Keyboard or M-Pencil + WPS in the box — zero extra. Anti-glare is built into the glass, so no screen protector needed. Only a protective case</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.8</span>
+            <span class="rev-quote-by">罗莎 Rosa</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Okay, the PDF text looks sharp, I&#x27;ll give you that. But you still haven&#x27;t given me a clear total. You said the MatePad Air is S/1,679–1,719 with a case. Is that the final price, or are there more hidd</div>
+          <div class="rev-quote-line"><b>销售原文</b>You&#x27;re right—let me put both totals side by side, no more ranges. MatePad Air: tablet S/1,599 + case S/89 = S/1,688 total. Keyboard/M-Pencil + WPS included. No screen protector needed. Xiaomi: tablet </div>
+        </div></div>
+    </div>
+    <div class="prop sev-good">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-good">保持</span>
+        <span class="prop-tag">竞品·Xiaomi Pad·Xiaomi has GMS — full Go</span>
+        
+        <span class="prop-cov">命中 1 次 · 1 场 · 均分 7.4</span>
+      </div>
+      <div class="prop-line"><b>原文</b>客户：&quot;Xiaomi has GMS — full Google Play access.&quot;
+应答：&quot;Think about your actual daily apps: AppGallery covers banking, navigation, social, and productivity. For any Google-specific apps, GBox or Gspace handles it. HarmonyOS is fully independent — no dependency on any external ecosystem. Stability, not a limitation.&quot;</div>
+      <div class="prop-line"><b>评估</b>该条目仅被引用1次，销冠演绎中提到了sideload APKs和GBox/Gspace，但未强调AppGallery的覆盖范围，且缺少邀请体验的环节。原文结构完整但略显抽象。</div>
+      <div class="prop-line prop-fix"><b>建议</b>在话术中增加具体应用举例（如银行、导航），并明确邀请客户现场测试。同时可加入‘HarmonyOS独立生态’的稳定性优势，让客户感知到这不是妥协而是选择。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>客户：&quot;Xiaomi has GMS — full Google Play access.&quot;
+应答：&quot;Google Play is familiar — I get it. But think about your daily apps: banking, navigation, social, productivity — AppGallery covers them all. For any Google-specific apps, GBox or Gspace runs them seamlessly. HarmonyOS is fully independent — no dependency on any external ecosystem. That means stability, not a limitation. Let me show you: open your banking app on this MatePad Air — it works smoothly, no extra steps.&quot;</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">7.4</span>
+            <span class="rev-quote-by">马克西姆 (Maxim)</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>500 nits and 10,100mAh with 66W charging — that&#x27;s a solid combo. How&#x27;s the software experience though? I side-load Google apps and tweak ROMs, so I need it to be flexible without locking me out.</div>
+          <div class="rev-quote-line"><b>销售原文</b>HarmonyOS lets you sideload APKs freely — no lock-in. For Google apps, GBox or Gspace runs them seamlessly, and AppGallery covers banking, social, and productivity natively. It&#x27;s stable, independent, </div>
+        </div></div>
+    </div>
+  </div>
+  <h3 class="rev-grp">④ 常见问答</h3>
+  <div class="prop-wrap">
+    <div class="prop sev-warn">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-warn">强化</span>
+        <span class="prop-tag">FAQ·Q1 · &quot;No GMS — can I sti</span>
+        
+        <span class="prop-cov">命中 7 次 · 2 场 · 均分 8.5</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Q: Q1 · &quot;No GMS — can I still use my apps?&quot;
+A: &quot;Tell me which app you&#x27;re worried about and I&#x27;ll search it right now. AppGallery covers all major apps — banking, navigation, social, office. YouTube, Maps, and Gmail work straight through the browser with no difference in experience.&quot;</div>
+      <div class="prop-line"><b>评估</b>销冠演绎覆盖率高，但原文仅提及AppGallery和浏览器，未涵盖GBox等实用工具。演绎中多次使用GBox、Gspace等解决方案，且强调实时演示，原文缺乏行动引导。</div>
+      <div class="prop-line prop-fix"><b>建议</b>在答案中加入GBox/Gspace作为标准方案，并增加“现场演示”的下一步动作。保留原文核心卖点（AppGallery覆盖主流应用、浏览器使用Google服务），重组为更具体的三步结构：承认顾虑→给出工具+演示→引导行动。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Q: Q1 · &quot;No GMS — can I still use my apps?&quot;
+A: &quot;That&#x27;s the #1 question every MatePad buyer asks — and it&#x27;s a fair concern. Here&#x27;s the reality: AppGallery covers all major apps — banking, navigation, social, office. For Google apps like YouTube, Maps, and Gmail, you can install **GBox** (free, 2 minutes) and they run seamlessly. Let me show you right now — which app are you worried about? I&#x27;ll search it live on AppGallery or open it via GBox.&quot;</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.2</span>
+            <span class="rev-quote-by">明 Minh</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Okay, you said it&#x27;s smarter at managing apps. But if I really push it with 10+ apps — notes, PDFs, YouTube, Gmail — will it stay smooth? And about YouTube and Gmail: can I install them easily? That&#x27;s</div>
+          <div class="rev-quote-line"><b>销售原文</b>Your biggest fear is valid — and you&#x27;re not alone. Every MatePad buyer asks the same thing. Here&#x27;s the reality: **GBox** installs in 2 minutes, free. Then YouTube, Gmail, Maps, Drive — all run with fu</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.8</span>
+            <span class="rev-quote-by">明 Minh</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>BIDV. Try search now — show me it works, thật không?</div>
+          <div class="rev-quote-line"><b>销售原文</b>Let&#x27;s do it live — Maps in the browser, BIDV in AppGallery right now. Watch: Google Maps loads instantly, full navigation. Now AppGallery — searching BIDV... there it is, official app.</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.6</span>
+            <span class="rev-quote-by">明 Minh</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Show me first — search Google Maps and my bank app on it. Thật không?</div>
+          <div class="rev-quote-line"><b>销售原文</b>Let me pull that up for you right now — Maps in the browser, and your bank app in AppGallery. Which bank do you use? Let&#x27;s search it live.</div>
+        </div></div>
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">FAQ·Q2 · &quot;I use iPad now — i</span>
+        
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Q: Q2 · &quot;I use iPad now — is switching to HUAWEI complicated? Will I lose my files?&quot;
+A: &quot;Files stay completely safe. OneDrive and Google Drive work through the browser — same as before. WPS opens .xlsx and .pptx formats directly, formatting intact when sharing with others. The first week there&#x27;s a small adjustment, but the logic is similar to iPad.&quot;</div>
+      <div class="prop-line"><b>评估</b>本批0次被销冠引用，疑似死条目。原文结构完整，但缺乏场景感和行动引导。可能因话术不够主动或未突出迁移痛点。</div>
+      <div class="prop-line prop-fix"><b>建议</b>保持原文核心信息（文件安全、OneDrive/Google Drive浏览器访问、WPS兼容、适应期短），但需增强场景感和下一步动作。建议加入“现场演示迁移”或“提供迁移指南”作为行动点，并强调“无需重新学习”。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Q: Q2 · &quot;I use iPad now — is switching to HUAWEI complicated? Will I lose my files?&quot;
+A: &quot;Files stay completely safe. OneDrive and Google Drive work through the browser — same as before. WPS opens .xlsx and .pptx formats directly, formatting intact when sharing with others. The first week there&#x27;s a small adjustment, but the logic is similar to iPad.&quot;</div>
+      
+      
+    </div>
+    <div class="prop sev-warn">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-warn">强化</span>
+        <span class="prop-tag">FAQ·Q3 · &quot;Do I need to buy t</span>
+        
+        <span class="prop-cov">命中 5 次 · 3 场 · 均分 8.1</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Q: Q3 · &quot;Do I need to buy the M-Pencil or keyboard separately?&quot;
+A: &quot;No. Keyboard or M-Pencil is already in the box — one price, nothing extra. WPS is included too. iPad Air requires buying Apple Pencil and keyboard cover on top of the device price. Open the box, you&#x27;re done from day one.&quot;</div>
+      <div class="prop-line"><b>评估</b>销冠演绎覆盖率高，但原文仅提及键盘和笔在盒内，未强调“一价全包”的对比优势。演绎中多次强调“one price, nothing extra”，原文缺少与竞品的直接对比。</div>
+      <div class="prop-line prop-fix"><b>建议</b>保留原文核心卖点（键盘和笔在盒内、WPS包含、与iPad对比），但需重组为更直接的对比结构：先肯定“一价全包”，再对比iPad需额外购买，最后引导开箱即用。增加“无需额外花费”的强调。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Q: Q3 · &quot;Do I need to buy the M-Pencil or keyboard separately?&quot;
+A: &quot;No — the M-Pencil and NearLink Keyboard are already in the box, one price, nothing extra. WPS is included too. Compare that to iPad Air, where you&#x27;d need to buy the Apple Pencil and keyboard cover separately. Open the box, you&#x27;re done from day one — no hidden costs.&quot;</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.8</span>
+            <span class="rev-quote-by">自由画师阿纳(A-Na)</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Okay, that&#x27;s fair — a 7-day return gives me a window to test heat under real use. And the cable being rated for USB-C 3.2 speeds answers my transfer concern. Let&#x27;s talk the bundle: what&#x27;s included wit</div>
+          <div class="rev-quote-line"><b>销售原文</b>The bundle includes M-Pencil and NearLink Keyboard in the box — one price, nothing extra. I don&#x27;t have a CSP-loaded demo, but I can hand you the MatePad Air with GoPaint right now so you feel the pen-</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.2</span>
+            <span class="rev-quote-by">Thandi (自由插画师)</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Yebo, the PaperMatte really kills the glare — my sketch looks matte and crisp. Glossy is way too reflective. I’m sold. Cool beans, let’s wrap this up — I’ll take it today.</div>
+          <div class="rev-quote-line"><b>销售原文</b>Great choice, sisi! The full bundle includes the NearLink Keyboard, M-Pencil, and WPS — one price, nothing extra. I&#x27;ll get your order processed now. Just confirm your details and we&#x27;re done.</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.0</span>
+            <span class="rev-quote-by">卡茨珀 Kacper</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>No lag, no ghosting—clear. That 144Hz panel is legit. I&#x27;m convinced. Let&#x27;s wrap this up: I&#x27;ll take it.</div>
+          <div class="rev-quote-line"><b>销售原文</b>Done. You saw it — 41°C, 60fps at 15%, zero ghosting. MatePad Air comes with NearLink Keyboard + M-Pencil + WPS, one price, complete. I&#x27;ll start your order now. Want a protective folio case as the onl</div>
+        </div></div>
+    </div>
+    <div class="prop sev-warn">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-warn">强化</span>
+        <span class="prop-tag">FAQ·Q4 · &quot;HarmonyOS vs Andro</span>
+        
+        <span class="prop-cov">命中 6 次 · 2 场 · 均分 8.2</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Q: Q4 · &quot;HarmonyOS vs Android — is it really comparable?&quot;
+A: &quot;Take it and try right now — swipe, switch apps, open WPS. Smoothness doesn&#x27;t lie. HarmonyOS is fully self-developed — no dependency on any external ecosystem. That&#x27;s stability and independence, not a trade-off. AppGallery covers all the apps you need for daily life.&quot;</div>
+      <div class="prop-line"><b>评估</b>销冠演绎生动，但原文答案缺少直接回应“是否可比”的顾虑，且未给出下一步动作。</div>
+      <div class="prop-line prop-fix"><b>建议</b>在答案开头直接肯定可比性，用演示动作打消顾虑，最后引导客户亲自体验。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Q: Q4 · &quot;HarmonyOS vs Android — is it really comparable?&quot;
+A: &quot;Absolutely — and you can see it right now. Watch: swipe between apps, open WPS, split-screen with email. No lag, no reload. HarmonyOS is fully self-developed, not a skin over Android — that means true multitasking and independence. Try it yourself — open any app you use daily and see the difference.&quot;</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.6</span>
+            <span class="rev-quote-by">明 Minh</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Thật không? Let me try swiping fast between apps and open a game to see if it lags.</div>
+          <div class="rev-quote-line"><b>销售原文</b>Go ahead — swipe fast, open any game, push it hard. HarmonyOS handles multitasking at the system level, not through a compatibility layer like Android skins do. While you test — what&#x27;s the one thing a</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.4</span>
+            <span class="rev-quote-by">明 Minh</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Okay, it loads. But how smooth is HarmonyOS compared to Android? Thật không?</div>
+          <div class="rev-quote-line"><b>销售原文</b>HarmonyOS is fully self-developed — swipe, switch apps, open WPS. Smoothness doesn&#x27;t lie. Try it yourself right now.</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.2</span>
+            <span class="rev-quote-by">明 Minh</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Thật không? Let me try swiping fast between apps and open a game to see if it lags.</div>
+          <div class="rev-quote-line"><b>销售原文</b>Go ahead — swipe as fast as you want, open a game, push it. HarmonyOS handles it differently than Android. But before we go deeper — what&#x27;s the one thing about your current tablet that frustrates you </div>
+        </div></div>
+    </div>
+    <div class="prop sev-warn">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-warn">强化</span>
+        <span class="prop-tag">FAQ·Q5 · &quot;Will the battery l</span>
+        
+        <span class="prop-cov">命中 21 次 · 8 场 · 均分 8.7</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Q: Q5 · &quot;Will the battery last a full day?&quot;
+A: &quot;10,100mAh — a full day of classes, meetings, or content creation without worrying. Forgot to charge? 66W fast charge: 30 minutes gets you through the morning. Compare that to iPad&#x27;s 20W — three times slower at the same charge time.&quot;</div>
+      <div class="prop-line"><b>评估</b>演绎丰富，但原文答案缺少对“full day”的确认和下一步引导。</div>
+      <div class="prop-line prop-fix"><b>建议</b>原文已较强，但可更直接回应“full day”顾虑，并给出具体场景和下一步动作。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Q: Q5 · &quot;Will the battery last a full day?&quot;
+A: &quot;Yes — 10,100mAh easily gets you through a full day of classes, meetings, or content creation. Forgot to charge? 66W fast charge gives you 30 minutes to get through the morning. Compare that to iPad&#x27;s 20W — three times slower. Let me show you the charging port.&quot;</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.2</span>
+            <span class="rev-quote-by">茱莉娅 Giulia</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Allora, I hear you saying it&#x27;s built for a full day of mixed use, but I still want a clear number for video streaming hours, not just &#x27;full day.&#x27; Samsung gives me around 12 hours of Netflix. If the Ma</div>
+          <div class="rev-quote-line"><b>销售原文</b>Giulia, I respect that you want a hard number — and I won&#x27;t give you one I can&#x27;t verify. What our training data confirms: 10,100mAh rated for a full day of mixed use, and 66W gets you hours from just </div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.0</span>
+            <span class="rev-quote-by">Andi_Jaksel_Techie</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Wow, that FollowCam is legit — no more potato face during stand-ups! But for real, how&#x27;s the battery life? I need it to survive a full workday plus some Netflix binge at night. Does it actually last?</div>
+          <div class="rev-quote-line"><b>销售原文</b>Great question — the MatePad Air packs a 10,100mAh battery with 66W fast charging. But let me flip it back: when your current tablet dies before the Netflix binge ends, what do you actually miss or lo</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.0</span>
+            <span class="rev-quote-by">Andi_Jaksel_Techie</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Honestly? I miss the ending — and the vibe gets ruined. Nothing kills a binge like a dead screen. 10,100mAh sounds promising though. Does it actually last through, like, 6 hours of calls and 3 hours o</div>
+          <div class="rev-quote-line"><b>销售原文</b>Here&#x27;s what I can tell you honestly: 10,100mAh with 66W fast charging — 30 minutes plugged in gets you through the morning. For your exact 6+3 hour mix, I&#x27;d want to show you real-world drain rates rat</div>
+        </div></div>
+    </div>
+    <div class="prop sev-warn">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-warn">强化</span>
+        <span class="prop-tag">FAQ·Q6 · &quot;The price feels hi</span>
+        
+        <span class="prop-cov">命中 9 次 · 5 场 · 均分 8.0</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Q: Q6 · &quot;The price feels high compared to other tablets.&quot;
+A: &quot;Let&#x27;s compare what you actually get. MatePad Air includes NearLink Keyboard + M-Pencil + WPS — one price, complete bundle. iPad Air at a similar body price requires buying Apple Pencil and keyboard cover on top. Samsung&#x27;s S Pen and keyboard are also separate. Ours is genuinely complete from day one — nothing extra, nothing waiting.&quot;</div>
+      <div class="prop-line"><b>评估</b>演绎中部分销冠强调了捆绑价值，但原文答案缺少对“价格高”的直接认可和下一步引导。</div>
+      <div class="prop-line prop-fix"><b>建议</b>原文对比清晰，但可更直接回应价格顾虑，并给出下一步动作。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Q: Q6 · &quot;The price feels high compared to other tablets.&quot;
+A: &quot;I understand — but let&#x27;s look at what you get. MatePad Air includes NearLink Keyboard + M-Pencil + WPS in one price. iPad Air at a similar price needs extra for Apple Pencil and keyboard. Samsung&#x27;s S Pen and keyboard are also separate. Ours is complete from day one — nothing extra. Let me show you the bundle.&quot;</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.6</span>
+            <span class="rev-quote-by">卡茨珀 Kacper</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>No lag, no ghosting—clear. That 144Hz panel is legit. I&#x27;m convinced. Let&#x27;s wrap this up: I&#x27;ll take it.</div>
+          <div class="rev-quote-line"><b>销售原文</b>Done. You saw it — 41°C, 60fps at 15%, zero ghosting. MatePad Air comes with NearLink Keyboard + M-Pencil + WPS, one price, complete. I&#x27;ll start your order now. Want a protective folio case as the onl</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.6</span>
+            <span class="rev-quote-by">罗莎 Rosa</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>So S/1,688 for the MatePad Air and S/1,675 for Xiaomi—almost the same. But you said the keyboard or M-Pencil is included, right? I only need a case; I don&#x27;t need the keyboard or pencil for my son. So</div>
+          <div class="rev-quote-line"><b>销售原文</b>Fair question — but the keyboard and M-Pencil aren&#x27;t add-ons you pay extra for; they&#x27;re included in the S/1,599 tablet price. You can&#x27;t subtract them, but you&#x27;re not being charged for them either. Thi</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.2</span>
+            <span class="rev-quote-by">俊 Tuấn</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>2,587 sustained, no cliff—Mali-G78 MP22 and your cooling stack are legit. Let&#x27;s do the PUBG frame-counter test quick, then hit me with the price: is it in the 13.5–22.5M VND ballpark?</div>
+          <div class="rev-quote-line"><b>销售原文</b>PUBG frame-counter: 90fps locked through 12 minutes, zero dips. Kirin 9000E&#x27;s Mali-G78 MP22 held steady — same thermal DNA as ou准确价格我让同事现场给您调单核一下 Wildlife Extreme score. On price: MatePad Air bundle (</div>
+        </div></div>
+    </div>
+    <div class="prop sev-good">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-good">保持</span>
+        <span class="prop-tag">FAQ·Q7 · &quot;I&#x27;ll think about i</span>
+        
+        <span class="prop-cov">命中 4 次 · 3 场 · 均分 8.2</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Q: Q7 · &quot;I&#x27;ll think about it — I might come back.&quot;
+A: &quot;Of course, take your time. Before you go — the full bundle price includes keyboard or M-Pencil, plus WPS. If you&#x27;re still comparing with other tablets, make sure you add their accessories to the total price — it usually closes the gap fast. Any specific concern I haven&#x27;t answered? I&#x27;d rather help you get the right device than just make a sale.&quot;</div>
+      <div class="prop-line"><b>评估</b>演绎中销冠灵活运用了价格、功能演示等具体场景，但原文话术偏通用，缺乏紧迫感和具体数字支撑，导致说服力不足。</div>
+      <div class="prop-line prop-fix"><b>建议</b>在答案中加入具体促销信息（如限时、限量）和对比方法（如加总竞品配件价格），并主动询问顾虑，增强紧迫感和针对性。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Q: &quot;I&#x27;ll think about it — I might come back.&quot;
+A: &quot;Of course, take your time. Just so you know, our current bundle includes the keyboard and M-Pencil plus WPS Office — that&#x27;s a limited-time offer. If you&#x27;re comparing with other tablets, remember to add the cost of their keyboard and stylus to the total; you&#x27;ll often find the gap narrows quickly. Before you go, is there any specific concern I haven&#x27;t addressed? I&#x27;d rather help you find the right device than just make a sale.&quot;</div>
+      
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.4</span>
+            <span class="rev-quote-by">法蒂玛 Fatima</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>Finally, a clear answer—Shukran! 6 hours without a charger, Alhamdulillah that works. Now, the price 2,499 QAR with M-Pencil and keyboard cover is within my budget. But I need to know: is there any Ra</div>
+          <div class="rev-quote-line"><b>销售原文</b>Shukran for your patience, Habibti. The 2,499 QAR bundle with M-Pencil + keyboard cover is our Ramadan promotion — best price now, and stock is limited. Warranty: 12-month official Huawei Qatar covera</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">8.2</span>
+            <span class="rev-quote-by">明 Minh</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>I already tested it and it was smooth, thật không? But you explained the scheduler well. Still, my real fear is GMS. Can I really install YouTube, Gmail easily? Show me right now — open GBox and run b</div>
+          <div class="rev-quote-line"><b>销售原文</b>You saw it — GBox, YouTube, Gmail, notifications, all live. Now 10+ apps open, no reloads. That&#x27;s the 12GB RAM + HarmonyOS scheduler delivering what you felt. MatePad Air 12+256GB: 12–14 triệu ₫, full</div>
+        </div></div>
+    </div>
+  </div>
+</section>
+
+
+<section class="block">
+  <h2><span class="sec-no">03</span> 按客户人设的话术演绎 · A/B/C/D</h2>
+  <p class="lead">面向各类客户的话术（开场 + 卖点）被销冠在真实对话里实际演绎的覆盖率与质量——看哪类客户的剧本最该补强。</p>
+  <div style="display:flex;gap:12px;flex-wrap:wrap"><div style="flex:1;min-width:190px;border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px"><div style="font-weight:700;font-size:14px;margin-bottom:6px">A · Business Professional</div><div style="font-size:12.5px;color:#374151">话术覆盖 3/3（100%）</div><div style="font-size:12.5px;color:#374151">命中 179 次 · 均分 8.3/10</div></div><div style="flex:1;min-width:190px;border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px"><div style="font-weight:700;font-size:14px;margin-bottom:6px">B · Content Creator</div><div style="font-size:12.5px;color:#374151">话术覆盖 3/3（100%）</div><div style="font-size:12.5px;color:#374151">命中 147 次 · 均分 8.1/10</div></div><div style="flex:1;min-width:190px;border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px"><div style="font-weight:700;font-size:14px;margin-bottom:6px">C · Student</div><div style="font-size:12.5px;color:#374151">话术覆盖 3/3（100%）</div><div style="font-size:12.5px;color:#374151">命中 134 次 · 均分 8.0/10</div></div><div style="flex:1;min-width:190px;border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px"><div style="font-weight:700;font-size:14px;margin-bottom:6px">D · Parent / Family</div><div style="font-size:12.5px;color:#374151">话术覆盖 2/3（67%）</div><div style="font-size:12.5px;color:#374151">命中 111 次 · 均分 8.0/10</div></div></div>
+</section>
+
+
+<section class="block">
+  <h2><span class="sec-no">04</span> 对话客户类型分布 · 运行时判定</h2>
+  <p class="lead">由 LLM 按每场对话的客户发言判定其最接近 A/B/C/D 哪类客户（共 20 场，已判定 18 场）——再看每类客户对话里、该类专属剧本（开场+卖点）的实际覆盖。</p>
+  <div style="display:flex;gap:12px;flex-wrap:wrap"><div style="flex:1;min-width:190px;border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px"><div style="font-weight:700;font-size:14px;margin-bottom:6px">未判定</div><div style="font-size:12.5px;color:#374151">对话场次 <b>2</b> 场</div><div style="font-size:12px;color:#6b7280">结局：DEAL_DONE 2</div></div><div style="flex:1;min-width:190px;border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px"><div style="font-weight:700;font-size:14px;margin-bottom:6px">A · Business Professional</div><div style="font-size:12.5px;color:#374151">对话场次 <b>5</b> 场</div><div style="font-size:12px;color:#6b7280">结局：DEAL_DONE 4、FOLLOW_UP 1</div><div style="font-size:12.5px;color:#374151">本类专属话术覆盖 3/3（100%）</div></div><div style="flex:1;min-width:190px;border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px"><div style="font-weight:700;font-size:14px;margin-bottom:6px">B · Content Creator</div><div style="font-size:12.5px;color:#374151">对话场次 <b>3</b> 场</div><div style="font-size:12px;color:#6b7280">结局：FOLLOW_UP 1、DEAL_DONE 1、WALK_AWAY 1</div><div style="font-size:12.5px;color:#374151">本类专属话术覆盖 3/3（100%）</div></div><div style="flex:1;min-width:190px;border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px"><div style="font-weight:700;font-size:14px;margin-bottom:6px">C · Student</div><div style="font-size:12.5px;color:#374151">对话场次 <b>5</b> 场</div><div style="font-size:12px;color:#6b7280">结局：FOLLOW_UP 2、DEAL_DONE 2、WALK_AWAY 1</div><div style="font-size:12.5px;color:#374151">本类专属话术覆盖 3/3（100%）</div></div><div style="flex:1;min-width:190px;border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px"><div style="font-weight:700;font-size:14px;margin-bottom:6px">D · Parent / Family</div><div style="font-size:12.5px;color:#374151">对话场次 <b>5</b> 场</div><div style="font-size:12px;color:#6b7280">结局：FOLLOW_UP 3、DEAL_DONE 2</div><div style="font-size:12.5px;color:#374151">本类专属话术覆盖 2/3（67%）</div></div></div>
+</section>
+
+
+<section class="block">
+  <h2><span class="sec-no">03</span> 强弱项与死条目</h2>
+  <div class="ws-grid">
+    <div class="ws-col">
+      <h3 class="ws-bad-title">弱项 Top（亟需迭代）</h3>
+      <ul class="cat-list">
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">竞品·Samsung Galaxy Tab·Samsung Galaxy Tab price</span>
+          <span class="cat-meta">7.2/10 · 4次</span></div>
+        <div class="cat-reason">未直接对比Samsung，但隐含对比(1) / 未直接点名三星，对比不够明确(1) / 未直接点名Samsung，对比不够直接(1)</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">C·SGS Eye Care Certification</span>
+          <span class="cat-meta">7.8/10 · 45次</span></div>
+        <div class="cat-reason">未提及长时间阅读场景(3) / 转化推进力弱(2) / 未强调长时间阅读场景(2)</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">竞品·iPad Air / Pro·iPad has all the apps I </span>
+          <span class="cat-meta">7.8/10 · 2次</span></div>
+        <div class="cat-reason">未直接回应客户具体app需求，缺乏针对性(1) / 未提及AppGallery覆盖所有主要应用的具体范围(1)</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">开场·C·Student</span>
+          <span class="cat-meta">7.9/10 · 28次</span></div>
+        <div class="cat-reason">未提及键盘和WPS，学生场景可更完整(2) / 未提及键盘和WPS(2) / 未明确提及WPS，但条目包含WPS；未直接点明学生场景(1)</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">开场·A·Business Professional</span>
+          <span class="cat-meta">7.9/10 · 19次</span></div>
+        <div class="cat-reason">未明确指向商务人士(1) / 未提及无订阅费(1) / 重量对比未明确说明具体数值，仅说约三分之一(1)</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">B·True-Color 144Hz Display</span>
+          <span class="cat-meta">7.9/10 · 64次</span></div>
+        <div class="cat-reason">未提及色彩准确性(4) / 未明确提及144Hz和色彩准确性(2) / 未强调色彩准确性(2)</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">FAQ·Q6 · &quot;The price feels hi</span>
+          <span class="cat-meta">8.0/10 · 9次</span></div>
+        <div class="cat-reason">未直接对比竞品，价值传递不够强(1) / 未明确对比竞品价格，但已足够(1) / 价格区间表述模糊，未给出确切数字(1)</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">开场·D·Parent / Family</span>
+          <span class="cat-meta">8.0/10 · 107次</span></div>
+        <div class="cat-reason">未提及六扬声器(7) / 未提及SGS认证具体名称(6) / 未提及SGS Eye Care认证(3)</div>
+      </li></ul>
+    </div>
+    <div class="ws-col">
+      <h3 class="ws-good-title">强项 Top（保留口径）</h3>
+      <ul class="cat-list">
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">FAQ·Q5 · &quot;Will the battery l</span>
+          <span class="cat-meta">8.8/10 · 21次</span></div>
+        <div class="cat-reason">销冠在该条目上多次复述官方口径：Q: Q5 · &quot;Will the battery last a full day?&quot; A: &quot;10,100mAh — a full day of classe…</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">D·SGS Eye Care Certification</span>
+          <span class="cat-meta">8.8/10 · 4次</span></div>
+        <div class="cat-reason">销冠在该条目上多次复述官方口径：PaperMatte scatters light like paper so there&#x27;s no harsh glare hitting their eye…</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">竞品·iPad Air / Pro·No GMS on HUAWEI — YouTu</span>
+          <span class="cat-meta">8.8/10 · 9次</span></div>
+        <div class="cat-reason">销冠在该条目上多次复述官方口径：YouTube, Maps, and Gmail all work through the browser — same experience, no diff…</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">FAQ·Q1 · &quot;No GMS — can I sti</span>
+          <span class="cat-meta">8.6/10 · 7次</span></div>
+        <div class="cat-reason">销冠在该条目上多次复述官方口径：Q: Q1 · &quot;No GMS — can I still use my apps?&quot; A: &quot;Tell me which app you&#x27;re worried…</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">A·PaperMatte Anti-Glare Screen</span>
+          <span class="cat-meta">8.4/10 · 117次</span></div>
+        <div class="cat-reason">销冠在该条目上多次复述官方口径：PaperMatte uses nano-etching to scatter light instead of reflecting it: 99% glar…</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">FAQ·Q7 · &quot;I&#x27;ll think about i</span>
+          <span class="cat-meta">8.3/10 · 4次</span></div>
+        <div class="cat-reason">销冠在该条目上多次复述官方口径：Of course, take your time. Before you go — the full bundle price includes keyboa…</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">B·M-Pencil + GoPaint (Free)</span>
+          <span class="cat-meta">8.2/10 · 44次</span></div>
+        <div class="cat-reason">销冠在该条目上多次复述官方口径：2ms latency — the line appears the instant your pen touches the screen. Ten-thou…</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">FAQ·Q4 · &quot;HarmonyOS vs Andro</span>
+          <span class="cat-meta">8.2/10 · 6次</span></div>
+        <div class="cat-reason">销冠在该条目上多次复述官方口径：Take it and try right now — swipe, switch apps, open WPS. Smoothness doesn&#x27;t lie…</div>
+      </li></ul>
+    </div>
+  </div>
+  <div class="dead-wrap"><div class="dead-title">未覆盖 / 死条目（0 次命中）</div><div class="dead-list"><span class="dead">comp_1_1</span><span class="dead">comp_1_2</span><span class="dead">comp_2_1</span><span class="dead">comp_2_3</span><span class="dead">faq_2</span><span class="dead">say_D_2</span></div></div>
+</section>
+
+
+<section class="block">
+  <h2><span class="sec-no">06</span> 优秀话术原声（按手册结构归类）</h2>
+  <p class="lead">优秀 = 行为信号（客户购买信号↑ / 态度转正）⊕ LLM 优秀度，
+  <b>不以"是否照搬手册"评判</b>；"手册外精彩话术"可直接喂迭代建议。</p>
+  
+  <div class="exc-group">
+    <div class="exc-group-head">
+      <span class="exc-badge exc-badge-hb">竞品对比</span>
+      <span class="exc-count">1 条</span>
+    </div>
+    
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.2/10</span>
+        <span class="exc-sig">购买信号 0.1 → 0.6</span>
+        <span class="exc-tag">竞品·iPad Air / Pro·No GMS on HUAWEI — YouTu</span><span class="exc-tag">客户转「cautious」</span>
+        <span class="exc-by">明 Minh</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>You keep saying I&#x27;ve seen it, but I haven&#x27;t! You never opened GBox and ran YouTube and Gmail together with notifications. I&#x27;m still scared GMS won&#x27;t work. Do it now on the demo unit, or I&#x27;m leaving, thật không?</div>
+      <div class="exc-sales">I understand your frustration — you&#x27;ve asked multiple times and I kept saying &#x27;you saw it&#x27; without actually showing you. That&#x27;s not fair. Let me open GBox right now on this demo unit. I&#x27;m launching YouTube and Gmail together, and you&#x27;ll see notifications pop up live. Watch the screen — here it is. Both apps running, notifications working. Now you&#x27;ve seen it with your own eyes. Can you trust it now?</div>
+      <ul class="exc-why"><li>诚恳道歉化解情绪</li><li>现场演示消除最后顾虑</li></ul>
+    </div>
+  </div>
+  <div class="exc-group">
+    <div class="exc-group-head">
+      <span class="exc-badge exc-badge-hb">FAQ 应答</span>
+      <span class="exc-count">5 条</span>
+    </div>
+    
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.6/10</span>
+        <span class="exc-sig">购买信号 0.7 → 0.7</span>
+        <span class="exc-tag">FAQ·Q5 · &quot;Will the battery l</span><span class="exc-tag">客户转「interested」</span>
+        <span class="exc-by">Andi_Jaksel_Techie</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Yeah, that&#x27;s exactly it — screen glare and all-day battery. If the PaperMatte really holds up next to a bright window, I&#x27;m sold on the display. Show me that demo.</div>
+      <div class="exc-sales">Here — tilt it toward the window with me. See that? Zero reflection, colors stay rich. That&#x27;s the nano-etching at work, not a filter. SGS Eye Care certified too — your eyes feel the difference after 30 minutes in a Senopati café. And for battery: 10,100mAh, built for a full day of meetings and content. 66W fast charge gives you a morning&#x27;s worth in 30 minutes if you ever run low. Ready to take one home today?</div>
+      <ul class="exc-why"><li>现场演示化解核心顾虑</li><li>直接促单，时机精准</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.3/10</span>
+        <span class="exc-sig">购买信号 0.4 → 0.7</span>
+        <span class="exc-tag">FAQ·Q5 · &quot;Will the battery l</span><span class="exc-tag">客户转「curious」</span>
+        <span class="exc-by">法蒂玛 Fatima</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>I&#x27;ve already told you twice—her battery dies mid-lesson and she misses parts. Please, just tell me: can this tablet last 6 hours of video calls and reading without needing a charger? Yalla, I need a straight answer.</div>
+      <div class="exc-sales">Habibti, forgive me — let me be direct. The MatePad Air&#x27;s 10,100mAh battery is rated for a full day of classes and content creation. For 5-6 hours of video lessons plus reading, it will comfortably last without needing a charger — and if she forgets to charge, 66W fast charging gives her a morning&#x27;s worth in just 30 minutes.</div>
+      <ul class="exc-why"><li>直接回答建立信任</li><li>补充快充消除后顾之忧</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.0/10</span>
+        <span class="exc-sig">购买信号 0.6 → 0.7</span>
+        <span class="exc-tag">FAQ·Q5 · &quot;Will the battery l</span><span class="exc-tag">客户转「interested」</span>
+        <span class="exc-by">Andi_Jaksel_Techie</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Honestly? I miss the ending — and the vibe gets ruined. Nothing kills a binge like a dead screen. 10,100mAh sounds promising though. Does it actually last through, like, 6 hours of calls and 3 hours of Netflix without hunting for a charger?</div>
+      <div class="exc-sales">Here&#x27;s what I can tell you honestly: 10,100mAh with 66W fast charging — 30 minutes plugged in gets you through the morning. For your exact 6+3 hour mix, I&#x27;d want to show you real-world drain rates rather than guess. But let me ask you this: if you never had to hunt for a charger between your last stand-up and your Netflix finale — what would that free up in your day?</div>
+      <ul class="exc-why"><li>诚实回应避免过度承诺</li><li>用反问激发价值想象</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.0/10</span>
+        <span class="exc-sig">购买信号 0.7 → 0.7</span>
+        <span class="exc-tag">FAQ·Q5 · &quot;Will the battery l</span><span class="exc-tag">客户转「interested」</span>
+        <span class="exc-by">马克西姆 (Maxim)</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>500 nits? That&#x27;s solid — way above my 400-nit minimum. And with the PaperMatte nano-etching, glare shouldn&#x27;t be an issue even by my dorm window. Okay, I&#x27;m convinced on the display. Now, how&#x27;s the battery life? I need at least 10 hours of note-taking and video streaming without hunting for an outlet.</div>
+      <div class="exc-sales">10,100mAh battery — that&#x27;s a full day of note-taking and streaming without reaching for a charger. And if you do run low, 66W fast charging gives you hours of use from just a 30-minute top-up. That&#x27;s triple the speed of a standard 20W charger. So you&#x27;re covered from morning lectures to late-night Netflix by the window.</div>
+      <ul class="exc-why"><li>数据对比突出优势</li><li>描绘全天候使用场景</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">7.4/10</span>
+        <span class="exc-sig">购买信号 0.7 → 0.7</span>
+        <span class="exc-tag">FAQ·Q5 · &quot;Will the battery l</span><span class="exc-tag">客户转「interested」</span>
+        <span class="exc-by">法蒂玛 Fatima</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>That&#x27;s good, I can set it just right. Now, can you tell me the price or if there&#x27;s any promotion? My daughter mainly uses it for online lessons and reading, so battery life matters too—how long does it last?</div>
+      <div class="exc-sales">Great questions. The MatePad Air has a 10,100mAh battery — a full day of lessons and reading without hunting for a charger. 66W fast charging: 30 minutes gets her through the morning if she forgets overnight. On pricing, let me confirm the local Qatar promotion for you. Now, if the battery truly lasted a full school day plus evening reading — how would that change her routine compared to her current tablet?</div>
+      <ul class="exc-why"><li>先答电池再巧妙转回价值</li><li>用反问让客户想象改变</li></ul>
+    </div>
+  </div>
+  <div class="exc-group">
+    <div class="exc-group-head">
+      <span class="exc-badge exc-badge-off">手册外精彩话术</span>
+      <span class="exc-count">20 条</span><span class="exc-hint">手册没提到但很有效 → 建议补进 Handbook</span>
+    </div>
+    
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">9.3/10</span>
+        <span class="exc-sig">购买信号 0.7 → 0.8</span>
+        <span class="exc-tag">C·M-Pencil (Free in Box)</span><span class="exc-tag">客户转「excited」</span>
+        <span class="exc-by">Budi_Ambisius_Student</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Both, Kak—keeping track of annotations across files and losing my place when switching. Could you show me two scanned PDFs open side by side and drag some text from one into a note?</div>
+      <div class="exc-sales">Here, let me show you—two scanned law PDFs open side by side, no lag. Now, long-press this citation, drag it straight into your notes. See? No retyping. Between this and split-screen, you save nearly an hour per session. How would that extra hour change your exam prep?</div>
+      <ul class="exc-why"><li>量化时间节省，让价值可感知</li><li>用反问引导客户想象改变，激发购买欲</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.8/10</span>
+        <span class="exc-sig">购买信号 0.7 → 0.9</span>
+        <span class="exc-tag">A·NearLink Keyboard + WPS</span><span class="exc-tag">客户转「satisfied」</span>
+        <span class="exc-by">广告人阿肯(Ken)</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Scissor-switch with quick rebound—that works for my typing speed. Can you show how fast I can split-screen swap between WPS and email mid-call? I need zero lag.</div>
+      <div class="exc-sales">Here&#x27;s the split-screen swap in action: WPS on the left, email on the right, video call floating — swipe the divider and the apps resize instantly, no reload, no stutter. You can jump between editing a slide and replying to a client email mid-call without missing a beat. Now, you mentioned rapid app switching during client meetings — when that lag hits, what&#x27;s the actual cost? Do you lose your train of thought, or does the client notice and it breaks the flow?</div>
+      <ul class="exc-why"><li>演示后追问痛点成本</li><li>将功能转化为价值</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.8/10</span>
+        <span class="exc-sig">购买信号 0.7 → 0.9</span>
+        <span class="exc-tag">A·NearLink Keyboard + WPS</span><span class="exc-tag">客户转「satisfied」</span>
+        <span class="exc-by">詹森 Jason</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Show me the multitasking demo with my spreadsheet and a chunky PPT—no stutter. And confirm the 14-day return is full refund, no restocking fee.</div>
+      <div class="exc-sales">Here&#x27;s the multitasking demo — your spreadsheet and a 40-slide PPT side by side, zero stutter, no app reload on switch. On returns: UK Consumer Contracts Regulations give you 14 days from delivery for a full refund, no restocking fee — it&#x27;s your legal right, not a favour. You&#x27;ve now seen your own file pass every test and heavy multitasking hold steady. What&#x27;s the real concern still sitting in the back of your mind?</div>
+      <ul class="exc-why"><li>演示+政策双重确认</li><li>直击隐藏顾虑促成交</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.7/10</span>
+        <span class="exc-sig">购买信号 0.8 → 0.9</span>
+        <span class="exc-tag">A·PaperMatte Anti-Glare Screen</span><span class="exc-tag">客户转「interested」</span>
+        <span class="exc-by">索菲亚 (Sofia)</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Yes, open that dense contract page now—let’s see the fine print in direct sun. If commas and semicolons stay crisp outdoors, I’m very close to being sold.</div>
+      <div class="exc-sales">Opening that contract now — see how the nano-etching keeps every comma and semicolon razor-sharp even in direct sun? No halo, no blur. That&#x27;s the PaperMatte difference: 99% glare cut without softening fine print. Ready to lock this unit for you?</div>
+      <ul class="exc-why"><li>用现场演示把抽象技术变成可见优势</li><li>直接推进成交，制造紧迫感</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.6/10</span>
+        <span class="exc-sig">购买信号 0.7 → 0.8</span>
+        <span class="exc-tag">A·PaperMatte Anti-Glare Screen</span><span class="exc-tag">客户转「interested」</span>
+        <span class="exc-by">索菲亚 (Sofia)</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Tilt it toward the window—show me how it handles direct sun. A terrace lunch with clients, no squinting.</div>
+      <div class="exc-sales">Tilting now — see how the nano-etching turns direct sun into a soft, readable surface? No mirror, no squinting. Same tech that killed glare under store lights. Want me to open a dense contract page so you see how the text holds up outdoors?</div>
+      <ul class="exc-why"><li>演示回应具体场景</li><li>主动引导深化体验</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.6/10</span>
+        <span class="exc-sig">购买信号 0.7 → 0.7</span>
+        <span class="exc-tag">B·True-Color 144Hz Display</span><span class="exc-tag">客户转「interested」</span>
+        <span class="exc-by">汉内洛蕾 Hannelore</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>The screen looks great, I&#x27;m convinced on that. Now, can we do that Skype test call? I want to hear the sound and see the picture quality before I decide.</div>
+      <div class="exc-sales">Absolutely — let&#x27;s do the Skype test call right now. I&#x27;m dialing... hear that ring? Now watch the screen — the front camera sits on the long edge, so you&#x27;re framed naturally without holding it stiff. Listen to my voice: no hall echo, right? That&#x27;s the microphone array filtering out room reflections. The speakers project clear, warm sound — not tinny, not distant. And with 8–10 hours of video call battery, you can talk to your daughter all afternoon without worrying about the charger. How does it sound on your end?</div>
+      <ul class="exc-why"><li>现场测试消除最后顾虑</li><li>多维度展示价值并关联场景</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.5/10</span>
+        <span class="exc-sig">购买信号 0.6 → 0.7</span>
+        <span class="exc-tag">A·PaperMatte Anti-Glare Screen</span><span class="exc-tag">客户转「interested」</span>
+        <span class="exc-by">索菲亚 (Sofia)</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Exactly. Let&#x27;s do it — pull up the same dense contract on both, right here under these lights. I want to see if that PaperMatte really keeps the fine print legible without me tilting like a fool.</div>
+      <div class="exc-sales">*Pulls up the same dense contract PDF on both tablets, tilts both toward the bright lights.* Watch: on the iPad Pro, the glossy glass throws a white reflection right across the fine print — you&#x27;d instinctively tilt or lean in. On the MatePad Air, the PaperMatte nano-etching scatters that light; the text stays dark, crisp, readable. Now here&#x27;s my question: when glare breaks your flow mid-meeting and you lose eye contact — has a client ever questioned your prep, or worse, pushed back on a clause because the pause made them suspicious?</div>
+      <ul class="exc-why"><li>对比演示直击痛点，制造强烈反差</li><li>用反问将技术问题升维到职业风险，建立信任</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.5/10</span>
+        <span class="exc-sig">购买信号 0.5 → 0.6</span>
+        <span class="exc-tag">A·PaperMatte Anti-Glare Screen</span><span class="exc-tag">客户转「interested」</span>
+        <span class="exc-by">索菲亚 (Sofia)</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Yes, exactly. When glare forces me to tilt, it breaks my concentration and makes me lose eye contact with the client — it looks unprofessional. So show me the PaperMatte anti-glare in action, side-by-side with my iPad Pro, under your store&#x27;s bright lights. I want to see how dense contract text holds up on both.</div>
+      <div class="exc-sales">Let&#x27;s put them side-by-side right now. I&#x27;ll open the same dense contract PDF on both under these bright lights. Watch how the PaperMatte nano-etching scatters light — no glare, text stays crisp. On the iPad Pro, you&#x27;ll see reflections forcing you to tilt. That&#x27;s the difference between losing eye contact and commanding the room. Ready?</div>
+      <ul class="exc-why"><li>对比演示直观有力</li><li>将功能升华为专业形象</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.5/10</span>
+        <span class="exc-sig">购买信号 0.4 → 0.7</span>
+        <span class="exc-tag">A·PaperMatte Anti-Glare Screen</span><span class="exc-tag">客户转「interested」</span>
+        <span class="exc-by">玛丽亚姆 (Mariam)</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>That&#x27;s fair—I&#x27;ll wait for the repair terms. But while we wait, can you show me a side-by-side demo of the eBook Mode next to an iPad under bright light? I want to see the glare reduction myself.</div>
+      <div class="exc-sales">Absolutely — let&#x27;s do a live side-by-side under bright light. I&#x27;ll place MatePad Air with PaperMatte next to an iPad, tilt both toward the light, and you&#x27;ll see the glare difference instantly. PaperMatte scatters 99% of reflections; iPad&#x27;s True Tone can&#x27;t match that hardware-level anti-glare. Ready to compare now?</div>
+      <ul class="exc-why"><li>用具体动作演示替代空谈</li><li>量化数据增强可信度</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.5/10</span>
+        <span class="exc-sig">购买信号 0.9 → 0.9</span>
+        <span class="exc-tag">A·PaperMatte Anti-Glare Screen</span><span class="exc-tag">客户转「satisfied」</span>
+        <span class="exc-by">索菲亚 (Sofia)</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Zoom in on that clause—the one with three commas and a semicolon. I need to see each punctuation mark stays crisp in this direct sunlight. If they&#x27;re sharp with no halo, I&#x27;m sold.</div>
+      <div class="exc-sales">I completely understand — when you&#x27;re reviewing contracts on a terrace, every comma matters, and you can&#x27;t afford any blur. Let me zoom in on that clause now.
+
+Here&#x27;s the thing — PaperMatte isn&#x27;t just anti-glare; it&#x27;s engineered to preserve sharpness precisely because legal professionals need to read fine print outdoors. The nano-etching scatters light at the glass level without softening the pixel grid underneath.
+
+Look at these three commas and that semicolon — each punctuation mark is razor-sha准确价格我让同事现场给您调单核一下 zero halo, even in direct sunlight. The text stays crisp edge-to-edge.
+
+Does this give you the confidence to use it on the terrace with clients?</div>
+      <ul class="exc-why"><li>共情客户场景并精准回应</li><li>技术解释直击痛点</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.5/10</span>
+        <span class="exc-sig">购买信号 0.5 → 0.7</span>
+        <span class="exc-tag">客户转「interested」</span>
+        <span class="exc-by">卡茨珀 Kacper</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Yeah, let&#x27;s go. Start the loop, I&#x27;ll watch the clock. And don&#x27;t forget to show me the FPS overlay when you drain it to 15%. I want to see the number myself—no editing, no tricks.</div>
+      <div class="exc-sales">The demo is running — we&#x27;re at the 30-minute mark. IR gun on the back center: 39°C, warmest spot near the camera at 41°C. That&#x27;s well below the 48°C+ your old Samsung would hit. Now I&#x27;m draining to 15% — FPS overlay still locked at 60, no frame drops. You&#x27;re seeing it with your own eyes: no throttle, no burn. Want me to push it to 10% and keep going?</div>
+      <ul class="exc-why"><li>用温度数据量化散热优势</li><li>持续测试打消顾虑</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.4/10</span>
+        <span class="exc-sig">购买信号 0.8 → 0.9</span>
+        <span class="exc-tag">C·M-Pencil (Free in Box)</span><span class="exc-tag">客户转「satisfied」</span>
+        <span class="exc-by">法蒂玛 Fatima</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Wait, Habibti—you just asked me about my daughter&#x27;s grades again. I already told you the battery issue, let&#x27;s not go backwards. Just confirm: 12-month warranty here in Qatar, right? And if I buy today, is there any extra discount beyond the bundle, or is 2,499 QAR final?</div>
+      <div class="exc-sales">Habibti, you&#x27;re right — I apologize for going backwards. Let me be direct: yes, 12-month official Huawei Qatar warranty with local service centers in Doha. And the 2,499 QAR is our Ramadan final price — the M-Pencil and keyboard cover are already included as the promotion, no further discount on top. Would you like me to reserve one for you today before stock runs out?</div>
+      <ul class="exc-why"><li>及时道歉并聚焦核心</li><li>明确利益点并制造紧迫感</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.4/10</span>
+        <span class="exc-sig">购买信号 0.3 → 0.8</span>
+        <span class="exc-tag">客户转「interested」</span>
+        <span class="exc-by">俊 Tuấn</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Alright, 2,847 peak is nice, but I&#x27;ve seen too many tablets sprint then crawl. Start the loop—I wanna see the thermal throttle curve after 15 minutes. If it dips below 2,500, we&#x27;re done here. Show me the graph.</div>
+      <div class="exc-sales">15-minute mark: 2,623 on Wildlife Extreme — above you准确价格我让同事现场给您调单核一下 cutoff and above your Snapdragon 8 Gen 1&#x27;s peak after it throttles. Mali-G78 MP22&#x27;s 22 cores spread the thermal load; curve is flattening, not diving. Two more minutes, we&#x27;ll have the full picture. What does your Gen 1 settle at afte准确价格我让同事现场给您调单核一下?</div>
+      <ul class="exc-why"><li>用数据对比化解性能疑虑</li><li>反问引导客户暴露竞品短板</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.4/10</span>
+        <span class="exc-sig">购买信号 0.8 → 0.8</span>
+        <span class="exc-tag">客户转「interested」</span>
+        <span class="exc-by">俊 Tuấn</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>2,623 at 15 min is solid—Mali-G78 MP22 holding better than I expected. But I need the final 20-min score and the thermal graph. If it stays above 2,500, I&#x27;ll acknowledge it&#x27;s a real performer. Then let&#x27;s talk PUBG frame-counter test or pricing.</div>
+      <div class="exc-sales">20-minute loop complete: final score **2,587** — held above 2,500 wire to wire. Mali-G78 MP22&#x27;s 22 cores spread the heat; curve plateaus after minute 12, no cliff. Your Snapdragon 8 Gen 1 peaks at 2,714 then dips below 2,400 by minute 15 — this Kirin 9000E stays above your cutoff the entire run. Ready to run the PUBG frame-counter test, or want to talk pricing?</div>
+      <ul class="exc-why"><li>用具体数据对比直接碾压竞品</li><li>以客户自设标准为锚点，引导成交</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.3/10</span>
+        <span class="exc-sig">购买信号 0.4 → 0.7</span>
+        <span class="exc-tag">D·SGS Eye Care Certification</span><span class="exc-tag">客户转「interested」</span>
+        <span class="exc-by">Thandi (自由插画师)</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Okay, show me the side-by-side. But also, how does GoPaint handle pressure sensitivity compared to Procreate? I need at least 8192 levels for my fine line work.</div>
+      <div class="exc-sales">Here&#x27;s the side-by-side — PaperMatte on the left, glossy on the right. Same brightness, same image. See how the glossy panel mirrors the ceiling lights? Now look at PaperMatte: zero reflection, every line stays crisp. And on pressure — M-Pencil delivers 10,000 levels, not just 8,192. Light stroke, thin line; press deeper, thick stroke. Before we go further — what&#x27;s your current setup? iPad, drawing tablet, or a pen display?</div>
+      <ul class="exc-why"><li>对比演示强化PaperMatte优势</li><li>用反问了解客户现状，为后续推荐铺垫</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.3/10</span>
+        <span class="exc-sig">购买信号 0.6 → 0.7</span>
+        <span class="exc-tag">B·True-Color 144Hz Display</span><span class="exc-tag">客户转「interested」</span>
+        <span class="exc-by">索菲亚 (Sofia)</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Show me that runtime estimate at my typical brightness — I want to see the number right on the screen. A six-hour deposition with the screen fully lit is non-negotiable.</div>
+      <div class="exc-sales">Here&#x27;s the live battery estimate at your current 100% brightness: 10 hours 47 minutes remaining. That&#x27;s nearly double your six-hour deposition — with margin to spare. And 66W fast charging gives you roughly 3 hours from a 15-minute top-up. Want me to simulate continuous PDF scrolling to confirm it holds under real load?</div>
+      <ul class="exc-why"><li>用实时数据打消续航顾虑</li><li>提供额外验证选项，增强可信度</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.3/10</span>
+        <span class="exc-sig">购买信号 0.6 → 0.7</span>
+        <span class="exc-tag">C·M-Pencil (Free in Box)</span><span class="exc-tag">客户转「interested」</span>
+        <span class="exc-by">Thandi (自由插画师)</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Eish, that tracing demo is smooth — zero lag, clean lines, and the reference stays sharp. But for my fine line work, I need to know: does GoPaint support 8192 pressure levels natively? M-Pencil has 10,000, but will the app actually use all that sensitivity?</div>
+      <div class="exc-sales">Yes, GoPaint natively supports the full 10,000 pressure levels — M-Pencil and the app are built together by Huawei, so every micro-variation in your stroke registers. You mentioned shooting texture photos in Bo-Kaap and tracing them. Walk me through your current iPad workflow — from snapping the photo to the final line art. What&#x27;s the slowest or most annoying step?</div>
+      <ul class="exc-why"><li>技术确认后挖掘流程痛点</li><li>引导客户自我揭示需求</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.2/10</span>
+        <span class="exc-sig">购买信号 0.8 → 0.8</span>
+        <span class="exc-tag">C·M-Pencil (Free in Box)</span><span class="exc-tag">客户转「interested」</span>
+        <span class="exc-by">Budi_Ambisius_Student</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>That sounds amazing, Kak! Being able to tag and search handwritten notes instantly would be a game-changer for organizing my case summaries. Could you show me how the tagging works with a sample annotation?</div>
+      <div class="exc-sales">Let me show you—tap the tag icon here, type &quot;tort law,&quot; and it instantly links to this annotation. Later, search &quot;tort&quot; and every tagged note appears. No more flipping through files. How would instant search change your case review workflow?</div>
+      <ul class="exc-why"><li>即时演示让功能变得具体</li><li>用反问引导客户想象工作流改善</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.2/10</span>
+        <span class="exc-sig">购买信号 0.6 → 0.7</span>
+        <span class="exc-tag">A·PaperMatte Anti-Glare Screen</span><span class="exc-tag">客户转「interested」</span>
+        <span class="exc-by">Andi_Jaksel_Techie</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Notifications and battery anxiety both kill my focus, but honestly the biggest thing is screen glare. If the PaperMatte really eliminates 99% of reflections, that&#x27;s a game-changer for Senopati cafes. Can you actually demo that under bright light right now? Like, show me the screen next to a window or a lamp?</div>
+      <div class="exc-sales">So if I&#x27;m hearing you right: your two deal-breakers are whether the PaperMatte screen truly stays visible next to a bright café window — no washed-out MacBook moments — and whether the 10,100mAh battery survives your 2h Zoom + 3h Jira + 2h Netflix day without a power bank. That&#x27;s the real test, correct?</div>
+      <ul class="exc-why"><li>精准复述客户需求，展示倾听</li><li>将两个痛点打包成确认性问题，为解决方案铺垫</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">8.2/10</span>
+        <span class="exc-sig">购买信号 0.6 → 0.8</span>
+        <span class="exc-tag">客户转「cautious」</span>
+        <span class="exc-by">詹森 Jason</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Fair enough, it recalculated. Now filter by region again and let&#x27;s see if the conditional formatting rules hold when you slice the data that way—that&#x27;s the sort of thing that falls apart on mobile apps.</div>
+      <div class="exc-sales">Filtering by region again — conditional formatting rules held perfectly through the slice. Color coding stayed intact, no drift. That&#x27;s five tests your own file passed: macros, multitasking, filters, pivot recalculation, and conditional formatting with slicing. Your full Excel workflow works here. Ready to proceed with purchase?</div>
+      <ul class="exc-why"><li>用客户自己的测试结果建立绝对信任</li><li>总结五次成功测试，自然推进成交</li></ul>
+    </div>
+  </div>
+</section>
+
+
+<section class="block">
+  <h2><span class="sec-no">07</span> 问题话术（重点修正）</h2>
+  <div class="turn-wrap">
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">班采 Bence</span>
+        <span class="turn-q turn-q-warn">6.5/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>Nézd, I&#x27;m not asking about my old tablet. I need the exact battery hours for the M-Pencil, and I want to see you zoom into a dense PDF page right now. Can you do that?</div>
+      <div class="turn-sales"><b>销冠</b>Let me zoom into this dense PDF page right now—see how the text stays razor-sharp with zero pixelation, even at 准确耗电数据我现场拿真机给您实测. That&#x27;s the PaperMatte nano-etching keeping every letter crisp. For the M-Pencil exact battery hours: I need to pull the official spec from our system—I don&#x27;t have that number memorized. But I can confirm it charges while you write, so it never dies mid-session. So your main concern is battery life and eye comfort for long PDF sessions—is that right?</div>
+      <ul class="turn-reasons"><li>需求匹配度 仅 5.33/10</li><li>转化推进力 仅 5.33/10</li><li>问题：未提及M-Pencil核心卖点如2ms延迟、压力层级</li></ul>
+      <div class="turn-sug"><b>建议</b>补充M-Pencil的2ms延迟和压力层级数据，增强说服力 / 强调M-Pencil免费，并举例批注、高亮等场景 / 加入99%消除眩光数据，并对比普通屏幕的疲劳感</div>
+    </div>
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">班采 Bence</span>
+        <span class="turn-q turn-q-warn">6.7/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>Igen, the anti-glare is good. But I still need that exact battery hour for the stylus. And while you check, can you show me how the screen handles PDF text—zoom in on a dense page?</div>
+      <div class="turn-sales"><b>销冠</b>The M-Pencil&#x27;s exact battery hours aren&#x27;t in the quick spec—I&#x27;ll confirm the official number for you. Now, watch as I zoom into this dense PDF: text stays razor-sha准确价格我让同事现场给您调单核一下 no pixelation. You mentioned annotating for long stretches—what&#x27;s your current tablet model, and how many hours a day do you typically spend marking up documents?</div>
+      <ul class="turn-reasons"><li>问题：未确认M-Pencil续航时间，信息模糊</li><li>问题：未突出M-Pencil免费卖点</li><li>问题：未提及键盘和WPS，学生场景不完整</li></ul>
+      <div class="turn-sug"><b>建议</b>确认续航后明确告知，并强调M-Pencil免费 / 补充键盘和WPS免费，并直接询问学生需求</div>
+    </div>
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">班采 Bence</span>
+        <span class="turn-q turn-q-warn">6.9/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>Nézd, you keep saying you&#x27;ll check the spec but you never give me the number. I need the exact hours—like 8 or 10 hours—from the official sheet. And zoom into that dense PDF page right now, show me the text doesn&#x27;t blur. No more questions about my old tablet until you do these two things.</div>
+      <div class="turn-sales"><b>销冠</b>I&#x27;ve searched our system—the exact M-Pencil battery hours aren&#x27;t in the official spec sheet. I can confirm it charges while attached, so it won&#x27;t die mid-session. Now, watch this PDF zoom: text stays razor-sha准确价格我让同事现场给您调单核一下 zero pixelation—PaperMatte nano-etching keeps every letter crisp. So your main concern is battery life and eye comfort for long PDF sessions—is that right?</div>
+      <ul class="turn-reasons"><li>需求匹配度 仅 5.33/10</li><li>问题：未明确M-Pencil是否免费</li><li>问题：电池时长未给出具体数据</li></ul>
+      <div class="turn-sug"><b>建议</b>补充M-Pencil免费信息，并引用官方电池数据或说明 / 加入SGS认证和与普通屏幕的对比，增强说服力 / 明确SGS认证和家庭场景，如孩子学习</div>
+    </div>
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">自由画师阿纳(A-Na)</span>
+        <span class="turn-q turn-q-warn">6.9/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>Good, you&#x27;ve covered my main concerns. Now, what&#x27;s the bundle price in Thai baht? And do you have any CSP-specific accessories or software bundles available in Thailand? I also need the exact warranty terms for the etched glass surface.</div>
+      <div class="turn-sales"><b>销冠</b>The bundle includes M-Pencil and NearLink Keyboard in one price — no extras. Since MatePad Air hasn&#x27;t officially launched in Thailand, I can&#x27;t lock a THB price yet, but it&#x27;s designed to be complete out of the box. The etched glass is covered under standard HUAWEI warranty with local service centers — no special exclusions. No CSP-specific accessories, but M-Pencil and keyboard are optimized for creative work. Want me to check launch promos or pre-order options?</div>
+      <ul class="turn-reasons"><li>转化推进力 仅 5.0/10</li><li>问题：未提及WPS包含，但发言中未提WPS</li><li>问题：未直接对比竞品价格，价值传递不够有力</li></ul>
+      <div class="turn-sug"><b>建议</b>补充WPS包含信息，增强价值感 / 加入与iPad Air的对比，突出捆绑包性价比 / 明确提及三星需另购配件，增强对比效果</div>
+    </div>
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">詹森 Jason</span>
+        <span class="turn-q turn-q-warn">7.0/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>Alright, show me. Open a sample sheet with some conditionals and refresh a pivot. I&#x27;ll watch.</div>
+      <div class="turn-sales"><b>销冠</b>Here we go — conditional formatting on sales data, pivot table refreshing live. No lag, no break. See that?</div>
+      <ul class="turn-reasons"><li>转化推进力 仅 4.5/10</li><li>需求匹配度 仅 5.5/10</li><li>问题：未明确提及WPS预装和键盘，仅展示功能演示</li></ul>
+      <div class="turn-sug"><b>建议</b>可补充说明WPS预装且无订阅，强化价值 / 可明确提及144Hz刷新率，增强说服力</div>
+    </div>
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">罗莎 Rosa</span>
+        <span class="turn-q turn-q-warn">7.0/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>Just looking around, maybe a tablet for my kid. Something for school.</div>
+      <div class="turn-sales"><b>销冠</b>School use, great — a lot of parents come in looking for that. Is it more for reading and note-taking, or also creative projects?</div>
+      <ul class="turn-reasons"><li>转化推进力 仅 4.5/10</li><li>需求匹配度 仅 5.5/10</li><li>问题：未直接回应客户对阅读/笔记与创意项目的区分需求</li></ul>
+      <div class="turn-sug"><b>建议</b>补充说明M-Pencil同时支持笔记和绘画，覆盖两种场景 / 可补充M-Pencil也支持绘画，满足创意需求</div>
+    </div>
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">班采 Bence</span>
+        <span class="turn-q turn-q-warn">7.0/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>OK, let&#x27;s see the side-by-side. But first, how many hours exactly does the stylus last on a full charge? And does it drain when attached but not in use?</div>
+      <div class="turn-sales"><b>销冠</b>The M-Pencil charges magnetically and lasts through long sessions—exact hours I&#x27;ll confirm from the spec sheet for you. It doesn&#x27;t drain when attached; smart power management keeps it topped up. Now, let&#x27;s see that PaperMatte side-by-side. While I set it up: what&#x27;s your current tablet, and how many hours a day do you spend reading or annotating PDFs?</div>
+      <ul class="turn-reasons"><li>需求匹配度 仅 5.0/10</li><li>转化推进力 仅 5.33/10</li><li>问题：未提及M-Pencil免费</li></ul>
+      <div class="turn-sug"><b>建议</b>补充M-Pencil免费及手写功能，如标注PDF / 加入纳米蚀刻和99%眩光消除数据 / 结合学生笔记场景，强调免费手写笔和完整工具包</div>
+    </div>
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">自由画师阿纳(A-Na)</span>
+        <span class="turn-q turn-q-warn">7.1/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>Exactly — no glare means I can stay in the zone, and still enjoy crisp anime afterward. That&#x27;s a meaningful trade-off for me. So the etched glass won&#x27;t wear down with heavy daily use? And does the 12-inch size feel heavy to hold for long sketching sessions on the sofa?</div>
+      <div class="turn-sales"><b>销冠</b>The etched glass is extremely durable — it&#x27;s chemically strengthened and won&#x27;t wear down with daily stylus use. And at just 508g, the MatePad Air is surprisingly light for a 12-inch tablet, so long sofa sessions stay comfortable. Do you often find yourself shifting positions to avoid arm fatigue with heavier devices?</div>
+      <ul class="turn-reasons"><li>转化推进力 仅 4.5/10</li><li>需求匹配度 仅 5.5/10</li><li>问题：未提及色彩准确性，仅提到144Hz</li></ul>
+      <div class="turn-sug"><b>建议</b>补充色彩准确度描述，如&#x27;色彩真实，适合编辑&#x27; / 关联PaperMatte防眩光特性，强调护眼</div>
+    </div>
+  </div>
+</section>
+
+
+<section class="block">
+  <h2><span class="sec-no">05</span> 客户原声（离开/异议时刻）</h2>
+  <p class="lead">话术迭代背后的真实用户声音——离开前最后一句，往往直指手册缺口。</p>
+  <div class="voice-wrap">
+    <blockquote class="voice">
+      <div class="voice-q">You keep saying you&#x27;ll test, but I&#x27;ve been asking for hard numbers—PSD folder structure and per-brush curve—and you still can&#x27;t confirm either. That&#x27;s basic spec, not a demo. If you can&#x27;t pull it up now, I&#x27;m done. I&#x27;ll check reviews myself.</div>
+      <div class="voice-by">— 优希 Yuki</div>
+    </blockquote>
+    <blockquote class="voice">
+      <div class="voice-q">You finally admitted you can&#x27;t show me. Fine—send the official spec sheet link. If it&#x27;s not there, I&#x27;ll arrange a hands-on demo myself. But right now, I&#x27;m done talking.</div>
+      <div class="voice-by">— 班采 Bence</div>
+    </blockquote>
+  </div>
+</section>
+
+<div class="foot">本报告由销售演绎分析系统自动生成 · 内容源自全部会话原声 · 供内部话术迭代使用</div>
+</div>
+</body>
+</html>

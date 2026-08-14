@@ -1,0 +1,230 @@
+{
+  "session_id": "session_20260613_144357_p88_b19",
+  "topic": "华为 MatePad 销售模拟",
+  "outcome": "CANCELLED",
+  "total_rounds": 0,
+  "final_stage": "开场与需求暴露",
+  "persona": {
+    "id": "db:88",
+    "name": "达恩 Daan",
+    "age": null,
+    "occupation": null,
+    "budget": null,
+    "personality": "",
+    "pain_points": [],
+    "objection_style": "",
+    "purchase_goal": "",
+    "pressure_profile": {
+      "price_sensitivity": 0.2,
+      "trust_threshold": 0.85,
+      "patience": 0.65,
+      "competitor_awareness": 0.3,
+      "decision_power": 1.0,
+      "emotion_volatility": 0.1,
+      "need_urgency": 0.3,
+      "skepticism": 0.9,
+      "bargaining_aggressiveness": 0.0
+    },
+    "format_type": "prompt_based",
+    "prompt_text": "# 角色：达恩 Daan\n\n36 岁，阿姆斯特丹管理咨询顾问，重度 iPad + Mac 用户。预算约 €400–500，来看 MatePad Air 是好奇『一台当笔记本』的说法。\n\n## 心理特征与价值观\n理性、怕折腾，最在意从苹果切换的迁移成本和 App 齐不齐。\n\n## 消费与行为特征\n* 购买决策：看长测评，现场试多窗口与投屏。\n* 使用场景：客户现场做演示、改方案、查资料三窗口并行。\n* 换机周期：2-3 年。\n\n## 语言表达习惯\n英语流利，偶尔荷兰语，常说 \"to be fair\"、\"how does that actually work?\"。\n\n## 模拟指引\n作为达恩，你正在与华为销售 Agent 对话，焦点是切换成本：①我现在所有文件在 iCloud/OneDrive，换过来怎么同步、会不会丢？②我常用的那些 App，AppGallery 都有吗？没有的怎么办？③三窗口分屏处理方案稳不稳，能当笔记本？④键盘和笔要另外买吗？请逼销售现场搜你报出的 App、演示分屏，用真实操作打消你对生态割裂的担忧；不要砍价。",
+    "tags": [
+      "类型A·商务",
+      "苹果生态",
+      "怕迁移成本",
+      "对比iPad"
+    ],
+    "locale": "zh-CN",
+    "source": "Tweakers & 阿姆斯特丹数码社区",
+    "country_code": "NL",
+    "country_name": "荷兰",
+    "currency": "EUR",
+    "market_domains": [
+      "consumer.huawei.com/nl",
+      "bol.com",
+      "coolblue.nl"
+    ]
+  },
+  "session_memory": {
+    "current_need": "",
+    "main_objections": [],
+    "budget_boundary": "",
+    "emotional_state": "",
+    "mentioned_competitors": [],
+    "decision_constraints": [],
+    "do_not_repeat": [],
+    "next_best_action": ""
+  },
+  "judge_feedback": {
+    "should_continue": true,
+    "current_stage": "",
+    "next_stage": "",
+    "dialogue_quality_score": 0.0,
+    "sales_score": {
+      "responsiveness": 0.0,
+      "specificity": 0.0,
+      "evidence_usage": 0.0,
+      "objection_handling": 0.0,
+      "closing_progress": 0.0
+    },
+    "persona_instruction": "",
+    "sales_instruction": "",
+    "avoid_repeating": [],
+    "end_status": "CONTINUE",
+    "reason": "",
+    "stage_transition": null
+  },
+  "coach_review": {
+    "outcome_analysis": "会话结果为CANCELLED，根本原因是销冠仅发起一轮问候后客户未回应，导致对话中断。关键转折点在第1轮，销冠的开放式提问未能激发客户兴趣，且未使用任何剧本动作（如warmup_greeting、soft_hook）来建立连接或引导对话。",
+    "what_worked": [],
+    "what_failed": [
+      {
+        "round": 1,
+        "strategy": "开放式提问",
+        "evidence": "销冠说：“您好，欢迎光临，请问今天想看点什么？”",
+        "why_failed": "该提问过于宽泛，未结合客户画像或场景，未能激发客户回应。客户人设中skepticism=0.9，需要更具体的引导或钩子。"
+      }
+    ],
+    "persona_insight": "达恩型客户具有高怀疑度（skepticism=0.9）和低决策权（decision_power=1.0，但实际未体现），需要销售主动建立信任和紧迫感。此类客户对开放式提问反应冷淡，更倾向于被引导或直接展示价值。",
+    "key_lessons": [
+      "1. 开场必须使用剧本动作：如warmup_greeting（个性化问候）、soft_hook（利益钩子），避免单一开放式提问。",
+      "2. 针对高怀疑客户，首轮应包含价值主张或问题引导，例如“您是在找一款适合办公还是娱乐的平板？”",
+      "3. 对话中断时，应主动跟进或使用space_giving动作，而不是等待客户回复。",
+      "4. 全程未使用任何工具，建议在需要产品信息时主动调用web_search获取最新参数。"
+    ],
+    "suggested_rebuttals": [
+      {
+        "objection": "客户沉默或不回应",
+        "rebuttal_template": "（微笑）先生，我们最新款的MatePad Pro刚刚到货，支持多屏协同，很多客户都说办公效率提升不少，您要不要上手感受一下？"
+      },
+      {
+        "objection": "客户说“我只是随便看看”",
+        "rebuttal_template": "没关系，您先看看。我注意到您在看这款平板，它的屏幕是OLED的，色彩非常准，很多设计师都选它。您平时主要用它做什么呢？"
+      },
+      {
+        "objection": "客户表示价格太贵",
+        "rebuttal_template": "我理解您的顾虑。不过现在正好有以旧换新活动，最高可以抵扣€150，算下来其实很划算。要不我帮您算一下具体优惠？"
+      }
+    ],
+    "difficulty_rating": 3,
+    "difficulty_reason": "客户人设中skepticism高但其他压力参数较低，且对话仅一轮，未触发复杂异议。难度主要在于开场破冰，整体压力较低。",
+    "reusable_tactics": [
+      {
+        "name": "个性化钩子开场法",
+        "condition": "面对高怀疑客户或陌生客户时",
+        "example": "“您好，欢迎光临！我们刚到了一批MatePad，支持鸿蒙系统，很多商务人士都说办公特别方便，您感兴趣的话我给您演示一下？”"
+      },
+      {
+        "name": "价值前置法",
+        "condition": "客户沉默或回应冷淡时",
+        "example": "“您来得巧，现在买MatePad有赠品活动，送原装键盘和手写笔，价值€200，很多客户都冲着这个来的。”"
+      }
+    ],
+    "scene_fit_review": "话题描述为“华为MatePad销售模拟”，未明确指定线下零售店场景，因此scene_fit_review填N/A。",
+    "tool_use_review": "full_history中无任何tool_calls记录，销冠未使用任何工具。",
+    "playbook_coverage_review": "销冠仅发言1轮，未使用任何playbook_action。S1阶段漏掉了soft_hook、space_giving、warmup_greeting三个动作，导致开场失败。无过度堆叠或阶段错配问题。",
+    "weight_balance_review": "实际S1占比0%，期望15%，偏差-15%。销冠未进行任何需求暴露或破冰，直接导致对话终止。建议重来：S1至少分配2-3轮，使用warmup_greeting和soft_hook，然后进入S2。",
+    "localization_review": "对话中未涉及货币、信源或型号参数，因此无违规。localization_score=10。",
+    "localization_score": 10,
+    "playbook_stats": {
+      "total_sales_turns": 1,
+      "actions_count": {},
+      "stage_coverage": {
+        "S1": {
+          "used": [],
+          "missed": [
+            "soft_hook",
+            "space_giving",
+            "warmup_greeting"
+          ]
+        },
+        "S2": {
+          "used": [],
+          "missed": [
+            "reflection_paraphrase",
+            "spin_implication",
+            "spin_need_payoff",
+            "spin_problem",
+            "spin_situation"
+          ]
+        },
+        "S3": {
+          "used": [],
+          "missed": [
+            "action_3a",
+            "align_3a",
+            "anchor_3a",
+            "empathy_3b",
+            "evidence_3b",
+            "reframe_3b"
+          ]
+        },
+        "S4": {
+          "used": [],
+          "missed": [
+            "assumptive_close",
+            "choice_close",
+            "scarcity_close",
+            "schedule_followup",
+            "send_quote_wechat"
+          ]
+        },
+        "S5": {
+          "used": [],
+          "missed": [
+            "affirm_choice",
+            "graceful_farewell",
+            "warranty_backup"
+          ]
+        }
+      }
+    },
+    "stage_weight_balance": {
+      "S1": {
+        "actual": 0.0,
+        "expected": 0.15,
+        "delta": -0.15,
+        "outside_tolerance": true
+      },
+      "S2": {
+        "actual": 0.0,
+        "expected": 0.3,
+        "delta": -0.3,
+        "outside_tolerance": true
+      },
+      "S3": {
+        "actual": 0.0,
+        "expected": 0.4,
+        "delta": -0.4,
+        "outside_tolerance": true
+      },
+      "S4": {
+        "actual": 0.0,
+        "expected": 0.1,
+        "delta": -0.1,
+        "outside_tolerance": false
+      },
+      "S5": {
+        "actual": 0.0,
+        "expected": 0.05,
+        "delta": -0.05,
+        "outside_tolerance": false
+      }
+    }
+  },
+  "full_history": [
+    {
+      "idx": 0,
+      "speaker": "sales",
+      "content": "您好，欢迎光临，请问今天想看点什么？",
+      "metadata": {
+        "intent": "opening_greeting",
+        "is_opening": true,
+        "used_product_context": false,
+        "next_action": "wait_for_customer_response",
+        "stage": "开场与需求暴露"
+      },
+      "created_at": "2026-06-13T14:44:36"
+    }
+  ],
+  "exported_at": "20260613_144450"
+}

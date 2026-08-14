@@ -37,23 +37,16 @@ scripts/_recent_sessions_dump*.txt
 .codegraph/
 
 # ===== 运行时产物 / 大文件 =====
-outputs/
 logs/
-*.log
 terminals/
 tmp/
 
-# ===== 数据库 / 向量库 / 上传（运行时数据，不入库）=====
+# ===== 数据库 =====
+# 原始 .db 单文件可超 GitHub 100MB 限制；入库压缩包 data/*.db.gz，部署时用 scripts/restore_conversations_db.py 解压
 data/*.db
 data/*.db-journal
+!data/*.db.gz
 data/*.sqlite
-data/chroma/
-data/sessions/
-data/uploads/
-data/handbook_uploads/
-data/product_handbooks/
-data/analysis_reports/
-data/lessons_candidate.jsonl
 
 # ===== 归档 / 大体积素材 =====
 *.zip

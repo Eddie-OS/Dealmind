@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>华为 MatePad 12X / Air 2025 · 销冠 Handbook · 分析报告</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#1a1d24; --muted:#6b7280; --line:#e6e8ec; --paper:#ffffff; --bg:#f4f5f7;
+  --brand:#b3122c; --brand-2:#8a0f22; --good:#1f9d57; --warn:#d98a00; --bad:#c0392b;
+  --soft:#f8f4f0;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Noto Serif SC",Georgia,"Songti SC",serif;color:var(--ink);
+  background:var(--bg);line-height:1.65;font-size:14px;}
+.page{max-width:880px;margin:0 auto;background:var(--paper);
+  box-shadow:0 1px 24px rgba(0,0,0,.06);}
+.sans{font-family:"Noto Sans SC","Helvetica Neue",Arial,sans-serif;}
+
+/* Cover */
+.cover{background:linear-gradient(135deg,var(--brand) 0%,var(--brand-2) 100%);
+  color:#fff;padding:52px 56px 40px;}
+.cover-kicker{font-family:"Noto Sans SC",sans-serif;font-size:12px;letter-spacing:3px;
+  text-transform:uppercase;opacity:.85;margin-bottom:14px;}
+.cover-title{font-size:34px;line-height:1.25;margin:0 0 10px;font-weight:700;}
+.cover-sub{font-family:"Noto Sans SC",sans-serif;font-size:13px;opacity:.9;margin-bottom:26px;}
+.kpi-grid{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
+.kpi{background:rgba(255,255,255,.14);border-radius:10px;padding:14px 18px;min-width:104px;
+  flex:1;backdrop-filter:blur(2px);}
+.kpi-bad .kpi-v{color:#ffd7d0;}
+.kpi-v{font-size:28px;font-weight:700;font-family:"Noto Sans SC",sans-serif;}
+.kpi-l{font-family:"Noto Sans SC",sans-serif;font-size:11px;opacity:.88;margin-top:2px;}
+.chips{display:flex;gap:8px;flex-wrap:wrap;}
+.chip{font-family:"Noto Sans SC",sans-serif;font-size:12px;padding:4px 12px;border-radius:20px;
+  background:rgba(255,255,255,.18);}
+.chip-good{background:rgba(255,255,255,.28);font-weight:600;}
+.chip-bad{background:rgba(0,0,0,.18);}
+
+/* Sections */
+.block{padding:30px 56px;border-bottom:1px solid var(--line);}
+.block-key{background:var(--soft);}
+h2{font-size:21px;margin:0 0 6px;display:flex;align-items:center;gap:12px;}
+.sec-no{font-family:"Noto Sans SC",sans-serif;font-size:13px;color:#fff;background:var(--brand);
+  width:30px;height:30px;border-radius:7px;display:inline-flex;align-items:center;
+  justify-content:center;font-weight:700;}
+.sec-flag{font-family:"Noto Sans SC",sans-serif;font-size:11px;color:var(--brand);
+  border:1px solid var(--brand);border-radius:4px;padding:2px 8px;font-weight:600;}
+.lead{color:var(--muted);font-size:13px;margin:0 0 18px;font-family:"Noto Sans SC",sans-serif;}
+.mth-sec{margin:0 0 16px;font-family:"Noto Sans SC",sans-serif;}
+.mth-sec-t{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:3px;}
+.mth-sec-d{font-size:12.5px;line-height:1.6;color:var(--muted);margin-bottom:7px;}
+.mth-items{margin:0;padding:0;list-style:none;}
+.mth-items li{font-size:12.5px;line-height:1.55;padding:5px 0 5px 14px;
+  border-bottom:1px dashed var(--line);position:relative;}
+.mth-items li:before{content:"";position:absolute;left:0;top:11px;width:5px;height:5px;
+  border-radius:50%;background:var(--brand);}
+.mth-name{font-weight:600;color:var(--ink);margin-right:6px;}
+.mth-desc{color:#374151;}
+h3{font-size:15px;margin:0 0 12px;font-family:"Noto Sans SC",sans-serif;}
+
+/* bars */
+.bar{background:#edeef1;border-radius:6px;height:9px;overflow:hidden;width:100%;}
+.bar-fill{display:block;height:100%;border-radius:6px;}
+.bar-good{background:var(--good);} .bar-warn{background:var(--warn);} .bar-bad{background:var(--bad);}
+
+/* coverage table */
+.cov-table{width:100%;border-collapse:collapse;font-family:"Noto Sans SC",sans-serif;}
+.cov-table td{padding:9px 6px;vertical-align:middle;border-bottom:1px solid var(--line);}
+.g-name{width:150px;font-weight:600;font-size:13px;}
+.g-frac{color:var(--muted);font-weight:400;font-size:11px;}
+.g-bar{width:auto;}.g-pct{width:48px;text-align:right;font-weight:700;}
+.g-q{width:78px;text-align:right;color:var(--muted);font-size:12px;}
+
+/* dimensions */
+.dim-row{display:flex;align-items:center;gap:14px;margin-bottom:11px;
+  font-family:"Noto Sans SC",sans-serif;}
+.dim-label{width:90px;font-size:13px;font-weight:600;}
+.dim-score{width:48px;text-align:right;font-weight:700;}
+.dim-good{color:var(--good);} .dim-warn{color:var(--warn);} .dim-bad{color:var(--bad);}
+
+/* health */
+.health-grid{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
+.health-card{flex:1;min-width:110px;border:1px solid var(--line);border-radius:10px;
+  padding:14px 16px;font-family:"Noto Sans SC",sans-serif;}
+.health-bad{border-color:#f2c9c2;background:#fdf3f1;}
+.h-v{font-size:24px;font-weight:700;}.h-l{font-size:11px;color:var(--muted);margin-top:2px;}
+.token-cloud{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+.token{font-family:"Noto Sans SC",sans-serif;font-size:12px;background:#eef1f4;
+  border-radius:6px;padding:4px 10px;}
+.token i{color:var(--brand);font-style:normal;font-weight:700;margin-left:4px;}
+.punt-title,.dead-title,.punt-title{font-family:"Noto Sans SC",sans-serif;font-size:12px;
+  color:var(--muted);margin-bottom:6px;}
+blockquote.punt{margin:0 0 8px;padding:8px 14px;border-left:3px solid var(--bad);
+  background:#fbf0ee;font-size:13px;color:#7a2a20;border-radius:0 6px 6px 0;}
+
+/* proposals */
+.prop-wrap{display:flex;flex-direction:column;gap:12px;}
+.prop{border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:8px;
+  padding:13px 16px;background:#fff;}
+.prop.sev-high{border-left-color:var(--bad);}
+.prop.sev-low{border-left-color:var(--good);}
+.prop-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;
+  font-family:"Noto Sans SC",sans-serif;}
+.sev-badge{font-size:11px;color:#fff;border-radius:4px;padding:1px 8px;font-weight:700;}
+.sev-b-high{background:var(--bad);}.sev-b-medium{background:var(--warn);}.sev-b-low{background:var(--good);}
+.prop-tag{font-weight:700;font-size:14px;}
+.prop-kind{font-size:11px;color:var(--muted);margin-left:auto;}
+.prop-line{font-size:13px;margin-top:5px;}
+.prop-line b{font-family:"Noto Sans SC",sans-serif;font-size:11px;color:var(--muted);
+  display:inline-block;min-width:38px;margin-right:6px;}
+.prop-fix{color:var(--brand-2);}
+.prop-ev{color:var(--muted);}
+.prop.sev-good{border-left-color:var(--good);}
+.prop.sev-warn{border-left-color:var(--warn);}
+.prop.sev-bad{border-left-color:var(--bad);}
+.sev-b-good{background:var(--good);}.sev-b-warn{background:var(--warn);}.sev-b-bad{background:var(--bad);}
+.prop-cov{font-size:11px;color:var(--muted);margin-left:auto;}
+.rev-grp{font-size:14px;font-weight:700;margin:16px 0 8px;
+  border-bottom:2px solid var(--line);padding-bottom:5px;font-family:"Noto Sans SC",sans-serif;}
+.rev-quotes{margin-top:8px;border-top:1px dashed var(--line);padding-top:6px;}
+.rev-quote{font-size:12px;padding:7px 0;border-bottom:1px dashed var(--line);}
+.rev-quote:last-child{border-bottom:none;}
+.rev-quote-meta{display:flex;align-items:baseline;gap:8px;margin-bottom:3px;}
+.rev-quote-score{font-weight:700;color:var(--good);min-width:28px;}
+.rev-quote-by{color:var(--muted);font-size:11px;}
+.rev-quote-line{font-size:12.5px;line-height:1.55;margin-top:2px;}
+.rev-quote-line b{font-family:"Noto Sans SC",sans-serif;font-size:11px;color:var(--muted);
+  display:inline-block;min-width:52px;margin-right:6px;vertical-align:top;}
+.rev-quote-fix{color:var(--brand-2);}
+
+/* weak/strong */
+.ws-grid{display:flex;gap:24px;}
+.ws-col{flex:1;}
+.ws-bad-title{color:var(--bad);}.ws-good-title{color:var(--good);}
+.cat-list{list-style:none;margin:0;padding:0;}
+.cat-list li{border:1px solid var(--line);border-radius:7px;padding:9px 12px;margin-bottom:8px;}
+.cat-bad{border-left:3px solid var(--bad);}.cat-good{border-left:3px solid var(--good);}
+.cat-h{display:flex;justify-content:space-between;font-family:"Noto Sans SC",sans-serif;}
+.cat-name{font-weight:600;font-size:13px;}
+.cat-meta{color:var(--muted);font-size:12px;}
+.cat-reason{font-size:12px;color:var(--muted);margin-top:4px;}
+.dead-wrap{margin-top:18px;}
+.dead-list{display:flex;flex-wrap:wrap;gap:6px;}
+.dead{font-family:"Noto Sans SC",sans-serif;font-size:12px;background:#f0e6e6;color:#8a3030;
+  border-radius:5px;padding:3px 9px;}
+
+/* turns */
+.turn-wrap{display:flex;flex-direction:column;gap:12px;}
+.turn{border:1px solid var(--line);border-radius:9px;padding:13px 16px;}
+.turn-good{border-left:4px solid var(--good);background:#f4faf6;}
+.turn-bad{border-left:4px solid var(--bad);background:#fcf4f3;}
+.turn-head{display:flex;justify-content:space-between;margin-bottom:8px;
+  font-family:"Noto Sans SC",sans-serif;}
+.turn-persona{font-weight:700;font-size:13px;}
+.turn-q{font-weight:700;font-size:13px;}
+.turn-q-good{color:var(--good);}.turn-q-warn{color:var(--warn);}.turn-q-bad{color:var(--bad);}
+.turn-cust,.turn-sales,.turn-sug{font-size:13px;margin-top:6px;}
+.turn-cust b,.turn-sales b,.turn-sug b{font-family:"Noto Sans SC",sans-serif;font-size:11px;
+  color:var(--muted);display:inline-block;min-width:34px;margin-right:6px;}
+.turn-cust{color:#555;}
+.turn-reasons{margin:8px 0 0;padding-left:20px;font-size:12px;color:var(--muted);}
+.turn-sug{color:var(--brand-2);}
+.exc-group{margin-bottom:16px;}
+.exc-group-head{display:flex;align-items:center;gap:10px;margin:4px 0 10px;
+  font-family:"Noto Sans SC",sans-serif;}
+.exc-badge{font-weight:700;font-size:13px;padding:3px 12px;border-radius:6px;color:#fff;}
+.exc-badge-hb{background:var(--brand-2,#2563eb);}
+.exc-badge-off{background:#d97706;}
+.exc-count{font-size:12px;color:var(--muted);}
+.exc-hint{font-size:11px;color:#d97706;font-style:italic;}
+.exc-card{border:1px solid var(--line);border-left:4px solid var(--good);
+  border-radius:9px;padding:11px 14px;margin-bottom:8px;background:#f4faf6;}
+.exc-top{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px;
+  font-family:"Noto Sans SC",sans-serif;}
+.exc-score{font-weight:700;font-size:13px;color:var(--good);}
+.exc-sig{font-size:11px;color:var(--muted);}
+.exc-tag{font-size:11px;background:#eef2ff;color:#3730a3;border-radius:4px;padding:1px 7px;}
+.exc-by{margin-left:auto;font-size:11px;color:var(--muted);}
+.exc-cust{font-size:12.5px;color:#555;margin-top:4px;}
+.exc-cust b{font-family:"Noto Sans SC",sans-serif;font-size:11px;color:var(--muted);
+  display:inline-block;min-width:34px;margin-right:6px;}
+.exc-sales{font-size:13px;margin-top:5px;line-height:1.6;}
+.exc-why{margin:7px 0 0;padding-left:20px;font-size:12px;color:#047857;}
+
+/* key numbers */
+.kn-table{width:100%;border-collapse:collapse;font-family:"Noto Sans SC",sans-serif;font-size:13px;}
+.kn-table th{text-align:left;color:var(--muted);font-weight:600;font-size:11px;
+  border-bottom:2px solid var(--line);padding:6px;}
+.kn-table td{padding:7px 6px;border-bottom:1px solid var(--line);}
+.kn-v{font-weight:700;color:var(--brand);white-space:nowrap;}
+.kn-src{color:var(--muted);font-size:12px;}
+
+/* voice */
+.voice-wrap{display:flex;flex-direction:column;gap:10px;}
+blockquote.voice{margin:0;padding:12px 18px;background:#f7f7f9;border-radius:8px;
+  border-left:3px solid var(--ink);}
+.voice-q{font-size:13px;font-style:italic;}
+.voice-by{font-family:"Noto Sans SC",sans-serif;font-size:12px;color:var(--muted);margin-top:6px;}
+
+/* footer */
+.foot{padding:22px 56px;color:var(--muted);font-family:"Noto Sans SC",sans-serif;font-size:11px;
+  text-align:center;}
+
+@media print{
+  body{background:#fff;}
+  .page{box-shadow:none;max-width:none;}
+  .block{page-break-inside:avoid;}
+  .prop,.turn,.cat-list li{page-break-inside:avoid;}
+  @page{margin:14mm;}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="cover">
+  <div class="cover-kicker">销售演绎反馈 · 话术分析与手册迭代报告</div>
+  <h1 class="cover-title">华为 MatePad 12X / Air 2025 · 销冠 Handbook</h1>
+  <div class="cover-sub">批次 # · 分析任务 #21 · 生成于 2026-06-10T14:01:05Z</div>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-v">16%</div><div class="kpi-l">手册覆盖率</div></div>
+    <div class="kpi"><div class="kpi-v">1</div><div class="kpi-l">会话场次</div></div>
+    <div class="kpi"><div class="kpi-v">75</div><div class="kpi-l">话术分类条数</div></div>
+  </div>
+  <div class="chips"><span class="chip chip-bad">超时 1</span></div>
+</header>
+
+
+<section class="block">
+  <h2><span class="sec-no">01</span> 手册结构覆盖率</h2>
+  <p class="lead">按 1/3/3/9 四大板块统计销冠实际命中情况——0% 覆盖即「死条目」，是迭代第一优先。</p>
+  <table class="cov-table">
+    <tr>
+      <td class="g-name">一句话定位 <span class="g-frac">0/1</span></td>
+      <td class="g-bar"><div class="bar"><span class="bar-fill bar-bad" style="width:0%"></span></div></td>
+      <td class="g-pct">0%</td>
+      <td class="g-q">质量 0.0</td>
+    </tr>
+    <tr>
+      <td class="g-name">核心卖点 <span class="g-frac">1/3</span></td>
+      <td class="g-bar"><div class="bar"><span class="bar-fill bar-bad" style="width:33%"></span></div></td>
+      <td class="g-pct">33%</td>
+      <td class="g-q">质量 8.6</td>
+    </tr>
+    <tr>
+      <td class="g-name">竞品对比 <span class="g-frac">1/3</span></td>
+      <td class="g-bar"><div class="bar"><span class="bar-fill bar-bad" style="width:33%"></span></div></td>
+      <td class="g-pct">33%</td>
+      <td class="g-q">质量 8.4</td>
+    </tr>
+    <tr>
+      <td class="g-name">常见问答 <span class="g-frac">0/9</span></td>
+      <td class="g-bar"><div class="bar"><span class="bar-fill bar-bad" style="width:0%"></span></div></td>
+      <td class="g-pct">0%</td>
+      <td class="g-q">质量 0.0</td>
+    </tr>
+  </table>
+</section>
+
+
+<section class="block block-key">
+  <h2><span class="sec-no">02</span> 手册迭代建议 · 逐条 <span class="sec-flag">本报告核心</span></h2>
+  <p class="lead">按 1/3/3/9 对各条目逐条给建议——即使表现好也给增强点，每条附 TOP3 命中原声。</p>
+  
+  <h3 class="rev-grp">① 一句话定位</h3>
+  <div class="prop-wrap">
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">一句话定位</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>华为MatePad 12 X是一款面向年轻用户的轻旗舰平板，集超清纸感屏、专业手写笔和旗舰性能于一身，搭配超轻键盘，让你轻松告别厚重笔记本，出行更便捷。</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「一句话定位」补：① 一句话定位的销冠口播；② 适用客户画像；③ 接续话术。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>华为MatePad 12 X是一款面向年轻用户的轻旗舰平板，集超清纸感屏、专业手写笔和旗舰性能于一身，搭配超轻键盘，让你轻松告别厚重笔记本，出行更便捷。</div>
+      
+    </div>
+  </div>
+  <h3 class="rev-grp">③ 核心卖点</h3>
+  <div class="prop-wrap">
+    <div class="prop sev-good">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-good">保持</span>
+        <span class="prop-tag">卖点①·超清纸感屏</span>
+        <span class="prop-cov">命中 22 次 · 1 场 · 均分 8.6</span>
+      </div>
+      <div class="prop-line"><b>原文</b>采用PaperMatte纸感显示技术，在强光下无反射，屏幕闪烁减少50%，提供全高清体验的同时呵护双眼，适合长时间阅读或创作。</div>
+      <div class="prop-line"><b>评估</b>演绎良好，可作范本沉淀。（均分 8.6/10，命中 22 次）</div>
+      <div class="prop-line prop-fix"><b>建议</b>对「卖点①·超清纸感屏」下一版增强：① 用可验证具体数字替换泛词；② 给 3 个口播变体（破冰/紧迫/异议）；③ 列禁忌说法；④ 配 1 个客户场景演绎。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>采用PaperMatte纸感显示技术，在强光下无反射，屏幕闪烁减少50%，提供全高清体验的同时呵护双眼，适合长时间阅读或创作。</div>
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.0</span>
+            <span class="rev-quote-by">阿卜杜拉 Abdullah</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>屏幕看着还行，但亮度够吗？户外能不能看清？我的iPad Pro Mini LED好歹有1600 nits。</div>
+          <div class="rev-quote-line"><b>销售原文</b>（拿起样机走到强光处，倾斜屏幕）您看，MatePad 12 X 峰值 1000 尼特，但 PaperMatte 纸感屏在强光下几乎零反射——户外实际可视效果反而比镜面屏更通透。您上手试试？</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.0</span>
+            <span class="rev-quote-by">阿卜杜拉 Abdullah</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>手电筒演示不够，我要真实户外强光！你拿亮度计来，两台并排，在模拟科威特正午阳光下测实际屏前亮度。1000尼特保持率到底多少？1600尼特反光吞掉后还剩多少？给我数据，别用&#x27;肉眼感知&#x27;绕开物理差距。</div>
+          <div class="rev-quote-line"><b>销售原文</b>（拿起亮度计，将两台平板并排置于模拟科威特正午强光灯下）您看，纸感屏1000尼特保持率准确耗电数据我现场拿真机给您实测，实测920尼特；iPad Pro 1600尼特因镜面反光，保持率仅准确耗电数据我现场拿真机给您实测，实测1088尼特——差距仅168尼特，但纸感屏无眩光，HDR高光更凝聚。所以您最在意的是户外强光下HDR高光还能不能炸裂，对吗？</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.0</span>
+            <span class="rev-quote-by">阿卜杜拉 Abdullah</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>168 尼特差距我看到了，但暗部细节呢？Ya zalami，现在放《沙丘》洞穴那段——我要看纸感屏暗处是不是一团黑，别拿 HDR 高光当借口。</div>
+          <div class="rev-quote-line"><b>销售原文</b>（将两台平板并排放在烈日下，打开《沙丘》洞穴片段）您看，纸感屏暗部层次分明，沙虫轮廓清晰，没有糊成一片。iPad Pro 反光强烈，暗部细节被镜面反射淹没。所以您最核心的顾虑就是户外强光下暗部细节和 HDR 高光能否兼得，对吗？</div>
+        </div></div>
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">卖点②·专业手写笔M-Pencil Pro</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>全新M-Pencil Pro配备三种笔尖，其中碳纤维笔尖带来真实铅笔书写感；支持捏合快捷菜单、尾部按钮一键启动应用，交互更智能。</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「卖点②·专业手写笔M-Pencil Pro」补：① 30 字黄金一句话；② 客户痛点引入场景；③ 关联演示动作；④ 一句 closing-push。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>全新M-Pencil Pro配备三种笔尖，其中碳纤维笔尖带来真实铅笔书写感；支持捏合快捷菜单、尾部按钮一键启动应用，交互更智能。</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">卖点③·PC级生产力</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>搭配超轻键盘（仅308克）和华为鼠标，支持PC级WPS，可轻松处理文档、表格和演示，实现移动办公，告别沉重笔记本。</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「卖点③·PC级生产力」补：① 30 字黄金一句话；② 客户痛点引入场景；③ 关联演示动作；④ 一句 closing-push。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>搭配超轻键盘（仅308克）和华为鼠标，支持PC级WPS，可轻松处理文档、表格和演示，实现移动办公，告别沉重笔记本。</div>
+      
+    </div>
+  </div>
+  <h3 class="rev-grp">③ 竞品对比</h3>
+  <div class="prop-wrap">
+    <div class="prop sev-good">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-good">保持</span>
+        <span class="prop-tag">竞品①·vs iPad Air</span>
+        <span class="prop-cov">命中 22 次 · 1 场 · 均分 8.4</span>
+      </div>
+      <div class="prop-line"><b>原文</b>（vs iPad Air）MatePad 12 X配备独有的PaperMatte纸感屏，而iPad Air没有此技术；即使在强光下，MatePad 12 X也能清晰显示且无反射，而iPad Air会有明显反光。</div>
+      <div class="prop-line"><b>评估</b>演绎良好，可作范本沉淀。（均分 8.4/10，命中 22 次）</div>
+      <div class="prop-line prop-fix"><b>建议</b>对「竞品①·vs iPad Air」下一版增强：① 用可验证具体数字替换泛词；② 给 3 个口播变体（破冰/紧迫/异议）；③ 列禁忌说法；④ 配 1 个客户场景演绎。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>（vs iPad Air）MatePad 12 X配备独有的PaperMatte纸感屏，而iPad Air没有此技术；即使在强光下，MatePad 12 X也能清晰显示且无反射，而iPad Air会有明显反光。</div>
+      <div class="rev-quotes">
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.5</span>
+            <span class="rev-quote-by">阿卜杜拉 Abdullah</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>168 尼特差距我看到了，但暗部细节呢？Ya zalami，现在放《沙丘》洞穴那段——我要看纸感屏暗处是不是一团黑，别拿 HDR 高光当借口。</div>
+          <div class="rev-quote-line"><b>销售原文</b>（将两台平板并排放在烈日下，打开《沙丘》洞穴片段）您看，纸感屏暗部层次分明，沙虫轮廓清晰，没有糊成一片。iPad Pro 反光强烈，暗部细节被镜面反射淹没。所以您最核心的顾虑就是户外强光下暗部细节和 HDR 高光能否兼得，对吗？</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.2</span>
+            <span class="rev-quote-by">阿卜杜拉 Abdullah</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>等等，你还没回答我的问题！现在放《沙丘》洞穴那段——纸感屏暗部层次分明？我亲眼看到才算数。把两台都调到同一时间轴，用手遮住阳光，看沙虫轮廓和岩石纹理，别想用高光区糊弄过去。</div>
+          <div class="rev-quote-line"><b>销售原文</b>（将两台平板并排，同步播放《沙丘》洞穴片段，用手遮挡阳光）您看，纸感屏沙虫轮廓和岩石纹理清晰可见，暗部层次分明；iPad Pro 反光强烈，暗部细节被镜面反射淹没。所以您最核心的顾虑就是户外强光下暗部细节和 HDR 高光能否兼得，对吗？</div>
+        </div>
+        <div class="rev-quote">
+          <div class="rev-quote-meta"><span class="rev-quote-score">9.0</span>
+            <span class="rev-quote-by">阿卜杜拉 Abdullah</span></div>
+          <div class="rev-quote-line"><b>客户原文</b>通透是通透，但1000尼特峰值看HDR还是不够爆。Ya zalami，暗部细节过关了，可高光冲击力呢？我客厅那台三星The Frame电视也是1000尼特，平板总不能比电视还暗吧？</div>
+          <div class="rev-quote-line"><b>销售原文</b>（打开 HDR 视频，暂停在高光场景）您看，纸感屏的 1000 尼特在户外无反射，实际高光冲击力比镜面屏的 1600 尼特更直接——暗部细节也干净，没有光晕干扰。您上手对比试试？</div>
+        </div></div>
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">竞品②·vs Apple Pencil Pro</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>（vs Apple Pencil Pro）M-Pencil Pro不仅支持捏合快捷操作，还拥有尾部快捷按钮，可一键启动任意应用；提供三种笔尖适应不同创作需求，而Apple Pencil Pro缺乏类似功能。</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「竞品②·vs Apple Pencil Pro」补：① 可验证数字对比；② 不诋毁竞品的合规话术；③ 客户提竞品时 3 句快速回应。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>（vs Apple Pencil Pro）M-Pencil Pro不仅支持捏合快捷操作，还拥有尾部快捷按钮，可一键启动任意应用；提供三种笔尖适应不同创作需求，而Apple Pencil Pro缺乏类似功能。</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">竞品③·vs iPad Air (充电续航)</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>（vs iPad Air）MatePad 12 X支持66W超级快充，充满电不到1.5小时，而iPad Air最大仅20W充电，需2.5小时；MatePad 12 X拥有10100mAh大电池，续航一整天。</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「竞品③·vs iPad Air (充电续航)」补：① 可验证数字对比；② 不诋毁竞品的合规话术；③ 客户提竞品时 3 句快速回应。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>（vs iPad Air）MatePad 12 X支持66W超级快充，充满电不到1.5小时，而iPad Air最大仅20W充电，需2.5小时；MatePad 12 X拥有10100mAh大电池，续航一整天。</div>
+      
+    </div>
+  </div>
+  <h3 class="rev-grp">⑨ FAQ</h3>
+  <div class="prop-wrap">
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">FAQ①</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Q: 新款MatePad 12 X 2025与上一代有什么区别？
+A: 主要升级包括：超清纸感屏、性能提升27%、Wi-Fi升级到Wi-Fi 7，连接更稳定。</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「FAQ①」补：① 问题 3 个变体；② 标准答；③ 一句反问引导；④ 一句 closing-push。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Q: 新款MatePad 12 X 2025与上一代有什么区别？
+A: 主要升级包括：超清纸感屏、性能提升27%、Wi-Fi升级到Wi-Fi 7，连接更稳定。</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">FAQ②</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Q: 标准屏和纸感屏如何选择？
+A: 标准屏色彩鲜艳，适合看电影刷视频；纸感屏减少反光，在强光下清晰，且书写有纸感，适合阅读和创作。</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「FAQ②」补：① 问题 3 个变体；② 标准答；③ 一句反问引导；④ 一句 closing-push。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Q: 标准屏和纸感屏如何选择？
+A: 标准屏色彩鲜艳，适合看电影刷视频；纸感屏减少反光，在强光下清晰，且书写有纸感，适合阅读和创作。</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">FAQ③</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Q: MatePad 12 X和MatePad Pro 12.2怎么选？
+A: Pro是顶级旗舰，性能最强，采用Tandem OLED屏，适合专业创作；12 X是轻旗舰，性能续航同样旗舰，屏幕护眼，配色时尚，适合轻办公和学习。</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「FAQ③」补：① 问题 3 个变体；② 标准答；③ 一句反问引导；④ 一句 closing-push。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Q: MatePad 12 X和MatePad Pro 12.2怎么选？
+A: Pro是顶级旗舰，性能最强，采用Tandem OLED屏，适合专业创作；12 X是轻旗舰，性能续航同样旗舰，屏幕护眼，配色时尚，适合轻办公和学习。</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">FAQ④</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Q: MatePad 12 X和MatePad 11.5 S有什么区别？
+A: 12 X屏幕更大、性能更强、电池更大（10100mAh），适合追求大屏和长续航的用户；11.5 S更小巧轻便，适合日常学习和娱乐。</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「FAQ④」补：① 问题 3 个变体；② 标准答；③ 一句反问引导；④ 一句 closing-push。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Q: MatePad 12 X和MatePad 11.5 S有什么区别？
+A: 12 X屏幕更大、性能更强、电池更大（10100mAh），适合追求大屏和长续航的用户；11.5 S更小巧轻便，适合日常学习和娱乐。</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">FAQ⑤</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Q: 这款平板支持哪些手写笔？
+A: 支持全新M-Pencil Pro，配备三种笔尖，支持捏合快捷操作和尾部按钮一键启动应用。</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「FAQ⑤」补：① 问题 3 个变体；② 标准答；③ 一句反问引导；④ 一句 closing-push。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Q: 这款平板支持哪些手写笔？
+A: 支持全新M-Pencil Pro，配备三种笔尖，支持捏合快捷操作和尾部按钮一键启动应用。</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">FAQ⑥</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Q: 电池续航怎么样？充电快吗？
+A: 配备10100mAh大电池，支持66W超级快充，充满电不到1.5小时，本地视频播放可达14小时。</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「FAQ⑥」补：① 问题 3 个变体；② 标准答；③ 一句反问引导；④ 一句 closing-push。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Q: 电池续航怎么样？充电快吗？
+A: 配备10100mAh大电池，支持66W超级快充，充满电不到1.5小时，本地视频播放可达14小时。</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">FAQ⑦</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Q: 这款平板适合学生使用吗？
+A: 非常适合。纸感屏护眼，M-Pencil Pro书写体验好，支持PC级WPS，可满足学习笔记、文档处理等需求。</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「FAQ⑦」补：① 问题 3 个变体；② 标准答；③ 一句反问引导；④ 一句 closing-push。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Q: 这款平板适合学生使用吗？
+A: 非常适合。纸感屏护眼，M-Pencil Pro书写体验好，支持PC级WPS，可满足学习笔记、文档处理等需求。</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">FAQ⑧</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Q: 键盘和鼠标是标配吗？
+A: 键盘和鼠标需单独购买，但键盘采用NearLink技术，超轻仅308克，搭配后总重863克，非常便携。</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「FAQ⑧」补：① 问题 3 个变体；② 标准答；③ 一句反问引导；④ 一句 closing-push。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Q: 键盘和鼠标是标配吗？
+A: 键盘和鼠标需单独购买，但键盘采用NearLink技术，超轻仅308克，搭配后总重863克，非常便携。</div>
+      
+    </div>
+    <div class="prop sev-bad">
+      <div class="prop-head">
+        <span class="sev-badge sev-b-bad">新增</span>
+        <span class="prop-tag">FAQ⑨</span>
+        <span class="prop-cov">本批 0 次引用（死条目）</span>
+      </div>
+      <div class="prop-line"><b>原文</b>Q: 这款平板支持哪些系统功能？
+A: 搭载HarmonyOS 4.3，支持多屏协同、PC级WPS等，可与华为手机、笔记本无缝协同。</div>
+      <div class="prop-line"><b>评估</b>本批 0 次被销冠引用，等同死条目。</div>
+      <div class="prop-line prop-fix"><b>建议</b>为「FAQ⑨」补：① 问题 3 个变体；② 标准答；③ 一句反问引导；④ 一句 closing-push。</div>
+      <div class="prop-line prop-fix"><b>修改后</b>Q: 这款平板支持哪些系统功能？
+A: 搭载HarmonyOS 4.3，支持多屏协同、PC级WPS等，可与华为手机、笔记本无缝协同。</div>
+      
+    </div>
+  </div>
+</section>
+
+
+<section class="block">
+  <h2><span class="sec-no">03</span> 强弱项与死条目</h2>
+  <div class="ws-grid">
+    <div class="ws-col">
+      <h3 class="ws-bad-title">弱项 Top（亟需迭代）</h3>
+      <ul class="cat-list">
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">参数①·屏幕</span>
+          <span class="cat-meta">7.8/10 · 15次</span></div>
+        <div class="cat-reason">未提及分辨率、刷新率、色域(2) / 亮度数值与手册不一致（1600 vs 1000）(1) / 未提及分辨率、刷新率等参数(1)</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">竞品①·vs iPad Air</span>
+          <span class="cat-meta">8.4/10 · 22次</span></div>
+        <div class="cat-reason">对比对象为iPad Pro而非iPad Air(2) / 未明确提及iPad Air(2) / 未明确点名iPad Air，对比不够直接(1)</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">演示②·纸感屏防反光</span>
+          <span class="cat-meta">8.5/10 · 15次</span></div>
+        <div class="cat-reason">未播放视频对比(2) / 未实际演示强光照射，仅口头描述(1) / 未明确使用强光手电，但户外阳光更真实(1)</div>
+      </li>
+      <li class="cat-bad">
+        <div class="cat-h"><span class="cat-name">卖点①·超清纸感屏</span>
+          <span class="cat-meta">8.6/10 · 22次</span></div>
+        <div class="cat-reason">未提及屏幕闪烁减少50%(3) / 未提及护眼（闪烁减少50%）(3) / 未明确提及PaperMatte技术名称(2)</div>
+      </li></ul>
+    </div>
+    <div class="ws-col">
+      <h3 class="ws-good-title">强项 Top（保留口径）</h3>
+      <ul class="cat-list">
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">卖点①·超清纸感屏</span>
+          <span class="cat-meta">8.6/10 · 22次</span></div>
+        <div class="cat-reason">销冠在该条目上多次复述官方口径：采用PaperMatte纸感显示技术，在强光下无反射，屏幕闪烁减少50%，提供全高清体验的同时呵护双眼…</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">演示②·纸感屏防反光</span>
+          <span class="cat-meta">8.5/10 · 15次</span></div>
+        <div class="cat-reason">销冠在该条目上多次复述官方口径：用强光手电照射屏幕，展示无反射效果；播放高清视频，对比普通屏幕与纸感屏的清晰度。…</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">竞品①·vs iPad Air</span>
+          <span class="cat-meta">8.4/10 · 22次</span></div>
+        <div class="cat-reason">销冠在该条目上多次复述官方口径：（vs iPad Air）MatePad 12 X配备独有的PaperMatte纸感屏，而iPad Air没有此技术；即使在强光下，MatePad 12 X也能…</div>
+      </li>
+      <li class="cat-good">
+        <div class="cat-h"><span class="cat-name">参数①·屏幕</span>
+          <span class="cat-meta">7.8/10 · 15次</span></div>
+        <div class="cat-reason">销冠在该条目上多次复述官方口径：2.8K 分辨率，144Hz 自适应刷新率，1000 尼特峰值亮度，P3 广色域…</div>
+      </li></ul>
+    </div>
+  </div>
+  <div class="dead-wrap"><div class="dead-title">未覆盖 / 死条目（0 次命中）</div><div class="dead-list"><span class="dead">comp_2</span><span class="dead">comp_3</span><span class="dead">demo_1</span><span class="dead">demo_10</span><span class="dead">demo_4</span><span class="dead">demo_5</span><span class="dead">demo_6</span><span class="dead">demo_7</span><span class="dead">demo_8</span><span class="dead">demo_9</span><span class="dead">faq_1</span><span class="dead">faq_2</span><span class="dead">faq_3</span><span class="dead">faq_4</span><span class="dead">faq_5</span><span class="dead">faq_6</span><span class="dead">faq_7</span><span class="dead">faq_8</span><span class="dead">faq_9</span><span class="dead">intro_1</span><span class="dead">param_2</span><span class="dead">param_3</span><span class="dead">param_4</span><span class="dead">param_5</span><span class="dead">sell_2</span><span class="dead">sell_3</span></div></div>
+</section>
+
+
+<section class="block">
+  <h2><span class="sec-no">06</span> 优秀话术原声（按手册结构归类）</h2>
+  <p class="lead">优秀 = 行为信号（客户购买信号↑ / 态度转正）⊕ LLM 优秀度，
+  <b>不以"是否照搬手册"评判</b>；"手册外精彩话术"可直接喂迭代建议。</p>
+  
+  <div class="exc-group">
+    <div class="exc-group-head">
+      <span class="exc-badge exc-badge-hb">核心卖点</span>
+      <span class="exc-count">19 条</span>
+    </div>
+    
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">7.2/10</span>
+        <span class="exc-sig">购买信号 0.3 → 0.5</span>
+        <span class="exc-tag">卖点①·超清纸感屏</span><span class="exc-tag">客户转「cautious」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>等等，你还没回答我的问题！现在放《沙丘》洞穴那段——纸感屏暗部层次分明？我亲眼看到才算数。把两台都调到同一时间轴，用手遮住阳光，看沙虫轮廓和岩石纹理，别想用高光区糊弄过去。</div>
+      <div class="exc-sales">（将两台平板并排，同步播放《沙丘》洞穴片段，用手遮挡阳光）您看，纸感屏沙虫轮廓和岩石纹理清晰可见，暗部层次分明；iPad Pro 反光强烈，暗部细节被镜面反射淹没。所以您最核心的顾虑就是户外强光下暗部细节和 HDR 高光能否兼得，对吗？</div>
+      <ul class="exc-why"><li>客户购买信号 0.3→0.5 明显上升</li><li>精准切入「卖点①·超清纸感屏」</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">7.0/10</span>
+        <span class="exc-sig">购买信号 0.3 → 0.5</span>
+        <span class="exc-tag">卖点①·超清纸感屏</span><span class="exc-tag">客户转「skeptical」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Ya zalami，别光说占比高出30%，我要看直方图！把两台平板的《沙丘》日出帧亮度分布调出来，1%窗口峰值数据摆上台面。纸感屏920尼特究竟几%窗口？iPad Pro 1088尼特又是几%？有效高光区占比高，不代表峰值亮，我要亲眼验证！</div>
+      <div class="exc-sales">（调出两台平板的直方图，并排显示《沙丘》日出帧）您看，纸感屏 1% 窗口峰值 920 尼特，iPad Pro 同窗口 1088 尼特，但纸感屏有效高光区占比高出 30%，暗部岩石纹理根根分明。您要的户外强光下暗部细节和 HDR 高光兼得，纸感屏做到了。我这样理解您的核心需求，对吗？</div>
+      <ul class="exc-why"><li>客户购买信号 0.3→0.5 明显上升</li><li>精准切入「卖点①·超清纸感屏」</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">6.7/10</span>
+        <span class="exc-sig">购买信号 0.2 → 0.4</span>
+        <span class="exc-tag">卖点①·超清纸感屏</span><span class="exc-tag">客户转「skeptical」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Ya zalami，别总拿‘有效高光区’绕开物理峰值！你调出iPad Pro直方图，我要亲眼看看镜面反光到底吞了多少高光面积——如果1000尼特真能比1600尼特更炸，Wallah，我当场认输。</div>
+      <div class="exc-sales">（调出iPad Pro直方图，与MatePad 12X并排）您看，镜面反光让高光边缘发虚，峰值面积被吞掉约准确耗电数据我现场拿真机给您实测——1000尼特凝聚反而更炸。您反复纠结绝对值，其实是在意户外强光下HDR还能不能有这种冲击力，对吗？</div>
+      <ul class="exc-why"><li>客户购买信号 0.2→0.4 明显上升</li><li>精准切入「卖点①·超清纸感屏」</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">6.5/10</span>
+        <span class="exc-sig">购买信号 0.2 → 0.4</span>
+        <span class="exc-tag">卖点①·超清纸感屏</span><span class="exc-tag">客户转「skeptical」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>行，拿我iPad Pro来，放同一段《双子杀手》4K HDR 60帧——室内暗光，两台亮度都拉满，Wallah，我要看爆炸场景的高光谁更刺眼，别拿SDR糊弄我。</div>
+      <div class="exc-sales">（接过您的iPad Pro，和MatePad 12X并排，打开《双子杀手》4K HD准确价格我让同事现场给您调单核一下帧同一帧爆炸场景，两台亮度都拉满）您看，纸感屏的1000尼特在暗光下高光更凝聚，没有镜面屏的反光散射，爆炸中心的火球边缘更锐利，冲击力反而更直接。您觉得这差距够明显吗？</div>
+      <ul class="exc-why"><li>客户购买信号 0.2→0.4 明显上升</li><li>精准切入「卖点①·超清纸感屏」</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">6.5/10</span>
+        <span class="exc-sig">购买信号 0.2 → 0.4</span>
+        <span class="exc-tag">卖点①·超清纸感屏</span><span class="exc-tag">客户转「skeptical」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>920尼特？我iPad Pro标称1600尼特，你这亮度计读数连1000都没破，Ya zalami，这就是你说的HDR高光冲击？别光看刺眼，我要看直方图——纸感屏这块OLED在1%窗口下到底能飙到多少？现在切到《沙丘》日出镜头，把亮度计对准太阳光斑，我要看到瞬间峰值！</div>
+      <div class="exc-sales">（将亮度计对准纸感屏太阳光斑，实时读数跳动）您看，瞬间峰值冲到 920 尼特，但 PaperMatte 纸感屏无镜面反光，高光冲击力直逼 1600 尼特观感。iPad Pro 标称虽高，镜面反射却吃掉大量有效亮度。所以您最核心的顾虑就是户外强光下暗部细节和 HDR 高光能否兼得，对吗？</div>
+      <ul class="exc-why"><li>客户购买信号 0.2→0.4 明显上升</li><li>精准切入「卖点①·超清纸感屏」</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">6.3/10</span>
+        <span class="exc-sig">购买信号 0.2 → 0.3</span>
+        <span class="exc-tag">卖点①·超清纸感屏</span><span class="exc-tag">客户转「skeptical」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>手电筒演示不够，我要真实户外强光！你拿亮度计来，两台并排，在模拟科威特正午阳光下测实际屏前亮度。1000尼特保持率到底多少？1600尼特反光吞掉后还剩多少？给我数据，别用&#x27;肉眼感知&#x27;绕开物理差距。</div>
+      <div class="exc-sales">（拿起亮度计，将两台平板并排置于模拟科威特正午强光灯下）您看，纸感屏1000尼特保持率准确耗电数据我现场拿真机给您实测，实测920尼特；iPad Pro 1600尼特因镜面反光，保持率仅准确耗电数据我现场拿真机给您实测，实测1088尼特——差距仅168尼特，但纸感屏无眩光，HDR高光更凝聚。所以您最在意的是户外强光下HDR高光还能不能炸裂，对吗？</div>
+      <ul class="exc-why"><li>精准切入「卖点①·超清纸感屏」</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">6.1/10</span>
+        <span class="exc-sig">购买信号 0.2 → 0.2</span>
+        <span class="exc-tag">卖点①·超清纸感屏</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>把两台直方图并排，iPad Pro有效高光区占比标出来！别再用百分比糊弄，我要精确数值，Yalla！</div>
+      <div class="exc-sales">（将两台平板并排，调出《沙丘》日出帧直方图，1%窗口峰值旁标注精确面积占比）您看——纸感屏有效高光区占比 47.3%，iPad Pro 同帧 36.4%，高出 10.9 个百分点。920 尼特虽低 168 尼特，但高光面积多出近三成，暗部岩石纹理也更清晰。您要的户外强光下暗部细节和 HDR 高光兼得，纸感屏做到了。我这样理解您的核心需求，对吗？</div>
+      <ul class="exc-why"><li>精准切入「卖点①·超清纸感屏」</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">6.0/10</span>
+        <span class="exc-sig">购买信号 0.4 → 0.4</span>
+        <span class="exc-tag">卖点①·超清纸感屏</span><span class="exc-tag">客户转「frustrated」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>持续峰值曲线看到了，纸感屏30分钟不衰减确实比iPad Pro强。但你别转移话题——现在把两台平板并排，用手遮阳，同时显示《沙丘》日出帧的直方图和1%窗口峰值读数，我要亲眼看到纸感屏有效高光区占比高出30%的具体数据，不是光说！</div>
+      <div class="exc-sales">（将两台平板并排，调出《沙丘》日出帧直方图和1%窗口峰值读数）您看，纸感屏有效高光区占比准确耗电数据我现场拿真机给您实测，iPad Pro仅准确耗电数据我现场拿真机给您实测——高出整整10个百分点。920尼特虽低168尼特，但高光面积更大，暗部岩石纹理也更清晰。您要的户外强光下暗部细节和HDR高光兼得，纸感屏做到了。我这样理解您的核心需求，对吗？</div>
+      <ul class="exc-why"><li>精准切入「卖点①·超清纸感屏」</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">6.0/10</span>
+        <span class="exc-sig">购买信号 0.3 → 0.3</span>
+        <span class="exc-tag">卖点①·超清纸感屏</span><span class="exc-tag">客户转「skeptical」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>920尼特对1088尼特？差距确实不大，但你这模拟灯能代表科威特正午吗？Yalla，拿上平板，我们到店外阳光下实测，我亲自用亮度计测——纸感屏反光控制再好，1000尼特物理上限是硬伤，我要亲眼看到它在烈日下还能不能看清暗部细节。</div>
+      <div class="exc-sales">（拿起两台平板，走向店门口）走，我们直接到外面阳光下实测。您刚才反复追问亮度保持率、暗部细节、HDR冲击力——其实您最在意的就是户外强光下HDR高光还能不能炸裂，对吗？</div>
+      <ul class="exc-why"><li>精准切入「卖点①·超清纸感屏」</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">6.0/10</span>
+        <span class="exc-sig">购买信号 0.2 → 0.2</span>
+        <span class="exc-tag">卖点①·超清纸感屏</span><span class="exc-tag">客户转「skeptical」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>通透是通透，但1000尼特峰值看HDR还是不够爆。Ya zalami，暗部细节过关了，可高光冲击力呢？我客厅那台三星The Frame电视也是1000尼特，平板总不能比电视还暗吧？</div>
+      <div class="exc-sales">（打开 HDR 视频，暂停在高光场景）您看，纸感屏的 1000 尼特在户外无反射，实际高光冲击力比镜面屏的 1600 尼特更直接——暗部细节也干净，没有光晕干扰。您上手对比试试？</div>
+      <ul class="exc-why"><li>精准切入「卖点①·超清纸感屏」</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">5.9/10</span>
+        <span class="exc-sig">购买信号 0.2 → 0.2</span>
+        <span class="exc-tag">卖点①·超清纸感屏</span><span class="exc-tag">客户转「skeptical」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>先测亮度！我手里这个分光光度计可不会说谎——纸感屏现在多少尼特？iPad Pro呢？《沙丘》那段洞穴戏要是暗部糊成一片，你刚才说的920尼特保持率就是扯淡。Yalla，数据亮出来！</div>
+      <div class="exc-sales">（将两台平板并排放在店外阳光下，打开亮度计）您看，纸感屏现在实测 920 尼特，iPad Pro 是 1088 尼特——差距仅 168 尼特。但纸感屏无镜面反光，暗部细节清晰可见。所以您最在意的是户外强光下 HDR 高光还能不能炸裂，对吗？</div>
+      <ul class="exc-why"><li>精准切入「卖点①·超清纸感屏」</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">5.8/10</span>
+        <span class="exc-sig">购买信号 0.3 → 0.3</span>
+        <span class="exc-tag">卖点①·超清纸感屏</span><span class="exc-tag">客户转「skeptical」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>168尼特差距我认了，但光看读数不够——现在把两台都调到《沙丘》日出镜头，用手遮阳看纸感屏暗部岩石纹理，同时盯着iPad Pro反光区，我要亲眼对比有效高光区到底差多少。Yalla，别磨蹭！</div>
+      <div class="exc-sales">（将两台平板并排，同步定格在《沙丘》日出镜头同一帧，用手遮阳）您看，纸感屏暗部岩石纹理根根分明，iPad Pro 反光区把暗部细节全吃掉了。亮度计读数：纸感屏 920 尼特，iPad Pro 1088 尼特——168 尼特差距，但纸感屏有效高光区占比高出约 30%，实际刺眼感反而更强。所以您最核心的顾虑就是户外强光下暗部细节和 HDR 高光能否兼得，对吗？</div>
+      <ul class="exc-why"><li>精准切入「卖点①·超清纸感屏」</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">5.7/10</span>
+        <span class="exc-sig">购买信号 0.4 → 0.3</span>
+        <span class="exc-tag">卖点①·超清纸感屏</span><span class="exc-tag">客户转「skeptical」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>920尼特瞬间峰值？Ya zalami，这数字和1600尼特差太多了！别拿“有效高光区”搪塞——现在把iPad Pro也拉到同一帧太阳光斑，亮度计读数对比，我要看纸感屏到底能追回多少差距！</div>
+      <div class="exc-sales">（将亮度计对准 iPad Pro 同一帧太阳光斑）您看，iPad Pro 瞬间峰值 1088 尼特，纸感屏 920 尼特——差距 168 尼特。但纸感屏无镜面反光，有效高光区占比高出 30%，实际刺眼感反而更强。所以您最核心的顾虑就是户外强光下暗部细节和 HDR 高光能否兼得，对吗？</div>
+      <ul class="exc-why"><li>精准切入「卖点①·超清纸感屏」</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">5.6/10</span>
+        <span class="exc-sig">购买信号 0.2 → 0.1</span>
+        <span class="exc-tag">卖点①·超清纸感屏</span><span class="exc-tag">客户转「skeptical」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>屏幕看着还行，但亮度够吗？户外能不能看清？我的iPad Pro Mini LED好歹有1600 nits。</div>
+      <div class="exc-sales">（拿起样机走到强光处，倾斜屏幕）您看，MatePad 12 X 峰值 1000 尼特，但 PaperMatte 纸感屏在强光下几乎零反射——户外实际可视效果反而比镜面屏更通透。您上手试试？</div>
+      <ul class="exc-why"><li>精准切入「卖点①·超清纸感屏」</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">5.5/10</span>
+        <span class="exc-sig">购买信号 0.2 → 0.2</span>
+        <span class="exc-tag">卖点①·超清纸感屏</span><span class="exc-tag">客户转「skeptical」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>光晕确实干净，但HDR峰值亮度能到多少？我户外看剧要1600 nits才够爽。</div>
+      <div class="exc-sales">（打开 HDR 测试视频，暂停在高光场景）这块屏 HDR 峰值亮度 1000 尼特，但纸感屏在户外无反射，实际可视亮度比镜面屏的 1600 尼特更通透。您对比看看？</div>
+      <ul class="exc-why"><li>精准切入「卖点①·超清纸感屏」</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">5.3/10</span>
+        <span class="exc-sig">购买信号 0.1 → 0.2</span>
+        <span class="exc-tag">卖点①·超清纸感屏</span><span class="exc-tag">客户转「skeptical」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>PaperMatte？听着像磨砂膜。PWM 调光频率多少？别告诉我低频闪到瞎眼。</div>
+      <div class="exc-sales">PaperMatte 是纳米级防眩光蚀刻，不是贴膜。PWM 调光频率 1440Hz，远超人眼感知范围，长时间阅读不累眼。（拿起样机打开设置调出护眼模式）您看，屏幕闪烁减少 50%，强光下依然清晰。</div>
+      <ul class="exc-why"><li>精准切入「卖点①·超清纸感屏」</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">4.8/10</span>
+        <span class="exc-sig">购买信号 0.5 → 0.2</span>
+        <span class="exc-tag">卖点①·超清纸感屏</span><span class="exc-tag">客户转「skeptical」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Wallah，纸感屏暗部确实没糊，沙虫鳞片和岩石裂纹都看得清，反光控制也比iPad Pro强。但先别得意——HDR高光呢？现在切到沙虫破土那段，我要看纸感屏的爆炸闪光能不能冲到1600尼特的感觉，亮度计实时读数别停！</div>
+      <div class="exc-sales">（将亮度计对准纸感屏，实时读数显示 920 尼特，同时播放沙虫破土片段）您看，纸感屏 HDR 高光区亮度计冲到 920 尼特，沙虫破土的爆炸闪光刺眼感十足，暗部岩石纹理依然清晰——这就是 PaperMatte 纸感屏的优势：强光下无镜面反光，高光不衰减，暗部不糊。所以您最核心的顾虑就是户外强光下暗部细节和 HDR 高光能否兼得，对吗？</div>
+      <ul class="exc-why"><li>精准切入「卖点①·超清纸感屏」</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">4.5/10</span>
+        <span class="exc-sig">购买信号 0.4 → 0.2</span>
+        <span class="exc-tag">卖点①·超清纸感屏</span><span class="exc-tag">客户转「skeptical」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>你终于把iPad Pro直方图调出来了。看，高光峰值确实被散射吞掉了一小截面积，但1600尼特绝对值还在。你刚才说1000尼特更炸，现在数据摆在这——峰值面积差距没那么大吧？我再问一遍：你那个纸感屏的1000尼特，在户外强光下还能保持多少实际亮度？</div>
+      <div class="exc-sales">（调出两台平板并排，用手电筒强光斜射两台屏幕）您看，强光下纸感屏几乎无反射，实际可视亮度保持率远高于镜面屏——1600尼特被反光散射吞掉后，肉眼感知亮度反而打折。但您反复追问户外表现，我想先了解：您平时主要在什么场景下看HDR内容？是阳台、泳池边、还是通勤路上？</div>
+      <ul class="exc-why"><li>精准切入「卖点①·超清纸感屏」</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">4.5/10</span>
+        <span class="exc-sig">购买信号 0.2 → 0.2</span>
+        <span class="exc-tag">卖点①·超清纸感屏</span><span class="exc-tag">客户转「skeptical」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>1440Hz？还行。但暗部灰阶纯不纯？我看电影最恨光晕，Mini LED 就这毛病。</div>
+      <div class="exc-sales">（打开一段暗部场景视频，暂停在阴影区域）您看，这块屏的暗部灰阶过渡很干净，光晕控制比 Mini LED 自然得多，暗处细节都在。</div>
+      <ul class="exc-why"><li>精准切入「卖点①·超清纸感屏」</li></ul>
+    </div>
+  </div>
+  <div class="exc-group">
+    <div class="exc-group-head">
+      <span class="exc-badge exc-badge-hb">竞品对比</span>
+      <span class="exc-count">4 条</span>
+    </div>
+    
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">6.6/10</span>
+        <span class="exc-sig">购买信号 0.2 → 0.3</span>
+        <span class="exc-tag">竞品①·vs iPad Air</span><span class="exc-tag">客户转「skeptical」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>168 尼特差距我看到了，但暗部细节呢？Ya zalami，现在放《沙丘》洞穴那段——我要看纸感屏暗处是不是一团黑，别拿 HDR 高光当借口。</div>
+      <div class="exc-sales">（将两台平板并排放在烈日下，打开《沙丘》洞穴片段）您看，纸感屏暗部层次分明，沙虫轮廓清晰，没有糊成一片。iPad Pro 反光强烈，暗部细节被镜面反射淹没。所以您最核心的顾虑就是户外强光下暗部细节和 HDR 高光能否兼得，对吗？</div>
+      <ul class="exc-why"><li>精准切入「竞品①·vs iPad Air」</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">5.9/10</span>
+        <span class="exc-sig">购买信号 0.5 → 0.4</span>
+        <span class="exc-tag">竞品①·vs iPad Air</span><span class="exc-tag">客户转「skeptical」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>直方图我看到了，纸感屏1%窗口920尼特，iPad Pro 1088尼特。但你还没回答我——纸感屏的HDR高光在1%窗口下到底能维持多久？会不会几秒就降亮度？我要看持续峰值曲线，别拿瞬时数据糊弄我。</div>
+      <div class="exc-sales">（调出持续峰值曲线图，并排显示两台平板）您看，纸感屏在1%窗口下920尼特可稳定维持超过30分钟，iPad Pro的1088尼特在5分钟后就会因发热降至800尼特左右。纸感屏的散热和功耗控制更优，户外强光下HDR高光持久不衰减。您要的暗部细节和HDR高光兼得，纸感屏做到了。我这样理解您的核心需求，对吗？</div>
+      <ul class="exc-why"><li>精准切入「竞品①·vs iPad Air」</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">5.8/10</span>
+        <span class="exc-sig">购买信号 0.4 → 0.3</span>
+        <span class="exc-tag">竞品①·vs iPad Air</span><span class="exc-tag">客户转「skeptical」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>Wait, 别急着下结论。火球边缘锐利我看到了，但整体亮度呢？你调出两台机子的HDR亮度直方图，我要看峰值尼特数值——1000对1600，Wallah，高光区面积谁更大？别用主观感受，给我数据。</div>
+      <div class="exc-sales">（调出MatePad 12X工程模式HDR亮度直方图，与iPad Pro并排）您看，纸感屏1000尼特峰值时高光区面积占比准确耗电数据我现场拿真机给您实测，iPad Pro 1600尼特镜面屏因反光散射，有效高光区反而缩到准确耗电数据我现场拿真机给您实测——数据上我们更凝聚。但您反复追问亮度，其实背后是想要户外看HDR不妥协的沉浸感，对吗？</div>
+      <ul class="exc-why"><li>精准切入「竞品①·vs iPad Air」</li></ul>
+    </div>
+    <div class="exc-card">
+      <div class="exc-top">
+        <span class="exc-score">5.2/10</span>
+        <span class="exc-sig">购买信号 0.3 → 0.2</span>
+        <span class="exc-tag">竞品①·vs iPad Air</span><span class="exc-tag">客户转「skeptical」</span>
+        <span class="exc-by">阿卜杜拉 Abdullah</span>
+      </div>
+      <div class="exc-cust"><b>客户</b>数据上1000尼特高光区占比更大？Ya zalami, 但峰值亮度绝对值1600尼特就是更高，这是物理限制。你刚才说&#x27;有效高光区缩了&#x27;，我要看iPad Pro直方图上反光散射到底吞了多少高光面积——调出来，别只给我看MatePad的。</div>
+      <div class="exc-sales">（调出iPad Pro工程模式HDR直方图，与MatePad 12X并排）您看，镜面屏反光散射让高光区边缘发虚，有效峰值面积反而被吞掉约准确耗电数据我现场拿真机给您实测。您反复纠结绝对值，其实是在意户外强光下HDR高光还能不能炸裂，对吗？</div>
+      <ul class="exc-why"><li>精准切入「竞品①·vs iPad Air」</li></ul>
+    </div>
+  </div>
+</section>
+
+
+<section class="block">
+  <h2><span class="sec-no">07</span> 问题话术（重点修正）</h2>
+  <div class="turn-wrap">
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">阿卜杜拉 Abdullah</span>
+        <span class="turn-q turn-q-warn">6.0/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>1440Hz？还行。但暗部灰阶纯不纯？我看电影最恨光晕，Mini LED 就这毛病。</div>
+      <div class="turn-sales"><b>销冠</b>（打开一段暗部场景视频，暂停在阴影区域）您看，这块屏的暗部灰阶过渡很干净，光晕控制比 Mini LED 自然得多，暗处细节都在。</div>
+      <ul class="turn-reasons"><li>推进力 仅 2.67/10</li><li>口径对齐 仅 5.0/10</li><li>问题：未明确提及纸感屏技术名称</li></ul>
+      <div class="turn-sug"><b>建议</b>补充PaperMatte技术名称和护眼数据 / 直接对比iPad Air，强调纸感屏优势 / 用强光手电照射屏幕，展示无反射效果</div>
+    </div>
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">阿卜杜拉 Abdullah</span>
+        <span class="turn-q turn-q-warn">7.0/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>你终于把iPad Pro直方图调出来了。看，高光峰值确实被散射吞掉了一小截面积，但1600尼特绝对值还在。你刚才说1000尼特更炸，现在数据摆在这——峰值面积差距没那么大吧？我再问一遍：你那个纸感屏的1000尼特，在户外强光下还能保持多少实际亮度？</div>
+      <div class="turn-sales"><b>销冠</b>（调出两台平板并排，用手电筒强光斜射两台屏幕）您看，强光下纸感屏几乎无反射，实际可视亮度保持率远高于镜面屏——1600尼特被反光散射吞掉后，肉眼感知亮度反而打折。但您反复追问户外表现，我想先了解：您平时主要在什么场景下看HDR内容？是阳台、泳池边、还是通勤路上？</div>
+      <ul class="turn-reasons"><li>推进力 仅 4.0/10</li><li>问题：未提及闪烁减少50%和护眼细节</li><li>问题：未明确点名iPad Air，对比不够直接</li></ul>
+      <div class="turn-sug"><b>建议</b>补充闪烁减少和护眼数据，强化健康卖点 / 可明确提及iPad Air，增强对比冲击力 / 核实亮度参数，统一使用手册数据</div>
+    </div>
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">阿卜杜拉 Abdullah</span>
+        <span class="turn-q turn-q-warn">7.5/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>PaperMatte？听着像磨砂膜。PWM 调光频率多少？别告诉我低频闪到瞎眼。</div>
+      <div class="turn-sales"><b>销冠</b>PaperMatte 是纳米级防眩光蚀刻，不是贴膜。PWM 调光频率 1440Hz，远超人眼感知范围，长时间阅读不累眼。（拿起样机打开设置调出护眼模式）您看，屏幕闪烁减少 50%，强光下依然清晰。</div>
+      <ul class="turn-reasons"><li>推进力 仅 5.33/10</li><li>问题：未提及全高清体验，但核心卖点已覆盖</li><li>问题：未明确对比普通屏幕，但已展示闪烁减少</li></ul>
+      <div class="turn-sug"><b>建议</b>可补充全高清体验，强化卖点完整性 / 建议同时对比普通屏幕，增强说服力 / 建议用强光手电照射屏幕，直观展示无反射</div>
+    </div>
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">阿卜杜拉 Abdullah</span>
+        <span class="turn-q turn-q-warn">8.0/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>数据上1000尼特高光区占比更大？Ya zalami, 但峰值亮度绝对值1600尼特就是更高，这是物理限制。你刚才说&#x27;有效高光区缩了&#x27;，我要看iPad Pro直方图上反光散射到底吞了多少高光面积——调出来，别只给我看MatePad的。</div>
+      <div class="turn-sales"><b>销冠</b>（调出iPad Pro工程模式HDR直方图，与MatePad 12X并排）您看，镜面屏反光散射让高光区边缘发虚，有效峰值面积反而被吞掉约准确耗电数据我现场拿真机给您实测。您反复纠结绝对值，其实是在意户外强光下HDR高光还能不能炸裂，对吗？</div>
+      <ul class="turn-reasons"><li>问题：未明确提及PaperMatte技术名称</li><li>问题：对比对象为iPad Pro而非iPad Air</li><li>问题：未使用强光手电，而是工程模式HDR直方图</li></ul>
+      <div class="turn-sug"><b>建议</b>可补充PaperMatte技术名称，并明确对比对象为iPad Air / 建议使用强光手电照射屏幕，并播放HDR视频对比 / 补充PaperMatte技术名称和护眼数据</div>
+    </div>
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">阿卜杜拉 Abdullah</span>
+        <span class="turn-q turn-q-warn">8.0/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>光晕确实干净，但HDR峰值亮度能到多少？我户外看剧要1600 nits才够爽。</div>
+      <div class="turn-sales"><b>销冠</b>（打开 HDR 测试视频，暂停在高光场景）这块屏 HDR 峰值亮度 1000 尼特，但纸感屏在户外无反射，实际可视亮度比镜面屏的 1600 尼特更通透。您对比看看？</div>
+      <ul class="turn-reasons"><li>问题：未提及护眼（闪烁减少50%）</li><li>问题：未提及分辨率、刷新率、色域</li><li>问题：未用强光手电，但视频演示也可</li></ul>
+      <div class="turn-sug"><b>建议</b>补充护眼数据，增强健康卖点 / 可补充2.8K和144Hz，强化屏幕参数 / 可配合手电筒增强对比效果</div>
+    </div>
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">阿卜杜拉 Abdullah</span>
+        <span class="turn-q turn-q-good">8.2/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>Wallah，纸感屏暗部确实没糊，沙虫鳞片和岩石裂纹都看得清，反光控制也比iPad Pro强。但先别得意——HDR高光呢？现在切到沙虫破土那段，我要看纸感屏的爆炸闪光能不能冲到1600尼特的感觉，亮度计实时读数别停！</div>
+      <div class="turn-sales"><b>销冠</b>（将亮度计对准纸感屏，实时读数显示 920 尼特，同时播放沙虫破土片段）您看，纸感屏 HDR 高光区亮度计冲到 920 尼特，沙虫破土的爆炸闪光刺眼感十足，暗部岩石纹理依然清晰——这就是 PaperMatte 纸感屏的优势：强光下无镜面反光，高光不衰减，暗部不糊。所以您最核心的顾虑就是户外强光下暗部细节和 HDR 高光能否兼得，对吗？</div>
+      <ul class="turn-reasons"><li>问题：未提及屏幕闪烁减少50%</li><li>问题：未明确提及护眼</li><li>问题：未使用强光手电，但亮度计和视频已足够</li></ul>
+      <div class="turn-sug"><b>建议</b>补充闪烁减少和护眼数据，强化健康卖点 / 可增加强光手电对比，更直观展示无反射 / 可补充2.8K和144Hz刷新率，增强参数说服力</div>
+    </div>
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">阿卜杜拉 Abdullah</span>
+        <span class="turn-q turn-q-good">8.2/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>行，拿我iPad Pro来，放同一段《双子杀手》4K HDR 60帧——室内暗光，两台亮度都拉满，Wallah，我要看爆炸场景的高光谁更刺眼，别拿SDR糊弄我。</div>
+      <div class="turn-sales"><b>销冠</b>（接过您的iPad Pro，和MatePad 12X并排，打开《双子杀手》4K HD准确价格我让同事现场给您调单核一下帧同一帧爆炸场景，两台亮度都拉满）您看，纸感屏的1000尼特在暗光下高光更凝聚，没有镜面屏的反光散射，爆炸中心的火球边缘更锐利，冲击力反而更直接。您觉得这差距够明显吗？</div>
+      <ul class="turn-reasons"><li>问题：未提及护眼（闪烁减少50%）</li><li>问题：未明确提iPad Air型号</li><li>问题：未提分辨率、刷新率、色域</li></ul>
+      <div class="turn-sug"><b>建议</b>补充护眼数据，如“闪烁减少50%” / 明确说“iPad Air”而非“镜面屏” / 补充2.8K、144Hz等参数</div>
+    </div>
+    <div class="turn turn-bad">
+      <div class="turn-head">
+        <span class="turn-persona">阿卜杜拉 Abdullah</span>
+        <span class="turn-q turn-q-good">8.2/10</span>
+      </div>
+      <div class="turn-cust"><b>客户</b>920尼特？我iPad Pro标称1600尼特，你这亮度计读数连1000都没破，Ya zalami，这就是你说的HDR高光冲击？别光看刺眼，我要看直方图——纸感屏这块OLED在1%窗口下到底能飙到多少？现在切到《沙丘》日出镜头，把亮度计对准太阳光斑，我要看到瞬间峰值！</div>
+      <div class="turn-sales"><b>销冠</b>（将亮度计对准纸感屏太阳光斑，实时读数跳动）您看，瞬间峰值冲到 920 尼特，但 PaperMatte 纸感屏无镜面反光，高光冲击力直逼 1600 尼特观感。iPad Pro 标称虽高，镜面反射却吃掉大量有效亮度。所以您最核心的顾虑就是户外强光下暗部细节和 HDR 高光能否兼得，对吗？</div>
+      <ul class="turn-reasons"><li>问题：未提及护眼参数（闪烁减少50%）</li><li>问题：竞品名称说iPad Pro而非iPad Air，手册为iPad Air</li><li>问题：实测920尼特与手册1000尼特有偏差，需确认是否合理</li></ul>
+      <div class="turn-sug"><b>建议</b>补充护眼数据，强化健康卖点 / 统一使用iPad Air，避免混淆 / 使用手册标准值1000尼特，或解释实测差异</div>
+    </div>
+  </div>
+</section>
+
+<div class="foot">本报告由销售演绎分析系统自动生成 · 内容源自全部会话原声 · 供内部话术迭代使用</div>
+</div>
+</body>
+</html>
