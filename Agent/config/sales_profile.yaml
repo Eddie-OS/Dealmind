@@ -1,0 +1,20 @@
+# 销冠 agent 的运行期覆盖。对应上游 agent_profiles.sales 那一行，
+# 只是数据源从 SQLite 换成了这个文件。
+
+# 想整体替换销冠人格时，指向一个 md 文件（相对 Agent/ 或绝对路径）。
+# 留空 = 用 shared/vendor/prompts/sales_prompt.md。
+system_prompt_file: null
+
+# 全部留空 = 用 .env 里的全局模型设置。
+model_override:
+  provider_id: null
+  model: null
+  temperature: null
+  max_tokens: null
+
+skills:
+  # 保持空列表。Agent 侧是离线文件驱动，联网搜索与向量检索工具都不可用，
+  # 启用它们只会让销冠每轮多等一次超时然后降级。
+  enabled_tools: []
+  max_tool_loops: 0
+  tool_top_k_default: 3

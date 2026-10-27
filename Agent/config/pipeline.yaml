@@ -1,0 +1,49 @@
+# 全量模拟对抗的唯一配置入口。改这里就够了，不用改代码。
+
+run:
+  # 本场销售话题。留空时由 01_handbook_ingest 从手册标题推断。
+  topic: ""
+  language: zh-CN
+  max_rounds: 20
+  # sales = 销冠先开口；persona = 客户先开口
+  who_speaks_first: sales
+  # 同时进行的会话数。调高会更快但更容易触发模型限流，
+  # 也会让 RUN_LOG.md 的时间线交错难读。
+  session_concurrency: 2
+
+personas:
+  # 相对 Agent/ 的目录。用 tools/export_personas_from_db.py 从上游库导一次快照。
+  source_dir: personas
+  # 非空时只跑带这些标签的人设
+  include_tags: []
+  # 明确排除的人设 id
+  exclude_ids: []
+  # 只跑前 N 个（null = 全量）。真实跑之前建议先设成 2 试水。
+  limit: null
+
+handbook:
+  # 把产品手册（pdf / docx / pptx / xlsx / md / txt / json）丢进这个目录
+  inbox_dir: inbox
+  # auto = 让抽取器自己判断走 1/3/3/5/9/10 结构还是 playbook 结构
+  doc_type: auto
+  # 送进抽取模型的正文上限，太长既贵又不提升质量
+  max_chars: 24000
+
+quality:
+  # fast = 零额外模型调用，聚合 Judge / Coach / 护栏已有信号
+  # deep = 对每条销冠发言额外调一次模型做 6 维打分（贵，按需开）
+  mode: fast
+  deep_max_turns_per_session: 20
+
+reports:
+  top_phrases: 40
+  # 话术进入优秀库的最低 Judge 综合分
+  min_turn_score: 6.5
+
+budget:
+  # 真实执行（非 dry-run）前必须人工确认预估调用量
+  confirm_before_real_run: true
+  # 三道硬闸，任意一道超了就直接停，不会跑到一半才发现烧超
+  max_personas: 120
+  max_rounds_per_session: 25
+  max_llm_calls: 12000

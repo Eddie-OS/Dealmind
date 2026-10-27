@@ -1,0 +1,19 @@
+# 执行产物：每次 run 都是一棵完整的目录树，不进版本库
+runs/
+
+# 引擎快照：由 shared/vendor_sync.py 从上游 src/ 生成，可随时重建
+shared/vendor/
+
+# 你上传的产品手册可能含未公开资料
+inbox/*
+!inbox/.gitkeep
+
+# 从数据库导出的人设快照可能含业务敏感信息。
+# 想把某几个人设纳入版本库时，在这里加白名单例外。
+personas/*.yaml
+personas/*.json
+!personas/_examples/
+
+.env
+__pycache__/
+*.pyc
